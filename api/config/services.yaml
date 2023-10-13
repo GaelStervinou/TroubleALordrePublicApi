@@ -20,5 +20,18 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    App\State\CreateAndUpdateStateProcessor:
+        bind:
+            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
+
+    App\State\SoftDeleteStateProcessor:
+        bind:
+            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
+
+    'App\ContextBuilder\IsAdminContextBuilder':
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\ContextBuilder\IsAdminContextBuilder.inner' ]
+        autoconfigure: false
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
