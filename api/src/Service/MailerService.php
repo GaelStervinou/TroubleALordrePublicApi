@@ -9,12 +9,12 @@ use SendinBlue\Client\Configuration;
 use SendinBlue\Client\Model\SendSmtpEmail;
 
 class MailerService {
-    public const VERIFY_ACCOUNT_TEMPLATE_ID = 1;
+    public const VERIFY_ACCOUNT_TEMPLATE_ID = 8;
     public const ISSUE_TEMPLATE_ID = 4;
     public const FORGOTTEN_PASSWORD_TEMPLATE_ID = 2;
     public const PROPOSAL_RONEUR_ROLE_TEMPLATE_ID = 3;
 
-    public static function sendEmail(array $options, int $templateId = 2): ?string
+    public static function sendEmail(array $options, int $templateId = 2): void
     {
         $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', $_ENV['SEND_IN_BLUE_API_KEY']);
 
@@ -39,11 +39,10 @@ class MailerService {
 
         //TODO sortir la génération du token dans le controller directement
         if ($templateId === self::VERIFY_ACCOUNT_TEMPLATE_ID) {
-            $token = self::generateToken();
-            if ($token === null) {
-                return null;
+            if (!isset($options['validationToken'])) {
+                throw new Exception('Validation token is required');
             }
-            $lienValidation = $_ENV['APP_URL'] . '/users/verify-account/' . $options['emailTo'] . '/' . $token . '/';
+            $lienValidation = $_ENV['APP_URL'] . '/users/verify-account/' . $options['emailTo'] . '/' . $options['validationToken'] . '/';
         }
 
         $addToParam = match ($templateId) {
@@ -59,20 +58,8 @@ class MailerService {
 
         try {
             $result = $apiInstance->sendTransacEmail($sendSmtpEmail);
-            print_r($result);
         } catch (Exception $e) {
-            return null;
-        }
-
-        return $token ?? null;
-    }
-
-    public static function generateToken(): ?string
-    {
-        try {
-            return bin2hex(random_bytes(32));
-        } catch (Exception $e) {
-            return null;
+            throw new Exception('Exception when calling TransactionalEmailsApi->sendTransacEmail: ' . $e->getMessage());
         }
     }
 

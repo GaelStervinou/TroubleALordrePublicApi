@@ -16,6 +16,7 @@ use App\Entity\Trait\SoftDeleteTrait;
 use App\Entity\Trait\TimestampableTrait;
 use App\Interface\SoftDeleteInterface;
 use App\Interface\TimestampableEntityInterface;
+use App\State\UserResetPasswordStateProvider;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use App\State\UserPasswordHasherStateProcessor;
@@ -47,10 +48,22 @@ use Symfony\Component\Validator\Constraints\NotBlank;
             securityMessage: 'Vous n\'êtes pas autorisé à voir cet utilisateur.',
         ),
         new Put(processor: UserPasswordHasherStateProcessor::class),
-        new Patch(processor: UserPasswordHasherStateProcessor::class),
-        new Delete(),
+        new Patch(processor: UserPasswordHasherStateProcessor::class)
     ],
     normalizationContext: ['groups' => ['user:read']],
+)]
+#[ApiResource(
+    operations: [
+        new Patch(
+            uriTemplate: '/auth/reset-password/{token}',
+            normalizationContext: ['groups' => ['user:read']],
+            denormalizationContext: ['groups' => ['user:reset-password']],
+            validationContext: ['groups' => ['user:reset-password']],
+            read: false,
+            provider: UserResetPasswordStateProvider::class,
+            processor: UserPasswordHasherStateProcessor::class,
+        )
+    ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, TimestampableEntityInterface, SoftDeleteInterface
 {
@@ -63,11 +76,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     private ?int $id = null;
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[Groups(['user:me', 'user:create', 'user:update', 'user:admin:read'])]
+    #[Groups(['user:me:read', 'user:create', 'user:update', 'user:admin:read'])]
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
     #[ORM\Column]
-    #[Groups(['user:create', 'user:update'])]
     private ?string $password = null;
 
     #[Assert\Regex(
@@ -76,16 +88,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     )]
     #[Assert\NotBlank(
         message: 'Votre mot de passe ne peut pas être vide.',
-        groups: ['user:create']
+        groups: ['user:create', 'user:reset-password']
     )]
-    #[Groups(['user:create', 'user:update'])]
+    #[Groups(['user:create', 'user:update', 'user:reset-password'])]
     private ?string $plainPassword = null;
 
     #[Assert\NotBlank(
         message: 'Votre mot de passe ne peut pas être vide.',
-        groups: ['user:create']
+        groups: ['user:create', 'user:reset-password']
     )]
-    #[Groups(['user:create', 'user:update'])]
+    #[Groups(['user:create', 'user:update', 'user:reset-password'])]
     private ?string $verifyPassword = null;
 
     #[ORM\Column(type: 'json')]
@@ -119,6 +131,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $validationToken = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $resetPasswordToken = null;
 
     public function getId(): ?int
     {
@@ -260,6 +275,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     public function setValidationToken(?string $validationToken): static
     {
         $this->validationToken = $validationToken;
+
+        return $this;
+    }
+
+    public function getResetPasswordToken(): ?string
+    {
+        return $this->resetPasswordToken;
+    }
+
+    public function setResetPasswordToken(?string $resetPasswordToken): static
+    {
+        $this->resetPasswordToken = $resetPasswordToken;
 
         return $this;
     }

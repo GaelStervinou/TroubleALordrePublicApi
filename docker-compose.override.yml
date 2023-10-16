@@ -14,7 +14,12 @@ services:
       #- /srv/app/vendor
     environment:
       # See https://xdebug.org/docs/all_settings#mode
-      XDEBUG_MODE: "${XDEBUG_MODE:-off}"
+      XDEBUG_MODE: debug
+      PHP_IDE_CONFIG: serverName=apiplatform
+
+      XDEBUG_CONFIG: >-
+        idekey=PHPSTORM
+        client_host=docker.for.mac.localhost
     extra_hosts:
       # Ensure that host.docker.internal is correctly defined on Linux
       - host.docker.internal:host-gateway
