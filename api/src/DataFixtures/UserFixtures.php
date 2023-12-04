@@ -49,7 +49,7 @@ class UserFixtures extends Fixture
                 $user->setEmail($faker->email)
                     ->setFirstname($faker->firstName)
                     ->setLastname($faker->lastName)
-                    ->setRoles([$role, 'ROLE_USER'])
+                    ->setRoles([$role->value, 'ROLE_USER'])
                     ->setStatus($faker->randomElement($status))
                     ->setPassword($pwd)
                     ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')))

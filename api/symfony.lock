@@ -1,13 +1,14 @@
 {
     "api-platform/core": {
-        "version": "3.0",
+        "version": "3.2",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "3.0",
-            "ref": "0330386d716d3eecc52ee5ac66976e733eb8f961"
+            "version": "3.2",
+            "ref": "696d44adc3c0d4f5d25a2f1c4f3700dd8a5c6db9"
         },
         "files": [
+            "config/packages/api_platform.yaml",
             "config/routes/api_platform.yaml",
             "src/ApiResource/.gitignore"
         ]
@@ -23,15 +24,6 @@
     },
     "composer/xdebug-handler": {
         "version": "2.0.4"
-    },
-    "doctrine/annotations": {
-        "version": "1.13",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "1.10",
-            "ref": "64d8583af5ea57b7afa4aba4b159907f3a148b05"
-        }
     },
     "doctrine/cache": {
         "version": "2.1.1"
@@ -54,7 +46,7 @@
             "repo": "github.com/symfony/recipes",
             "branch": "main",
             "version": "2.10",
-            "ref": "e025a6cb69b195970543820b2f18ad21724473fa"
+            "ref": "0db4b12b5df45f5122213b4ecd18733ab7fa7d53"
         },
         "files": [
             "config/packages/doctrine.yaml",
@@ -133,7 +125,7 @@
         "version": "v1.0.5"
     },
     "gesdinet/jwt-refresh-token-bundle": {
-        "version": "1.1",
+        "version": "1.2",
         "recipe": {
             "repo": "github.com/symfony/recipes-contrib",
             "branch": "main",
@@ -165,7 +157,7 @@
         "version": "5.0.2"
     },
     "lexik/jwt-authentication-bundle": {
-        "version": "2.19",
+        "version": "2.20",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
@@ -243,18 +235,6 @@
         },
         "files": [
             "config/packages/ramsey_uuid_doctrine.yaml"
-        ]
-    },
-    "sensio/framework-extra-bundle": {
-        "version": "6.2",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "5.2",
-            "ref": "fb7e19da7f013d0d422fa9bce16f5c510e27609b"
-        },
-        "files": [
-            "config/packages/sensio_framework_extra.yaml"
         ]
     },
     "symfony/asset": {
@@ -345,12 +325,12 @@
         ]
     },
     "symfony/framework-bundle": {
-        "version": "6.2",
+        "version": "6.4",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "6.2",
-            "ref": "af47254c5e4cd543e6af3e4508298ffebbdaddd3"
+            "version": "6.4",
+            "ref": "a91c965766ad3ff2ae15981801643330eb42b6a5"
         },
         "files": [
             "config/packages/cache.yaml",
@@ -421,12 +401,12 @@
         "version": "v6.0.2"
     },
     "symfony/phpunit-bridge": {
-        "version": "6.3",
+        "version": "6.4",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
             "version": "6.3",
-            "ref": "01dfaa98c58f7a7b5a9b30e6edb7074af7ed9819"
+            "ref": "1f5830c331065b6e4c9d5fa2105e322d29fcd573"
         },
         "files": [
             ".env.test",
@@ -464,15 +444,16 @@
         "version": "v6.0.0"
     },
     "symfony/security-bundle": {
-        "version": "6.1",
+        "version": "6.4",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "6.0",
-            "ref": "8a5b112826f7d3d5b07027f93786ae11a1c7de48"
+            "version": "6.4",
+            "ref": "2ae08430db28c8eb4476605894296c82a642028f"
         },
         "files": [
-            "config/packages/security.yaml"
+            "config/packages/security.yaml",
+            "config/routes/security.yaml"
         ]
     },
     "symfony/security-core": {

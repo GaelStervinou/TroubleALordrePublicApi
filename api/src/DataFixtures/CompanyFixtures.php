@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Company;
 use App\Entity\User;
 use App\Enum\CompanyStatusEnum;
+use App\Enum\UserStatusEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -23,6 +24,13 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
             CompanyStatusEnum::BANNED
         ];
 
+        $userStatus = [
+            UserStatusEnum::USER_STATUS_BANNED,
+            UserStatusEnum::USER_STATUS_DELETED,
+            UserStatusEnum::USER_STATUS_PENDING,
+            UserStatusEnum::USER_STATUS_ACTIVE
+        ];
+
         // pwd = TESTtest@1
         $pwd = '$2y$13$f24/1sWERanDbm00jGHbl.BM39Gsm33CMp7RQcB7Rtl1agoQpSDCa';
 
@@ -31,7 +39,7 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
         foreach ($companyAdmins as $companyAdmin) {
 
             $company = new Company();
-            $company->setKbis($faker->regexify('[A-Z]{2}[0-9]{4}'))
+            $company->setKbis($faker->regexify('[A-Z]{2}[0-9]{3}'))
                 ->setStatus($faker->randomElement($status))
                 ->setName($faker->company)
                 ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 months', '-2 days')))
@@ -47,7 +55,7 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
                     ->setFirstname($faker->firstName)
                     ->setLastname($faker->lastName)
                     ->setRoles(['ROLE_TROUBLE_MAKER', 'ROLE_USER'])
-                    ->setStatus($faker->randomElement($status))
+                    ->setStatus($faker->randomElement($userStatus))
                     ->setPassword($pwd)
                     ->setCompany($company)
                     ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')))

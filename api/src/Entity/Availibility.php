@@ -62,8 +62,7 @@ class Availibility implements TimestampableEntityInterface
 
     #[ORM\Column]
     #[Assert\Range(
-        minMessage: "La valeur doit être au moins égale à 1",
-        maxMessage: "La valeur doit être au plus égale à 7",
+        notInRangeMessage: "La valeur doit être entre 1 et 7",
         min: 1,
         max: 7
     )]

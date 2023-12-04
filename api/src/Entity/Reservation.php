@@ -85,7 +85,7 @@ class Reservation implements TimestampableEntityInterface
         ],
         message: "Le status n'est pas valide"
     )]
-    private ?string $status = null;
+    private ?ReservationStatusEnum $status = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $duration = null;
@@ -165,12 +165,12 @@ class Reservation implements TimestampableEntityInterface
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?ReservationStatusEnum
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(ReservationStatusEnum $status): static
     {
         $this->status = $status;
 

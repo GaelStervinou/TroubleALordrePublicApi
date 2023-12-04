@@ -81,7 +81,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         message: "Le status n'est pas valide"
     )]
-    private ?string $status = null;
+    private ?CompanyStatusEnum $status = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]
     private Collection $users;
@@ -194,12 +194,12 @@ use Symfony\Component\Validator\Constraints as Assert;
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?CompanyStatusEnum
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(CompanyStatusEnum $status): static
     {
         $this->status = $status;
 

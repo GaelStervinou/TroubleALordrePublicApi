@@ -131,9 +131,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     #[Groups(['user:read', 'user:create', 'user:update'])]
     private ?string $lastname = null;
 
-    #[ORM\Column]
+    #[ORM\Column (options: ['default' => UserStatusEnum::USER_STATUS_PENDING])]
     #[Groups(['user:read'])]
-    private ?int $status = null;
+    private ?UserStatusEnum $status = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $validationToken = null;
@@ -275,12 +275,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         return $this;
     }
 
-    public function getStatus(): ?int
+    public function getStatus(): UserStatusEnum
     {
         return $this->status;
     }
 
-    public function setStatus(int $status): static
+    public function setStatus(UserStatusEnum $status): static
     {
         $this->status = $status;
 
@@ -300,12 +300,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
 
     public function delete(): self
     {
-        return $this->setStatus(UserStatusEnum::USER_STATUS_DELETED->value);
+        return $this->setStatus(UserStatusEnum::USER_STATUS_DELETED);
     }
 
     public function isDeleted(): bool
     {
-        return $this->getStatus() === UserStatusEnum::USER_STATUS_DELETED->value;
+        return $this->getStatus() === UserStatusEnum::USER_STATUS_DELETED;
     }
 
     public function getValidationToken(): ?string

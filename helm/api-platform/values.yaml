@@ -18,17 +18,11 @@ php:
     - "10.0.0.0/8"
     - "172.16.0.0/12"
     - "192.168.0.0/16"
+  caddyGlobalOptions: ""
 
 pwa:
   image:
     repository: "chart-example.local/api-platform/pwa"
-    pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
-    tag: ""
-
-caddy:
-  image:
-    repository: "chart-example.local/api-platform/caddy"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: ""
