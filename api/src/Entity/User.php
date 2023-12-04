@@ -11,15 +11,19 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Enum\UserRolesEnum;
 use App\Enum\UserStatusEnum;
 use App\Entity\Trait\SoftDeleteTrait;
 use App\Entity\Trait\TimestampableTrait;
 use App\Interface\SoftDeleteInterface;
 use App\Interface\TimestampableEntityInterface;
 use App\State\UserResetPasswordStateProvider;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use App\State\UserPasswordHasherStateProcessor;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -71,9 +75,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     use SoftDeleteTrait;
 
     #[ORM\Id]
-    #[ORM\Column(type: 'integer')]
-    #[ORM\GeneratedValue]
-    private ?int $id = null;
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
+    #[ApiProperty(identifier: true)]
+    private ?UuidInterface $id = null;
     #[Assert\NotBlank]
     #[Assert\Email]
     #[Groups(['user:me:read', 'user:create', 'user:update', 'user:admin:read'])]
@@ -134,6 +140,41 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $resetPasswordToken = null;
+
+    #[ORM\OneToMany(mappedBy: 'receiver', targetEntity: Invitation::class)]
+    private Collection $invitations;
+
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Reservation::class)]
+    private Collection $reservations;
+
+    #[ORM\OneToMany(mappedBy: 'troubleMaker', targetEntity: Reservation::class)]
+    private Collection $reservationsTroubleMaker;
+
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Rate::class)]
+    private Collection $rates;
+
+    #[ORM\OneToMany(mappedBy: 'troubleMaker', targetEntity: Unavailibility::class)]
+    private Collection $unavailibilities;
+
+    #[ORM\OneToMany(mappedBy: 'troubleMaker', targetEntity: Availibility::class)]
+    private Collection $availibilities;
+
+    #[ORM\ManyToMany(targetEntity: Service::class, inversedBy: 'users')]
+    private Collection $service;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    private ?Company $company = null;
+
+    public function __construct()
+    {
+        $this->invitations = new ArrayCollection();
+        $this->reservations = new ArrayCollection();
+        $this->reservationsTroubleMaker = new ArrayCollection();
+        $this->rates = new ArrayCollection();
+        $this->unavailibilities = new ArrayCollection();
+        $this->availibilities = new ArrayCollection();
+        $this->service = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -287,6 +328,242 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     public function setResetPasswordToken(?string $resetPasswordToken): static
     {
         $this->resetPasswordToken = $resetPasswordToken;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Invitation>
+     */
+    public function getInvitations(): Collection
+    {
+        return $this->invitations;
+    }
+
+    public function addInvitation(Invitation $invitation): static
+    {
+        if (!$this->invitations->contains($invitation)) {
+            $this->invitations->add($invitation);
+            $invitation->setReceiver($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvitation(Invitation $invitation): static
+    {
+        if ($this->invitations->removeElement($invitation)) {
+            // set the owning side to null (unless already changed)
+            if ($invitation->getReceiver() === $this) {
+                $invitation->setReceiver(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): static
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): static
+    {
+        if ($this->reservations->removeElement($reservation)) {
+            // set the owning side to null (unless already changed)
+            if ($reservation->getCustomer() === $this) {
+                $reservation->setCustomer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservationsTroubleMaker(): Collection
+    {
+        return $this->reservationsTroubleMaker;
+    }
+
+    public function addReservationsTroubleMaker(Reservation $reservationsTroubleMaker): static
+    {
+        if (!$this->reservationsTroubleMaker->contains($reservationsTroubleMaker)) {
+            $this->reservationsTroubleMaker->add($reservationsTroubleMaker);
+            $reservationsTroubleMaker->setTroubleMaker($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservationsTroubleMaker(Reservation $reservationsTroubleMaker): static
+    {
+        if ($this->reservationsTroubleMaker->removeElement($reservationsTroubleMaker)) {
+            // set the owning side to null (unless already changed)
+            if ($reservationsTroubleMaker->getTroubleMaker() === $this) {
+                $reservationsTroubleMaker->setTroubleMaker(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Rate>
+     */
+    public function getRates(): Collection
+    {
+        return $this->rates;
+    }
+
+    public function addRate(Rate $rate): static
+    {
+        if (!$this->rates->contains($rate)) {
+            $this->rates->add($rate);
+            $rate->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRate(Rate $rate): static
+    {
+        if ($this->rates->removeElement($rate)) {
+            // set the owning side to null (unless already changed)
+            if ($rate->getCustomer() === $this) {
+                $rate->setCustomer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Unavailibility>
+     */
+    public function getUnavailibilities(): Collection
+    {
+        return $this->unavailibilities;
+    }
+
+    public function addUnavailibility(Unavailibility $unavailibility): static
+    {
+        if (!$this->unavailibilities->contains($unavailibility)) {
+            $this->unavailibilities->add($unavailibility);
+            $unavailibility->setTroubleMaker($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUnavailibility(Unavailibility $unavailibility): static
+    {
+        if ($this->unavailibilities->removeElement($unavailibility)) {
+            // set the owning side to null (unless already changed)
+            if ($unavailibility->getTroubleMaker() === $this) {
+                $unavailibility->setTroubleMaker(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Availibility>
+     */
+    public function getAvailibilities(): Collection
+    {
+        return $this->availibilities;
+    }
+
+    public function addAvailibility(Availibility $availibility): static
+    {
+        if (!$this->availibilities->contains($availibility)) {
+            $this->availibilities->add($availibility);
+            $availibility->setTroubleMaker($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAvailibility(Availibility $availibility): static
+    {
+        if ($this->availibilities->removeElement($availibility)) {
+            // set the owning side to null (unless already changed)
+            if ($availibility->getTroubleMaker() === $this) {
+                $availibility->setTroubleMaker(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Service>
+     */
+    public function getService(): Collection
+    {
+        return $this->service;
+    }
+
+    public function addService(Service $service): static
+    {
+        if (!$this->service->contains($service)) {
+            $this->service->add($service);
+        }
+
+        return $this;
+    }
+
+    public function removeService(Service $service): static
+    {
+        $this->service->removeElement($service);
+
+        return $this;
+    }
+
+    public function isAdmin(): bool
+    {
+        return in_array(UserRolesEnum::ADMIN, $this->getRoles(), true);
+    }
+
+    public function isUser(): bool
+    {
+        return in_array('ROLE_USER', $this->getRoles(), true);
+    }
+
+    public function isTroubleMaker(): bool
+    {
+        return in_array(UserRolesEnum::TROUBLE_MAKER, $this->getRoles(), true);
+    }
+
+    public function isCompanyAdmin(): bool
+    {
+        return in_array(UserRolesEnum::COMPANY_ADMIN, $this->getRoles(), true) && $this->getCompany() !== null && $this->getCompany()->isActive();
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): static
+    {
+        $this->company = $company;
 
         return $this;
     }

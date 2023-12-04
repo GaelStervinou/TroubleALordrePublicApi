@@ -55,5 +55,12 @@ services:
         protocol: tcp
 ###< doctrine/doctrine-bundle ###
 
+  maildev:
+    image: maildev/maildev
+    container_name: maildev
+    restart: unless-stopped
+    ports:
+      - "1080:1080"
+
 ###> symfony/mercure-bundle ###
 ###< symfony/mercure-bundle ###

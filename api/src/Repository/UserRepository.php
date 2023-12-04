@@ -1,6 +1,7 @@
 <?php
 # api/src/Repository/UserRepository.php
 namespace App\Repository;
+use App\Enum\UserStatusEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\User;
@@ -45,5 +46,19 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         }
         $user->setPassword($newHashedPassword);
         $this->save($user, true);
+    }
+
+    public function findByRole(string $role, bool $activeOnly = true)
+    {
+        $role = mb_strtoupper($role);
+
+        $query =  $this->createQueryBuilder('u')
+            ->Where("JSON_GET_TEXT(u.roles, 0) LIKE :value ")
+            ->setParameter('value', '%'.$role.'%');
+        if ($activeOnly === true) {
+            $query->andWhere('u.status = :status')
+                ->setParameter('status', UserStatusEnum::USER_STATUS_ACTIVE);
+        }
+        return $query->getQuery()->getResult();
     }
 }
