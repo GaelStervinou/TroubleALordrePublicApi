@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\Action\PaymentIntent\CreatePaymentIntentAction;
 use App\Entity\Trait\TimestampableTrait;
 use App\Enum\ReservationStatusEnum;
 use App\Interface\TimestampableEntityInterface;
@@ -20,6 +21,19 @@ use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    uriTemplate: '/reservation/payment-intent',
+    operations: [
+        new Post(
+            controller: CreatePaymentIntentAction::class,
+            normalizationContext: ['groups' => ['paymentIntent:read']],
+            denormalizationContext: ['groups' => ['paymentIntent:write']],
+            security: 'user.isUser()',
+            output: PaymentIntent::class,
+            name: 'payment-intent',
+        ),
+    ]
+)]
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 #[ApiResource(
     operations: [
