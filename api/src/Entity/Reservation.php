@@ -12,6 +12,7 @@ use App\Entity\Trait\TimestampableTrait;
 use App\Enum\ReservationStatusEnum;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\ReservationRepository;
+use App\State\Reservation\CreateReservationSateProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -32,7 +33,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 or user.isAdmin()'
         ),
         new Post(
-            security: 'user.isUser()'
+            security: 'user.isUser()',
+            processor: CreateReservationSateProcessor::class
         ),
         new Put(
             security: '(user.isTroubleMaker() and object.getTroubleMaker() == user)
