@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Entity\Trait\TimestampableTrait;
@@ -16,25 +17,73 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Attribute\Groups;
 
+#[ApiResource(
+    uriTemplate: '/companies/{id}/services',
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['service:read']],
+        ),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'services', fromClass: Company::class)
+    ],
+    order: ['createdAt' => 'DESC']
+)]
+#[ApiResource(
+    uriTemplate: '/companies/{id}/users',
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['user:read']],
+            security: 'user.isAdmin() 
+                or (object == user.getCompany() and user.isCompanyAdmin())'
+        ),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'users', fromClass: Company::class)
+    ],
+    order: ['createdAt' => 'DESC']
+)]
+#[ApiResource(
+    uriTemplate: '/companies/{id}/invitations',
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['invitation:read']],
+            security: 'user.isAdmin() 
+                or (object == user.getCompany() and user.isCompanyAdmin())'
+        ),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'invitations', fromClass: Company::class)
+    ],
+    order: ['createdAt' => 'DESC']
+)]
+#[UniqueEntity(fields: ['name', 'kbis'], message: 'Ce nom existe déjà')]
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(),
-        new Get(),
+        new Get(
+            security: 'user.isAdmin() 
+                or object == user.getCompany()
+                or object.isActive()'
+        ),
         new Post(
-            security: 'user.isUser()'
+            security: 'user.isUser() and user.company == null'
         ),
         new Patch(
+            denormalizationContext: ['groups' => ['company:update']],
             security: '(user.isCompanyAdmin() and object == user.getCompany()) or user.isAdmin()'
         )
     ],
     normalizationContext: ['groups' => ['company:read']],
     denormalizationContext: ['groups' => ['company:write']],
     order: ['createdAt' => 'DESC'],
-)]class Company implements TimestampableEntityInterface
+)]
+class Company implements TimestampableEntityInterface
 {
     use TimestampableTrait;
 
@@ -52,7 +101,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['company:read', 'company:write', 'service:read', 'reservation:read'])]
+    #[Groups(['company:read', 'company:write', 'company:update', 'service:read', 'reservation:read' ])]
     private ?string $name = null;
 
     #[ORM\Column(length: 5)]
@@ -62,9 +111,11 @@ use Symfony\Component\Serializer\Attribute\Groups;
         minMessage: "Le kbis invalide",
         maxMessage: "Le kbis invalide"
     )]
+    #[Groups(['company:read', 'company:write'])]
     private ?string $kbis = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['company:read', 'company:write', 'company:update', 'company:update','service:read', 'reservation:read'])]
     private ?Media $media = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Invitation::class)]
@@ -83,6 +134,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
         ],
         message: "Le status n'est pas valide"
     )]
+    #[Groups(['company:read', 'admin:company:update'])]
     private ?CompanyStatusEnum $status = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]

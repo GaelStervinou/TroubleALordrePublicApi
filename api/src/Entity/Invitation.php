@@ -14,6 +14,7 @@ use App\Interface\TimestampableEntityInterface;
 use App\Repository\InvitationRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: InvitationRepository::class)]
 #[ApiResource(
@@ -52,10 +53,12 @@ class Invitation implements TimestampableEntityInterface
 
     #[ORM\ManyToOne(inversedBy: 'invitations')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['invitation:read', 'invitation:write'])]
     private ?user $receiver = null;
 
     #[ORM\ManyToOne(inversedBy: 'invitations')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['invitation:read', 'invitation:write'])]
     private ?company $company = null;
 
     public function getId(): ?UuidInterface
