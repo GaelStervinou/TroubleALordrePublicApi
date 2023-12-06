@@ -9,7 +9,6 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Controller\Action\PaymentIntent\CreatePaymentIntentAction;
 use App\Entity\Trait\TimestampableTrait;
 use App\Enum\ReservationStatusEnum;
@@ -21,6 +20,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
@@ -108,6 +108,7 @@ class Reservation implements TimestampableEntityInterface
 
     #[ORM\Column(length: 255)]
     //TODO: Add custom validator to check if address is valid with gouv api
+    #[Groups(['reservation:write', 'reservation:read'])]
     private ?string $address = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -117,9 +118,12 @@ class Reservation implements TimestampableEntityInterface
         minMessage: "La description doit avoir au moins {{ limit }} caractères",
         maxMessage: "La description ne peut pas dépasser {{ limit }} caractères"
     )]
+    #[Groups(['reservation:read'])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[Assert\GreaterThan('today', message: "La date ne peut pas être antérieure à aujourd'hui")]
+    #[Groups(['reservation:write', 'reservation:read'])]
     private ?\DateTimeImmutable $date = null;
 
     #[ORM\Column(length: 50, options: ['default' => ReservationStatusEnum::PENDING])]
@@ -133,26 +137,34 @@ class Reservation implements TimestampableEntityInterface
         ],
         message: "Le status n'est pas valide"
     )]
+    #[Groups(['reservation:update'])]
     private ?ReservationStatusEnum $status = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[Groups(['reservation:read'])]
     private ?\DateTimeImmutable $duration = null;
 
     #[ORM\Column]
+    #[Groups(['reservation:read'])]
     private ?float $price = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['reservation:read', 'reservation:write'])]
     private ?Service $service = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['reservation:read'])]
     private ?User $customer = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservationsTroubleMaker')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['reservation:read', 'reservation:write'])]
     private ?User $troubleMaker = null;
 
     #[ORM\OneToMany(mappedBy: 'reservation', targetEntity: Rate::class)]
+    #[Groups(['reservation:read'])]
     private Collection $rates;
 
     public function __construct()
