@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Controller\Action\PaymentIntent\CreatePaymentIntentAction;
@@ -50,7 +51,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: 'user.isUser()',
             processor: CreateReservationSateProcessor::class
         ),
-        new Put(
+        new Patch(
             security: '(user.isTroubleMaker() and object.getTroubleMaker() == user)
                 or (user.isCompanyAdmin() and object.getTroubleMaker().getCompany() == user.getCompany())
                 or user == object.getCustomer()'

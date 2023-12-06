@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\TimestampableTrait;
@@ -27,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: '(user.isCompanyAdmin() and object.getCompany() == user.getCompany()) 
                         or user.isAdmin()'
         ),
-        new Put(
+        new Patch(
             security: 'user.isCompanyAdmin() and object.getCompany() == user.getCompany()'
         )
     ],

@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\TimestampableTrait;
@@ -23,7 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(),
         new Get(),
         new Post(),
-        new Put(
+        new Patch(
             security: '(user.isTroubleMaker() and object.getTroubleMaker() == user)
                 or (user.isCompanyAdmin() and object.getTroubleMaker().getCompany() == user.getCompany())'
         ),
