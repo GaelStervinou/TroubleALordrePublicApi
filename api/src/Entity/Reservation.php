@@ -2,23 +2,72 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
+use App\Controller\Action\PaymentIntent\CreatePaymentIntentAction;
 use App\Entity\Trait\TimestampableTrait;
 use App\Enum\ReservationStatusEnum;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\ReservationRepository;
+use App\State\Reservation\CreateReservationSateProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    uriTemplate: '/reservation/payment-intent',
+    operations: [
+        new Post(
+            controller: CreatePaymentIntentAction::class,
+            normalizationContext: ['groups' => ['paymentIntent:read']],
+            denormalizationContext: ['groups' => ['paymentIntent:write']],
+            security: 'user.isUser()',
+            output: PaymentIntent::class,
+            name: 'payment-intent',
+        ),
+    ]
+)]
+#[ApiResource(
+    uriTemplate: '/users/{id}/reservations',
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['reservation:read']],
+            security: 'user.isAdmin or id == user.getId()',
+            securityMessage: "Vous n'avez pas accès à cette ressource",
+        ),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'reservations', fromClass: User::class)
+    ],
+    order: ['createdAt' => 'DESC']
+)]
+#[ApiResource(
+    uriTemplate: '/users/trouble-maker/{id}/reservations',
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['reservation:read']],
+            security: 'user.isAdmin() 
+                        or (id == user.getId() and user.isTroubleMaker()) 
+                        or (user.isCompanyAdmin() and id == user.getCompany().getId())',
+            securityMessage: "Vous n'avez pas accès à cette ressource",
+        ),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'reservationsTroubleMaker', fromClass: User::class)
+    ],
+    order: ['createdAt' => 'DESC']
+)]
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 #[ApiResource(
     operations: [
@@ -32,9 +81,10 @@ use Symfony\Component\Validator\Constraints as Assert;
                 or user.isAdmin()'
         ),
         new Post(
-            security: 'user.isUser()'
+            security: 'user.isUser()',
+            processor: CreateReservationSateProcessor::class
         ),
-        new Put(
+        new Patch(
             security: '(user.isTroubleMaker() and object.getTroubleMaker() == user)
                 or (user.isCompanyAdmin() and object.getTroubleMaker().getCompany() == user.getCompany())
                 or user == object.getCustomer()'
@@ -44,6 +94,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: ['groups' => ['reservation:write']],
     order: ['createdAt' => 'DESC'],
 )]
+#[ApiFilter(SearchFilter::class, properties: [
+    'status' => 'exact',
+])]
 class Reservation implements TimestampableEntityInterface
 {
     use TimestampableTrait;
@@ -60,6 +113,7 @@ class Reservation implements TimestampableEntityInterface
 
     #[ORM\Column(length: 255)]
     //TODO: Add custom validator to check if address is valid with gouv api
+    #[Groups(['reservation:write', 'reservation:read'])]
     private ?string $address = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -69,9 +123,12 @@ class Reservation implements TimestampableEntityInterface
         minMessage: "La description doit avoir au moins {{ limit }} caractères",
         maxMessage: "La description ne peut pas dépasser {{ limit }} caractères"
     )]
+    #[Groups(['reservation:read'])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[Assert\GreaterThan('today', message: "La date ne peut pas être antérieure à aujourd'hui")]
+    #[Groups(['reservation:write', 'reservation:read'])]
     private ?\DateTimeImmutable $date = null;
 
     #[ORM\Column(length: 50, options: ['default' => ReservationStatusEnum::PENDING])]
@@ -85,26 +142,34 @@ class Reservation implements TimestampableEntityInterface
         ],
         message: "Le status n'est pas valide"
     )]
+    #[Groups(['reservation:update'])]
     private ?ReservationStatusEnum $status = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[Groups(['reservation:read'])]
     private ?\DateTimeImmutable $duration = null;
 
     #[ORM\Column]
+    #[Groups(['reservation:read'])]
     private ?float $price = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['reservation:read', 'reservation:write'])]
     private ?Service $service = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['reservation:read'])]
     private ?User $customer = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservationsTroubleMaker')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['reservation:read', 'reservation:write'])]
     private ?User $troubleMaker = null;
 
     #[ORM\OneToMany(mappedBy: 'reservation', targetEntity: Rate::class)]
+    #[Groups(['reservation:read'])]
     private Collection $rates;
 
     public function __construct()

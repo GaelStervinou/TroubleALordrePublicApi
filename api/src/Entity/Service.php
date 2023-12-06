@@ -6,8 +6,8 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\TimestampableTrait;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\ServiceRepository;
@@ -16,6 +16,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
@@ -27,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: '(user.isCompanyAdmin() and object.getCompany() == user.getCompany()) 
                         or user.isAdmin()'
         ),
-        new Put(
+        new Patch(
             security: 'user.isCompanyAdmin() and object.getCompany() == user.getCompany()'
         )
     ],
@@ -48,9 +49,12 @@ class Service implements TimestampableEntityInterface
 
     #[ORM\ManyToOne(inversedBy: 'services')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?company $company = null;
+    #[Groups(['service:read', 'service:write', 'reservation:read'])]
+    private ?Company $company = null;
 
     #[ORM\Column]
+    #[Assert\PositiveOrZero]
+    #[Groups(['service:read', 'service:write'])]
     private ?float $price = null;
 
     #[ORM\Column(length: 255)]
@@ -60,9 +64,11 @@ class Service implements TimestampableEntityInterface
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
+    #[Groups(['service:read', 'service:write', 'reservation:read'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[Groups(['service:read', 'service:write'])]
     private ?\DateTimeImmutable $duration = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -72,16 +78,20 @@ class Service implements TimestampableEntityInterface
         minMessage: "La description doit avoir au moins {{ limit }} caractères",
         maxMessage: "La description ne peut pas dépasser {{ limit }} caractères"
     )]
+    #[Groups(['service:read', 'service:write'])]
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'services')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['service:read', 'service:write', 'reservation:read'])]
     private ?Category $category = null;
 
     #[ORM\OneToMany(mappedBy: 'service', targetEntity: Media::class)]
+    #[Groups(['service:read', 'service:write', 'reservation:read'])]
     private Collection $medias;
 
     #[ORM\ManyToMany(targetEntity: City::class, inversedBy: 'services')]
+    #[Groups(['service:read', 'service:write', 'reservation:read'])]
     private Collection $cities;
 
     #[ORM\OneToMany(mappedBy: 'service', targetEntity: Reservation::class)]

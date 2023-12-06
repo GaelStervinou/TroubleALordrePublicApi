@@ -6,8 +6,8 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\TimestampableTrait;
 use App\Enum\CompanyStatusEnum;
 use App\Interface\TimestampableEntityInterface;
@@ -17,6 +17,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 #[ApiResource(
@@ -26,7 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Post(
             security: 'user.isUser()'
         ),
-        new Put(
+        new Patch(
             security: '(user.isCompanyAdmin() and object == user.getCompany()) or user.isAdmin()'
         )
     ],
@@ -51,6 +52,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
+    #[Groups(['company:read', 'company:write', 'service:read', 'reservation:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 5)]

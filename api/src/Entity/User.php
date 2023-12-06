@@ -117,7 +117,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         minMessage: 'Votre prénom doit faire 2 caractères minimum.',
         maxMessage: 'Votre prénom doit faire 50 caractères maximum.',
     )]
-    #[Groups(['user:read', 'user:create', 'user:update'])]
+    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 80)]
@@ -128,7 +128,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         minMessage: 'Votre nom doit faire 2 caractères minimum.',
         maxMessage: 'Votre nom doit faire 80 caractères maximum.',
     )]
-    #[Groups(['user:read', 'user:create', 'user:update'])]
+    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read'])]
     private ?string $lastname = null;
 
     #[ORM\Column (options: ['default' => UserStatusEnum::USER_STATUS_PENDING])]
@@ -176,7 +176,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         $this->service = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
