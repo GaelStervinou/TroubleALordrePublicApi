@@ -55,7 +55,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             normalizationContext: ['groups' => ['reservation:read']],
-            security: 'user.isAdmin() or (id == user.getId() and user.isTroubleMaker())',
+            security: 'user.isAdmin() 
+                        or (id == user.getId() and user.isTroubleMaker()) 
+                        or (user.isCompanyAdmin() and id == user.getCompany().getId())',
             securityMessage: "Vous n'avez pas accès à cette ressource",
         ),
     ],
