@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
@@ -17,8 +18,21 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    uriTemplate: '/cities/{id}/services',
+    operations: [
+        new GetCollection(),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'services', fromClass: City::class)
+    ],
+    order: ['createdAt' => 'DESC']
+)]
+#[UniqueEntity(fields: ['name'], message: 'Cette ville existe déjà')]
 #[ORM\Entity(repositoryClass: CityRepository::class)]
 #[ApiResource(
     operations: [
@@ -55,6 +69,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
+    #[Groups(['city:read', 'city:write'])]
     private ?string $name = null;
 
     #[ORM\ManyToMany(targetEntity: Service::class, mappedBy: 'cities')]
