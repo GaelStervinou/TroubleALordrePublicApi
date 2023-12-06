@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
@@ -17,8 +18,21 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    uriTemplate: '/categories/{id}/services',
+    operations: [
+        new GetCollection(),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'services', fromClass: Category::class)
+    ],
+    order: ['createdAt' => 'DESC']
+)]
+#[UniqueEntity(fields: ['name'], message: 'Cette catégorie existe déjà')]
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ApiResource(
     operations: [
@@ -56,12 +70,14 @@ class Category implements TimestampableEntityInterface
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
+    #[Groups(['category:read', 'category:write', 'service:read', 'reservation:read'])]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Service::class)]
     private Collection $services;
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: RateType::class)]
+    #[Groups(['category:read'])]
     private Collection $rateTypes;
 
     public function __construct()
