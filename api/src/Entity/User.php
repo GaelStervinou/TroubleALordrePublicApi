@@ -308,6 +308,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         return $this->getStatus() === UserStatusEnum::USER_STATUS_DELETED;
     }
 
+    public function isPending(): bool
+    {
+        return $this->getStatus() === UserStatusEnum::USER_STATUS_PENDING;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->getStatus() === UserStatusEnum::USER_STATUS_ACTIVE;
+    }
+
     public function getValidationToken(): ?string
     {
         return $this->validationToken;
