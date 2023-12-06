@@ -8,7 +8,6 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\TimestampableTrait;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\RateTypeRepository;
@@ -17,6 +16,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: RateTypeRepository::class)]
 #[ApiResource(
@@ -49,10 +49,12 @@ class RateType implements TimestampableEntityInterface
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
+    #[Groups(['rate_type:read', 'rate_type:write', 'reservation:read'])]
     private ?string $label = null;
 
     #[ORM\ManyToOne(inversedBy: 'rateTypes')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['rate_type:read', 'rate_type:write'])]
     private ?Category $category = null;
 
     #[ORM\OneToMany(mappedBy: 'rateType', targetEntity: Rate::class)]

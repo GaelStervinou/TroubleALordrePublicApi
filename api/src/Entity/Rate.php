@@ -5,13 +5,12 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Repository\RateRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: RateRepository::class)]
 #[ApiResource(
@@ -39,6 +38,7 @@ class Rate
         min: 0,
         max: 5,
     )]
+    #[Groups(['rate:read', 'rate:write', 'reservation:read'])]
     private ?float $value = null;
 
     #[ORM\ManyToOne(inversedBy: 'rates')]
@@ -55,6 +55,7 @@ class Rate
 
     #[ORM\ManyToOne(inversedBy: 'rates')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['rate:read', 'rate:write', 'reservation:read'])]
     private ?RateType $rateType = null;
 
     public function getId(): ?UuidInterface

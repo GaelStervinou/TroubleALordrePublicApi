@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
@@ -92,6 +94,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: ['groups' => ['reservation:write']],
     order: ['createdAt' => 'DESC'],
 )]
+#[ApiFilter(SearchFilter::class, properties: [
+    'status' => 'exact',
+])]
 class Reservation implements TimestampableEntityInterface
 {
     use TimestampableTrait;
