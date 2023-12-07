@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\TimestampableTrait;
@@ -16,6 +17,34 @@ use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 
+#[ApiResource(
+    uriTemplate: '/users/{id}/invitations',
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['rate:read']],
+            security: 'id == user.getId()',
+            securityMessage: "Vous n'avez pas accès à cette ressource",
+        ),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'invitations', fromClass: User::class)
+    ],
+    order: ['createdAt' => 'DESC']
+)]
+#[ApiResource(
+    uriTemplate: '/companies/{id}/invitations',
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['rate:read']],
+            security: 'user.isCompanyAdmin() and id == user.getCompany().getId()',
+            securityMessage: "Vous n'avez pas accès à cette ressource",
+        ),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'invitations', fromClass: Company::class)
+    ],
+    order: ['createdAt' => 'DESC']
+)]
 #[ORM\Entity(repositoryClass: InvitationRepository::class)]
 #[ApiResource(
     operations: [
@@ -29,7 +58,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
         ),
         new Post(
             security: 'user.isAdmin() 
-                or (user.isCompanyAdmin() and object.getCompany() == user.getCompany())'
+                or (user.isCompanyAdmin() and object.getCompany() == user.getCompany())
+                and object.getCompany().isActive()',
+            securityMessage: "Vous n'avez pas accès à cette ressource",
         ),
         new Delete(
             security: 'user.isAdmin() 
