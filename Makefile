@@ -12,3 +12,9 @@ start:
 
 down:
 	docker compose down
+
+ci:
+	cp api/.env.example api/.env
+	docker compose build --no-cache --pull
+	docker compose up -d
+	docker compose exec php composer install
