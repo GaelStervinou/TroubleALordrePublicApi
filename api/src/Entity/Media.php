@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\Put;
 use App\Repository\MediaRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
 #[ApiResource(
@@ -36,6 +37,7 @@ class Media
     private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['media:read', 'media:write', 'service:read', 'company:read'])]
     private ?string $path = null;
 
     #[ORM\ManyToOne(inversedBy: 'medias')]

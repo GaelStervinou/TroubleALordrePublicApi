@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Entity\Trait\TimestampableTrait;
@@ -19,13 +20,26 @@ use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    uriTemplate: '/users/{id}/services',
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['service:read']],
+            securityMessage: "Vous n'avez pas accès à cette ressource",
+        ),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'services', fromClass: User::class)
+    ],
+    order: ['createdAt' => 'DESC']
+)]
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(),
         new Get(),
         new Post(
-            security: '(user.isCompanyAdmin() and object.getCompany() == user.getCompany()) 
+            security: '(user.isCompanyAdmin() and object.getCompany() == user.getCompany() and object.getCompany().isActive())
                         or user.isAdmin()'
         ),
         new Patch(
@@ -101,6 +115,7 @@ class Service implements TimestampableEntityInterface
     private Collection $rates;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'service')]
+    #[Groups(['service:read', 'service:write'])]
     private Collection $users;
 
     public function __construct()

@@ -176,7 +176,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         $this->service = new ArrayCollection();
     }
 
-    public function getId(): UuidInterface
+    public function getId(): ?UuidInterface
     {
         return $this->id;
     }
