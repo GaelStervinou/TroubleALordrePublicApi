@@ -26,7 +26,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
-    uriTemplate: '/reservation/payment-intent',
+    uriTemplate: '/reservations/payment-intent',
     operations: [
         new Post(
             controller: CreatePaymentIntentAction::class,
