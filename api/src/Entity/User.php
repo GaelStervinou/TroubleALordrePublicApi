@@ -17,6 +17,7 @@ use App\Entity\Trait\SoftDeleteTrait;
 use App\Entity\Trait\TimestampableTrait;
 use App\Interface\SoftDeleteInterface;
 use App\Interface\TimestampableEntityInterface;
+use App\State\User\UserMeProvider;
 use App\State\UserResetPasswordStateProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -50,6 +51,13 @@ use Symfony\Component\Validator\Constraints\NotBlank;
             normalizationContext: ['groups' => ['user:read']],
             security: 'is_granted("ROLE_ADMIN") or object == user && (user.isActive() == true or user.isPending() == true)',
             securityMessage: 'Vous n\'êtes pas autorisé à voir cet utilisateur.',
+        ),
+        new Get(
+            uriTemplate: '/me',
+            normalizationContext: ['groups' => ['user:read']],
+            security: 'object == user && (user.isActive() == true or user.isPending() == true)',
+            securityMessage: 'Votre compte n\'est plus disponible.',
+            provider: UserMeProvider::class,
         ),
         new Put(processor: UserPasswordHasherStateProcessor::class),
         new Patch(processor: UserPasswordHasherStateProcessor::class)
