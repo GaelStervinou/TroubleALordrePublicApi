@@ -115,6 +115,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     private ?string $verifyPassword = null;
 
     #[ORM\Column(type: 'json')]
+    #[Groups(['user:read'])]
     private array $roles = [];
 
     #[ORM\Column(length: 50)]
