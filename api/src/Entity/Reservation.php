@@ -57,8 +57,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             normalizationContext: ['groups' => ['reservation:read']],
-            security: 'user.isAdmin() 
-                        or (id == user.getId() and user.isTroubleMaker()) 
+            security: 'user.isAdmin()
+                        or (id == user.getId() and user.isTroubleMaker())
                         or (user.isCompanyAdmin() and id == user.getCompany().getId())',
             securityMessage: "Vous n'avez pas accès à cette ressource",
         ),
@@ -145,9 +145,9 @@ class Reservation implements TimestampableEntityInterface
     #[Groups(['reservation:update'])]
     private ?ReservationStatusEnum $status = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[ORM\Column()]
     #[Groups(['reservation:read'])]
-    private ?\DateTimeImmutable $duration = null;
+    private ?int $duration = null;
 
     #[ORM\Column]
     #[Groups(['reservation:read'])]
@@ -242,12 +242,12 @@ class Reservation implements TimestampableEntityInterface
         return $this;
     }
 
-    public function getDuration(): ?\DateTimeImmutable
+    public function getDuration(): ?int
     {
         return $this->duration;
     }
 
-    public function setDuration(\DateTimeImmutable $duration): static
+    public function setDuration(?int $duration): self
     {
         $this->duration = $duration;
 

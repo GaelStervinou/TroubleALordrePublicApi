@@ -35,7 +35,7 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
                         ->setCategory($category)
                         ->setCompany($company)
                         ->setDescription($faker->text)
-                        ->setDuration(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 hours', '-1 seconds')))
+                        ->setDuration($faker->numberBetween(300, 86400))
                         ->setPrice($faker->randomFloat(2, 0, 1000))
                         ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')))
                         ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')));

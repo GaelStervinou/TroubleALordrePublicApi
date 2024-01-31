@@ -81,9 +81,14 @@ class Service implements TimestampableEntityInterface
     #[Groups(['service:read', 'service:write', 'reservation:read'])]
     private ?string $name = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[ORM\Column()]
+    #[Assert\Range(
+        notInRangeMessage: "La durée d'un service doit être comprise entre 5 minutes et 24 heures.",
+        min: 300,
+        max: 86400
+    )]
     #[Groups(['service:read', 'service:write'])]
-    private ?\DateTimeImmutable $duration = null;
+    private ?int $duration = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\Length(
@@ -168,12 +173,12 @@ class Service implements TimestampableEntityInterface
         return $this;
     }
 
-    public function getDuration(): ?\DateTimeImmutable
+    public function getDuration(): ?int
     {
         return $this->duration;
     }
 
-    public function setDuration(\DateTimeImmutable $duration): static
+    public function setDuration(?int $duration): self
     {
         $this->duration = $duration;
 

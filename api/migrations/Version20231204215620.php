@@ -80,7 +80,7 @@ final class Version20231204215620 extends AbstractMigration
         $this->addSql('COMMENT ON COLUMN rate_type.category_id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN rate_type.created_at IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('COMMENT ON COLUMN rate_type.updated_at IS \'(DC2Type:datetime_immutable)\'');
-        $this->addSql('CREATE TABLE reservation (id varchar NOT NULL, service_id varchar DEFAULT NULL, customer_id varchar NOT NULL, trouble_maker_id varchar NOT NULL, payment_intent_id VARCHAR(255) NOT NULL, address VARCHAR(255) NOT NULL, description VARCHAR(255) DEFAULT NULL, date DATE NOT NULL, status VARCHAR(50) DEFAULT \'pending\' NOT NULL, duration DATE NOT NULL, price DOUBLE PRECISION NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE reservation (id varchar NOT NULL, service_id varchar DEFAULT NULL, customer_id varchar NOT NULL, trouble_maker_id varchar NOT NULL, payment_intent_id VARCHAR(255) NOT NULL, address VARCHAR(255) NOT NULL, description VARCHAR(255) DEFAULT NULL, date DATE NOT NULL, status VARCHAR(50) DEFAULT \'pending\' NOT NULL, duration INT NOT NULL, price DOUBLE PRECISION NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('ALTER TABLE "reservation" ALTER COLUMN id TYPE UUID USING id::uuid');
         $this->addSql('CREATE INDEX IDX_42C84955ED5CA9E6 ON reservation (service_id)');
         $this->addSql('CREATE INDEX IDX_42C849559395C3F3 ON reservation (customer_id)');
@@ -89,18 +89,15 @@ final class Version20231204215620 extends AbstractMigration
         $this->addSql('COMMENT ON COLUMN reservation.service_id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN reservation.customer_id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN reservation.trouble_maker_id IS \'(DC2Type:uuid)\'');
-        $this->addSql('COMMENT ON COLUMN reservation.date IS \'(DC2Type:date_immutable)\'');
-        $this->addSql('COMMENT ON COLUMN reservation.duration IS \'(DC2Type:date_immutable)\'');
         $this->addSql('COMMENT ON COLUMN reservation.created_at IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('COMMENT ON COLUMN reservation.updated_at IS \'(DC2Type:datetime_immutable)\'');
-        $this->addSql('CREATE TABLE service (id varchar NOT NULL, company_id varchar NOT NULL, category_id varchar NOT NULL, price DOUBLE PRECISION NOT NULL, name VARCHAR(255) NOT NULL, duration DATE NOT NULL, description TEXT NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE service (id varchar NOT NULL, company_id varchar NOT NULL, category_id varchar NOT NULL, price DOUBLE PRECISION NOT NULL, name VARCHAR(255) NOT NULL, duration INT NOT NULL, description TEXT NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('ALTER TABLE "service" ALTER COLUMN id TYPE UUID USING id::uuid');
         $this->addSql('CREATE INDEX IDX_E19D9AD2979B1AD6 ON service (company_id)');
         $this->addSql('CREATE INDEX IDX_E19D9AD212469DE2 ON service (category_id)');
         $this->addSql('COMMENT ON COLUMN service.id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN service.company_id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN service.category_id IS \'(DC2Type:uuid)\'');
-        $this->addSql('COMMENT ON COLUMN service.duration IS \'(DC2Type:date_immutable)\'');
         $this->addSql('COMMENT ON COLUMN service.created_at IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('COMMENT ON COLUMN service.updated_at IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('CREATE TABLE service_city (service_id varchar NOT NULL, city_id varchar NOT NULL, PRIMARY KEY(service_id, city_id))');
@@ -228,4 +225,3 @@ final class Version20231204215620 extends AbstractMigration
         $this->addSql('COMMENT ON COLUMN "user".id IS NULL');
     }
 }
-
