@@ -11,5 +11,5 @@ start:
 	docker compose up -d
 	docker compose exec php bin/console d:m:m -n
 
-down:
+stop:
 	docker compose down

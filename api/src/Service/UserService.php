@@ -10,7 +10,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class UserService
 {
-    private const DEFAULT_STATUS = UserStatusEnum::USER_STATUS_PENDING->value;
+    private const DEFAULT_STATUS = UserStatusEnum::USER_STATUS_PENDING;
     private const DEFAULT_ROLES = ['ROLE_USER'];
     public function __construct(
         private User $user,
