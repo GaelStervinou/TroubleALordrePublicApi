@@ -2,65 +2,65 @@
 
 namespace App\Service;
 
-use Exception;
-use GuzzleHttp\Client;
-use SendinBlue\Client\Api\TransactionalEmailsApi;
-use SendinBlue\Client\Configuration;
-use SendinBlue\Client\Model\SendSmtpEmail;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use ApiPlatform\Metadata\ApiResource;
 
-class MailerService {
-    public const VERIFY_ACCOUNT_TEMPLATE_ID = 8;
-    public const ISSUE_TEMPLATE_ID = 4;
-    public const FORGOTTEN_PASSWORD_TEMPLATE_ID = 2;
-    public const PROPOSAL_RONEUR_ROLE_TEMPLATE_ID = 3;
+class MailerService
+{
+    private MailerInterface $mailer;
 
-    public static function sendEmail(array $options, int $templateId = 2): void
+    public function __construct(MailerInterface $mailer)
     {
-        $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', $_ENV['SEND_IN_BLUE_API_KEY']);
+        $this->mailer = $mailer;
+    }
 
-
-        $apiInstance = new TransactionalEmailsApi(
-            new Client(),
-            $config
-        );
-
-        $sendSmtpEmail = new SendSmtpEmail();
-
-        $sendSmtpEmail['to'] = [[
-            'email'=> $options['emailTo'],
-            'name'=> $options['lastnameTo'],
-            'PRENOM' => $options['firstnameTo'],
-        ]];
-        $sendSmtpEmail['params'] = [
-            'EMAIL'=> $options['emailTo'],
-            'NOM'=> $options['lastnameTo'],
-            'PRENOM' => $options['firstnameTo'],
-        ];
-
-        //TODO sortir la génération du token dans le controller directement
-        if ($templateId === self::VERIFY_ACCOUNT_TEMPLATE_ID) {
-            if (!isset($options['validationToken'])) {
-                throw new Exception('Validation token is required');
-            }
-            $lienValidation = $_ENV['APP_URL'] . '/users/verify-account/' . $options['emailTo'] . '/' . $options['validationToken'] . '/';
-        }
-
-        $addToParam = match ($templateId) {
-            self::VERIFY_ACCOUNT_TEMPLATE_ID => ['LIEN_VALIDATION' => $lienValidation],
-            self::ISSUE_TEMPLATE_ID => ['LIEN_ISSUE' => $options['issueLink']],
-            self::FORGOTTEN_PASSWORD_TEMPLATE_ID => ['RESET_TOKEN' => $options['resetToken']],
-            self::PROPOSAL_RONEUR_ROLE_TEMPLATE_ID => ['LIEN_PROPOSITION' => $options['proposalLink']],
-            default => throw new Exception('Template ID not found'),
-        };
-
-        $sendSmtpEmail['params'] = array_merge($sendSmtpEmail['params'], $addToParam);
-        $sendSmtpEmail['templateId'] = $templateId;
+    public function sendEmail(array $options, int $templateId = 2): void
+    {
+        $email = (new TemplatedEmail())
+            ->to($options['emailTo'])
+            ->subject($this->getSubject($templateId))
+            ->from('troublealordrepublic@gmail.com')
+            ->htmlTemplate($this->getTemplate($templateId));
+            // ->context($this->getContext($options, $templateId));
 
         try {
-            $result = $apiInstance->sendTransacEmail($sendSmtpEmail);
-        } catch (Exception $e) {
-            throw new Exception('Exception when calling TransactionalEmailsApi->sendTransacEmail: ' . $e->getMessage());
+            $this->mailer->send($email);
+        } catch (TransportExceptionInterface $e) {
+            throw new \Exception('Unable to send email: ' . $e->getMessage());
         }
     }
 
+    private function getSubject(int $templateId): string
+    {
+        // TODO : logique pour récupérer le sujet en fonction du templateId
+        switch ($templateId) {
+            case 1:
+                return 'Sujet du mail de vérification';
+            case 2:
+                return 'Sujet du mail de réinitialisation de mot de passe';
+            default:
+                return 'Sujet par défaut';
+        }
+        
+    }
+
+    private function getTemplate(int $templateId): string
+    {
+        // TODO : gestion template selon le mail
+        switch ($templateId) {
+            case 1:
+                return 'emails/validation.html.twig';
+            case 2:
+                return 'emails/reset_password.html.twig';
+            default:
+                return 'emails/default.html.twig';
+        }
+    }
+
+    private function getContext(array $options, int $templateId): array
+    {
+        // TODO : context si besoin 
+    }
 }

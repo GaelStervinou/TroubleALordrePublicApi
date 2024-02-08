@@ -8,3 +8,7 @@ auth:
     methods: ['POST']
 api_refresh_token:
     path: /token/refresh
+send_email:
+    path: /send-email
+    methods: ['GET']
+
