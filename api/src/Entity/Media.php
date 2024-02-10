@@ -38,7 +38,7 @@ class Media
     private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['media:read', 'media:write', 'service:read', 'company:read'])]
+    #[Groups(['media:read', 'media:write', 'service:read', 'company:collection:read'])]
     private ?string $path = null;
 
     #[ORM\ManyToOne(inversedBy: 'medias')]

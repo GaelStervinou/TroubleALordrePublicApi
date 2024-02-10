@@ -94,6 +94,7 @@ class Company implements TimestampableEntityInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
+    #[Groups(['company:collection:read'])]
     private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 255)]
@@ -167,6 +168,9 @@ class Company implements TimestampableEntityInterface
     #[Groups(['company:collection:read', 'company:admin:read'])]
     private Collection $categories;
 
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Availibility::class)]
+    private Collection $availibilities;
+
     public function __construct()
     {
         $this->invitations = new ArrayCollection();
@@ -174,6 +178,7 @@ class Company implements TimestampableEntityInterface
         $this->users = new ArrayCollection();
         $this->medias = new ArrayCollection();
         $this->categories = new ArrayCollection();
+        $this->availibilities = new ArrayCollection();
     }
 
     public function getId(): ?UuidInterface
@@ -493,6 +498,36 @@ class Company implements TimestampableEntityInterface
     public function removeCategory(Category $category): static
     {
         $this->categories->removeElement($category);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Availibility>
+     */
+    public function getAvailibilities(): Collection
+    {
+        return $this->availibilities;
+    }
+
+    public function addAvailibility(Availibility $availibility): static
+    {
+        if (!$this->availibilities->contains($availibility)) {
+            $this->availibilities->add($availibility);
+            $availibility->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAvailibility(Availibility $availibility): static
+    {
+        if ($this->availibilities->removeElement($availibility)) {
+            // set the owning side to null (unless already changed)
+            if ($availibility->getCompany() === $this) {
+                $availibility->setCompany(null);
+            }
+        }
 
         return $this;
     }
