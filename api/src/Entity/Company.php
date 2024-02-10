@@ -100,15 +100,15 @@ class Company implements TimestampableEntityInterface
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'service:read', 'reservation:read'])]
+    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'service:read', 'reservation:read', 'user:companies:read'])]
     private ?string $name = null;
 
     #[ORM\ManyToOne]
-    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'company:update', 'service:read', 'reservation:read'])]
+    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'company:update', 'service:read', 'reservation:read', 'user:companies:read'])]
     private ?Media $mainMedia = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Media::class)]
-    #[Groups(['company:read', 'company:write', 'reservation:read'])]
+    #[Groups(['company:read', 'company:write', 'reservation:read', 'user:companies:read'])]
     private Collection $medias;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Invitation::class)]
@@ -116,7 +116,7 @@ class Company implements TimestampableEntityInterface
     private Collection $invitations;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Service::class)]
-    #[Groups(['company:read', 'company:admin:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read'])]
     private Collection $services;
 
     #[ORM\Column(length: 10, options: ['default' => CompanyStatusEnum::PENDING])]
@@ -129,39 +129,39 @@ class Company implements TimestampableEntityInterface
         ],
         message: "Le status n'est pas valide"
     )]
-    #[Groups(['company:read', 'admin:company:update'])]
+    #[Groups(['company:read', 'admin:company:update', 'user:companies:read'])]
     private ?CompanyStatusEnum $status = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]
-    #[Groups('company:admin:read')]
+    #[Groups('company:admin:read', 'user:companies:read')]
     private Collection $users;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:read', 'company:admin:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read'])]
     private ?string $address = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:read', 'company:admin:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read'])]
     private ?string $zipCode = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:read', 'company:admin:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read'])]
     private ?string $city = null;
 
     #[ORM\Column]
-    #[Groups(['company:read', 'company:admin:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read'])]
     private ?float $lat = null;
 
     #[ORM\Column]
-    #[Groups(['company:read', 'company:admin:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read'])]
     private ?float $lng = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:read', 'company:admin:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read'])]
     private ?string $description = null;
 
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'companies')]
-    #[Groups(['company:collection:read', 'company:admin:read', 'company:read'])]
+    #[Groups(['company:collection:read', 'company:admin:read', 'company:read', 'user:companies:read'])]
     private Collection $categories;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Availibility::class)]

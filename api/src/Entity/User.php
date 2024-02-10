@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
@@ -47,8 +48,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
         ),
         new Get(
             normalizationContext: ['groups' => ['user:read']],
-            security: 'is_granted("ROLE_ADMIN") or object == user && (user.isActive() == true or user.isPending() == true)',
-            securityMessage: 'Vous n\'êtes pas autorisé à voir cet utilisateur.',
         ),
         new Get(
             uriTemplate: '/me',
@@ -74,6 +73,18 @@ use Symfony\Component\Validator\Constraints\NotBlank;
             processor: UserPasswordHasherStateProcessor::class,
         )
     ]
+)]
+#[ApiResource(
+    uriTemplate: '/users/{id}/companies',
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['user:companies:read']],
+        ),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'companies', fromClass: User::class)
+    ],
+    order: ['createdAt' => 'DESC']
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, TimestampableEntityInterface, SoftDeleteInterface
 {
@@ -187,6 +198,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     private ?Media $profilePicture = null;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Company::class)]
+    #[Groups(['user:companies:read'])]
     private Collection $ownedCompanies;
 
     public function __construct()
