@@ -67,7 +67,7 @@ class Media
     private ?UuidInterface $id = null;
 
     #[ApiProperty(types: ['https://schema.org/contentUrl'])]
-    #[Groups('media:read')]
+    #[Groups(['media:read', 'company:collection:read', 'company:read'])]
     public ?string $contentUrl = null;
 
     #[UploadableField(mapping: 'media', fileNameProperty: 'path')]

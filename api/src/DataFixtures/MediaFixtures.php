@@ -12,10 +12,17 @@ class MediaFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
+        $companyPictureNames = [
+            'company-1.jpeg',
+            'company-2.jpeg',
+            'company-3.jpeg',
+            'company-4.jpeg',
+            'company-5.jpeg',
+        ];
 
-        for ($i=0; $i < 300; $i++) {
+        for ($i = 0; $i < 300; $i++) {
             $manager->persist((new Media())
-                ->setPath($faker->filePath()));
+                ->setPath($faker->randomElement($companyPictureNames)));
         }
 
         $manager->flush();
