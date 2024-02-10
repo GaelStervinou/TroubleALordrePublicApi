@@ -174,6 +174,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Company $company = null;
 
+    #[ORM\Column(length: 5, nullable: true)]
+    #[Assert\Length(
+        min: 5,
+        max: 5,
+        minMessage: "Le kbis invalide",
+        maxMessage: "Le kbis invalide"
+    )]
+    private ?string $kbis = null;
+
     public function __construct()
     {
         $this->invitations = new ArrayCollection();
@@ -572,7 +581,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
 
     public function isCompanyAdmin(): bool
     {
-        return in_array(UserRolesEnum::COMPANY_ADMIN, $this->getRoles(), true) && $this->getCompany() !== null && $this->getCompany()->isActive();
+        return in_array(UserRolesEnum::COMPANY_ADMIN, $this->getRoles(), true) && $this->getCompany()?->isActive();
     }
 
     public function getCompany(): ?Company
@@ -583,6 +592,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     public function setCompany(?Company $company): static
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    public function getKbis(): ?string
+    {
+        return $this->kbis;
+    }
+
+    public function setKbis(?string $kbis): static
+    {
+        $this->kbis = $kbis;
 
         return $this;
     }

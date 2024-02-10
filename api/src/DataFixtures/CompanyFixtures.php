@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Company;
+use App\Entity\Media;
 use App\Entity\User;
 use App\Enum\CompanyStatusEnum;
 use App\Enum\UserStatusEnum;
@@ -35,15 +36,27 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
         $pwd = '$2y$13$f24/1sWERanDbm00jGHbl.BM39Gsm33CMp7RQcB7Rtl1agoQpSDCa';
 
         $companyAdmins = $manager->getRepository(User::class)->findByRole('ROLE_COMPANY_ADMIN', false);
-
+        $medias = $manager->getRepository(Media::class)->findAll();
         foreach ($companyAdmins as $companyAdmin) {
+            $companyMainMedia = $faker->randomElement($medias);
+            $companyMedias = $faker->randomElements($medias, 5);
 
             $company = new Company();
-            $company->setKbis($faker->regexify('[A-Z]{2}[0-9]{3}'))
+            $company
                 ->setStatus($faker->randomElement($status))
                 ->setName($faker->company)
+                ->setDescription($faker->text(255))
+                ->setMainMedia($companyMainMedia)
+                ->setAddress($faker->streetAddress)
+                ->setZipCode($faker->postcode)
+                ->setCity($faker->city)
+                ->setLat($faker->latitude)
+                ->setLng($faker->longitude)
                 ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 months', '-2 days')))
                 ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 months', '-2 days')));
+            foreach($companyMedias as $companyMedia) {
+                $company->addMedia($companyMedia);
+            }
             $manager->persist($company);
 
             $companyAdmin->setCompany($company);
@@ -71,6 +84,7 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             UserFixtures::class,
+            MediaFixtures::class,
         ];
     }
 }

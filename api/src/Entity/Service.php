@@ -105,14 +105,6 @@ class Service implements TimestampableEntityInterface
     #[Groups(['service:read', 'service:write', 'reservation:read'])]
     private ?Category $category = null;
 
-    #[ORM\OneToMany(mappedBy: 'service', targetEntity: Media::class)]
-    #[Groups(['service:read', 'service:write', 'reservation:read'])]
-    private Collection $medias;
-
-    #[ORM\ManyToMany(targetEntity: City::class, inversedBy: 'services')]
-    #[Groups(['service:read', 'service:write', 'reservation:read'])]
-    private Collection $cities;
-
     #[ORM\OneToMany(mappedBy: 'service', targetEntity: Reservation::class)]
     private Collection $reservations;
 
@@ -125,7 +117,6 @@ class Service implements TimestampableEntityInterface
 
     public function __construct()
     {
-        $this->medias = new ArrayCollection();
         $this->cities = new ArrayCollection();
         $this->reservations = new ArrayCollection();
         $this->rates = new ArrayCollection();
@@ -209,24 +200,6 @@ class Service implements TimestampableEntityInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Media>
-     */
-    public function getMedias(): Collection
-    {
-        return $this->medias;
-    }
-
-    public function addMedia(Media $media): static
-    {
-        if (!$this->medias->contains($media)) {
-            $this->medias->add($media);
-            $media->setService($this);
-        }
-
-        return $this;
-    }
-
     public function removeMedia(Media $media): static
     {
         if ($this->medias->removeElement($media)) {
@@ -235,30 +208,6 @@ class Service implements TimestampableEntityInterface
                 $media->setService(null);
             }
         }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, City>
-     */
-    public function getCities(): Collection
-    {
-        return $this->cities;
-    }
-
-    public function addCity(City $city): static
-    {
-        if (!$this->cities->contains($city)) {
-            $this->cities->add($city);
-        }
-
-        return $this;
-    }
-
-    public function removeCity(City $city): static
-    {
-        $this->cities->removeElement($city);
 
         return $this;
     }
@@ -348,5 +297,22 @@ class Service implements TimestampableEntityInterface
         }
 
         return $this;
+    }
+
+    public function getRatesFromCustomersCountAndTotal(): array
+    {
+        $rates = $this->getRates();
+        $ratesTotal = $rates->reduce(function (int $accumulator, Rate $value) {
+            if ($value->isCustomerRate()) {
+                return $accumulator + $value->getValue();
+            }
+
+            return $accumulator;
+        }, 0);
+
+        return [
+            'count' => $rates->count(),
+            'total' => $ratesTotal
+        ];
     }
 }

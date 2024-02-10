@@ -46,6 +46,9 @@ class UserFixtures extends Fixture
         foreach ($roles as $role) {
             for ($i = 0; $i < 6; $i++) {
                 $user = new User();
+                if($role) {
+                    $user->setKbis($faker->regexify('[A-Z]{2}[0-9]{3}'));
+                }
                 $user->setEmail($faker->email)
                     ->setFirstname($faker->firstName)
                     ->setLastname($faker->lastName)
