@@ -18,6 +18,14 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
+        $profilePictureNames = [
+            'pp-1.jpeg',
+            'pp-2.jpeg',
+            'pp-3.jpeg',
+            'pp-4.jpeg',
+            'pp-5.jpeg',
+            'pp-6.jpeg',
+        ];
 
         $status = [
             CompanyStatusEnum::ACTIVE,
@@ -56,12 +64,13 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
                 ->setLng($faker->longitude)
                 ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 months', '-2 days')))
                 ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 months', '-2 days')));
-            foreach($companyMedias as $companyMedia) {
+            foreach ($companyMedias as $companyMedia) {
                 $company->addMedia($companyMedia);
             }
-            for($i = 0; $i < random_int(1, 5); $i++) {
+            for ($i = 0; $i < random_int(1, 5); $i++) {
                 $company->addCategory($faker->randomElement($categories));
             }
+
             $manager->persist($company);
 
             $companyAdmin->setCompany($company);
@@ -78,10 +87,12 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
                     ->setCompany($company)
                     ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')))
                     ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')));
+                $profilePicture = (new Media())
+                    ->setPath($faker->randomElement($profilePictureNames));
+                $manager->persist($profilePicture);
+                $user->setProfilePicture($profilePicture);
                 $manager->persist($user);
             }
-
-
         }
 
         $manager->flush();
