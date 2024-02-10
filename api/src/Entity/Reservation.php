@@ -121,7 +121,7 @@ class Reservation implements TimestampableEntityInterface
     #[Groups(['reservation:read'])]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[ORM\Column()]
     #[Assert\GreaterThan('today', message: "La date ne peut pas être antérieure à aujourd'hui")]
     #[Groups(['reservation:write', 'reservation:read'])]
     private ?\DateTimeImmutable $date = null;

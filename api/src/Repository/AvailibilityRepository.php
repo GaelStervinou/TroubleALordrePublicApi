@@ -22,29 +22,28 @@ use Doctrine\Persistence\ManagerRegistry;
 class AvailibilityRepository extends ServiceEntityRepository
 {
     public const DEFAULT_PAGINATION_LIMIT = 7;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Availibility::class);
     }
 
     public function getTroubleMakerAvailabilityFromDateToDate(
-        string $userId,
-        string $companyId,
-        int $limit = self::DEFAULT_PAGINATION_LIMIT,
-        int $page = 1
-    ): Collection
+        string             $userId,
+        string             $companyId,
+        \DateTimeImmutable $dateFrom,
+        \DateTimeImmutable $dateTo
+    ): array
     {
-        if (1 > $page) {
-            $page = 1;
-        }
-        $dateFrom = (new \DateTimeImmutable())->add(new \DateInterval("P+{$offset}D"));
-
-         $query = $this->createQueryBuilder('a')
+        $query = $this->createQueryBuilder('a')
             ->select()
-            ->where('a.user_id = :userId')
-            ->orWhere('a.company_id = :companyId')
+            ->where('(a.troubleMaker = :userId AND a.start_time BETWEEN :dateFrom AND :dateTo) OR a.company = :companyId')
             ->setParameter('userId', $userId, ParameterType::STRING)
+            ->setParameter('dateFrom', $dateFrom)
+            ->setParameter('dateTo', $dateTo)
             ->setParameter('companyId', $companyId, ParameterType::STRING)
+            ->orderBy('a.day', 'ASC')
+            ->orderBy('a.start_time', 'ASC')
         ;
 
         return $query->getQuery()->execute();

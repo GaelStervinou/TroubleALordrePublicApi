@@ -5,14 +5,20 @@ namespace App\ApiResource;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\State\TroubleMakerPlanningStateProvider;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
     operations: [
-        new Get(
+        new GetCollection(
             uriTemplate: '/plannings/{userId}/{serviceId}',
+            requirements: [
+                'userId' => '[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}',
+                'serviceId' => '[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}',
+                ],
             normalizationContext: ['groups' => ['planning:read']],
+            name: 'planning',
             provider: TroubleMakerPlanningStateProvider::class,
         )
     ],
@@ -20,17 +26,17 @@ use Symfony\Component\Serializer\Attribute\Groups;
 )]
 class Planning
 {
-    private ?string $date = null;
+    private ?\DateTimeImmutable $date = null;
     private array $shifts = [];
 
     #[Groups(['planning:read'])]
-    public function getDate(): ?string
+    public function getDate(): ?\DateTimeImmutable
     {
         return $this->date;
     }
 
     #[Groups(['planning:read'])]
-    public function setDate(?string $date): self
+    public function setDate(?\DateTimeImmutable $date): self
     {
         $this->date = $date;
 

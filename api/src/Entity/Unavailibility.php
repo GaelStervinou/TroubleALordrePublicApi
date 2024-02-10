@@ -51,12 +51,12 @@ class Unavailibility implements TimestampableEntityInterface
     #[ApiProperty(identifier: true)]
     private ?UuidInterface $id = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeImmutable $startDate = null;
+    #[ORM\Column()]
+    private ?\DateTimeImmutable $startTime = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[ORM\Column()]
     #[Assert\GreaterThan(propertyPath: "startDate", message: "La date de fin doit être postérieure à la date de début")]
-    private ?\DateTimeImmutable $endDate = null;
+    private ?\DateTimeImmutable $endTime = null;
 
     #[ORM\ManyToOne(inversedBy: 'unavailibilities')]
     #[ORM\JoinColumn(nullable: false)]
@@ -67,26 +67,26 @@ class Unavailibility implements TimestampableEntityInterface
         return $this->id;
     }
 
-    public function getStartDate(): ?\DateTimeImmutable
+    public function getStartTime(): ?\DateTimeImmutable
     {
-        return $this->startDate;
+        return $this->startTime;
     }
 
-    public function setStartDate(\DateTimeImmutable $startDate): static
+    public function setStartTime(\DateTimeImmutable $startTime): static
     {
-        $this->startDate = $startDate;
+        $this->startTime = $startTime;
 
         return $this;
     }
 
-    public function getEndDate(): ?\DateTimeImmutable
+    public function getEndTime(): ?\DateTimeImmutable
     {
-        return $this->endDate;
+        return $this->endTime;
     }
 
-    public function setEndDate(\DateTimeImmutable $endDate): static
+    public function setEndTime(\DateTimeImmutable $endTime): static
     {
-        $this->endDate = $endDate;
+        $this->endTime = $endTime;
 
         return $this;
     }

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Reservation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -20,29 +21,19 @@ class ReservationRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Reservation::class);
     }
+    public function getTroubleMakerReservationsFromDateToDate(
+        string $userId,
+        \DateTimeImmutable $dateFrom,
+        \DateTimeImmutable $dateTo
+    ): array
+    {
+        $query = $this->createQueryBuilder('r')
+            ->select()
+            ->where('(r.troubleMaker = :userId AND r.date BETWEEN :dateFrom AND :dateTo)')
+            ->setParameter('userId', $userId, ParameterType::STRING)
+            ->setParameter('dateFrom', $dateFrom)
+            ->setParameter('dateTo', $dateTo);
 
-//    /**
-//     * @return Reservation[] Returns an array of Reservation objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('r.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Reservation
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        return $query->getQuery()->execute();
+    }
 }
