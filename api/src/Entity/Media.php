@@ -34,11 +34,11 @@ class Media
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:collection:read'])]
+    #[Groups(['company:collection:read', 'company:read'])]
     private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['media:read', 'media:write', 'service:read', 'company:collection:read'])]
+    #[Groups(['media:read', 'media:write', 'service:read', 'company:collection:read', 'company:read'])]
     private ?string $path = null;
 
     #[ORM\ManyToOne(inversedBy: 'medias')]

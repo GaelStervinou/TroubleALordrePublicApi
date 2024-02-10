@@ -161,7 +161,7 @@ class Company implements TimestampableEntityInterface
     private ?string $description = null;
 
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'companies')]
-    #[Groups(['company:collection:read', 'company:admin:read'])]
+    #[Groups(['company:collection:read', 'company:admin:read', 'company:read'])]
     private Collection $categories;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Availibility::class)]

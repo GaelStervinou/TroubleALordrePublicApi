@@ -3,8 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\Availibility;
+use App\Entity\Company;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\ParameterType;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -24,8 +28,8 @@ class AvailibilityRepository extends ServiceEntityRepository
     }
 
     public function getTroubleMakerAvailabilityFromDateToDate(
-        \DateTimeImmutable $dateFrom,
-        \DateTimeImmutable $dateTo,
+        string $userId,
+        string $companyId,
         int $limit = self::DEFAULT_PAGINATION_LIMIT,
         int $page = 1
     ): Collection
@@ -33,7 +37,16 @@ class AvailibilityRepository extends ServiceEntityRepository
         if (1 > $page) {
             $page = 1;
         }
+        $dateFrom = (new \DateTimeImmutable())->add(new \DateInterval("P+{$offset}D"));
 
-        $this->createQueryBuilder();
+         $query = $this->createQueryBuilder('a')
+            ->select()
+            ->where('a.user_id = :userId')
+            ->orWhere('a.company_id = :companyId')
+            ->setParameter('userId', $userId, ParameterType::STRING)
+            ->setParameter('companyId', $companyId, ParameterType::STRING)
+        ;
+
+        return $query->getQuery()->execute();
     }
 }

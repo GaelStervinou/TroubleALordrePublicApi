@@ -2,10 +2,8 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
@@ -17,7 +15,6 @@ use App\Entity\Trait\SoftDeleteTrait;
 use App\Entity\Trait\TimestampableTrait;
 use App\Interface\SoftDeleteInterface;
 use App\Interface\TimestampableEntityInterface;
-use App\State\TroubleMakerPlanningStateProvider;
 use App\State\User\UserMeProvider;
 use App\State\UserResetPasswordStateProvider;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -78,16 +75,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
         )
     ]
 )]
-
-#[ApiResource(
-    operations: [
-        new Get(
-            uriTemplate: '/users/{userId}/{serviceId}',
-            normalizationContext: ['groups' => ['user:planning:read']],
-            provider: TroubleMakerPlanningStateProvider::class,
-        )
-    ]
-)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, TimestampableEntityInterface, SoftDeleteInterface
 {
     use TimestampableTrait;
@@ -98,6 +85,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
+    #[Groups(['company:read', 'user:read'])]
     private ?UuidInterface $id = null;
     #[Assert\NotBlank]
     #[Assert\Email]
@@ -193,6 +181,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         maxMessage: "Le kbis invalide"
     )]
     private ?string $kbis = null;
+
+    #[ORM\ManyToOne]
+    #[Groups(['company:read'])]
+    private ?Media $profilePicture = null;
 
     public function __construct()
     {
@@ -635,5 +627,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
             return null;
         }
         return $userRates['total'] / $userRates['count'];
+    }
+
+    public function getProfilePicture(): ?Media
+    {
+        return $this->profilePicture;
+    }
+
+    public function setProfilePicture(?Media $profilePicture): static
+    {
+        $this->profilePicture = $profilePicture;
+
+        return $this;
     }
 }

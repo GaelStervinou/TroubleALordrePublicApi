@@ -61,7 +61,7 @@ class Category implements TimestampableEntityInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:collection:read'])]
+    #[Groups(['company:collection:read', 'company:read'])]
     private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 30)]
@@ -71,7 +71,7 @@ class Category implements TimestampableEntityInterface
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['category:read', 'category:write', 'company:collection:read', 'company:read', 'reservation:read'])]
+    #[Groups(['category:read', 'category:write', 'company:collection:read', 'company:read', 'reservation:read', 'company:read'])]
     private ?string $name = null;
 
     #[ORM\ManyToMany(targetEntity: Company::class, mappedBy: 'categories')]

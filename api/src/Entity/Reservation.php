@@ -111,11 +111,6 @@ class Reservation implements TimestampableEntityInterface
     #[ORM\Column(length: 255)]
     private ?string $paymentIntentId = null;
 
-    #[ORM\Column(length: 255)]
-    //TODO: Add custom validator to check if address is valid with gouv api
-    #[Groups(['reservation:write', 'reservation:read'])]
-    private ?string $address = null;
-
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(
         min: 5,
