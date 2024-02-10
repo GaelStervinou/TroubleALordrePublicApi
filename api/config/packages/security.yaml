@@ -56,9 +56,10 @@ security:
         - { path: ^/docs, roles: PUBLIC_ACCESS }
         - { path: ^/auth, roles: PUBLIC_ACCESS }
         - { path: ^/users, method: POST, roles: PUBLIC_ACCESS }
+        - { path: ^/users, method: GET, roles: PUBLIC_ACCESS }
         - { path: ^/companies, method: GET, roles: PUBLIC_ACCESS }
         - { path: ^/categories, method: GET, roles: PUBLIC_ACCESS }
-        - { path: ^/planning, method: GET, roles: PUBLIC_ACCESS }
+        - { path: ^/plannings, method: GET, roles: PUBLIC_ACCESS }
         - { path: ^/medias, method: GET, roles: PUBLIC_ACCESS }
         - { path: ^/users/verify-email/, method: GET, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
