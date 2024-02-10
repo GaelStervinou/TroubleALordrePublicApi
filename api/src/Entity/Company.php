@@ -167,6 +167,11 @@ class Company implements TimestampableEntityInterface
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Availibility::class)]
     private Collection $availibilities;
 
+    #[ORM\ManyToOne(inversedBy: 'ownedCompanies')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['company:admin:read'])]
+    private ?User $owner = null;
+
     public function __construct()
     {
         $this->invitations = new ArrayCollection();
@@ -524,6 +529,18 @@ class Company implements TimestampableEntityInterface
                 $availibility->setCompany(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

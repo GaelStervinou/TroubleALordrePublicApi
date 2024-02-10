@@ -85,7 +85,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:read', 'user:read'])]
+    #[Groups(['company:read', 'user:read', 'company:admin:read'])]
     private ?UuidInterface $id = null;
     #[Assert\NotBlank]
     #[Assert\Email]
@@ -125,7 +125,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         minMessage: 'Votre prénom doit faire 2 caractères minimum.',
         maxMessage: 'Votre prénom doit faire 50 caractères maximum.',
     )]
-    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read', 'company:read'])]
+    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read', 'company:read', 'company:admin:read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 80)]
@@ -136,7 +136,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         minMessage: 'Votre nom doit faire 2 caractères minimum.',
         maxMessage: 'Votre nom doit faire 80 caractères maximum.',
     )]
-    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read', 'company:read'])]
+    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read', 'company:read', 'company:admin:read'])]
     private ?string $lastname = null;
 
     #[ORM\Column (options: ['default' => UserStatusEnum::USER_STATUS_PENDING])]
@@ -186,6 +186,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     #[Groups(['company:read'])]
     private ?Media $profilePicture = null;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Company::class)]
+    private Collection $ownedCompanies;
+
     public function __construct()
     {
         $this->invitations = new ArrayCollection();
@@ -195,6 +198,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         $this->unavailibilities = new ArrayCollection();
         $this->availibilities = new ArrayCollection();
         $this->service = new ArrayCollection();
+        $this->ownedCompanies = new ArrayCollection();
     }
 
     public function getId(): ?UuidInterface
@@ -637,6 +641,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     public function setProfilePicture(?Media $profilePicture): static
     {
         $this->profilePicture = $profilePicture;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Company>
+     */
+    public function getOwnedCompanies(): Collection
+    {
+        return $this->ownedCompanies;
+    }
+
+    public function addOwnedCompany(Company $ownedCompany): static
+    {
+        if (!$this->ownedCompanies->contains($ownedCompany)) {
+            $this->ownedCompanies->add($ownedCompany);
+            $ownedCompany->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOwnedCompany(Company $ownedCompany): static
+    {
+        if ($this->ownedCompanies->removeElement($ownedCompany)) {
+            // set the owning side to null (unless already changed)
+            if ($ownedCompany->getOwner() === $this) {
+                $ownedCompany->setOwner(null);
+            }
+        }
 
         return $this;
     }

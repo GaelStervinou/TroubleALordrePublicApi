@@ -47,13 +47,15 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
         $companyAdmins = $manager->getRepository(User::class)->findByRole('ROLE_COMPANY_ADMIN', false);
         $medias = $manager->getRepository(Media::class)->findAll();
         $categories = $manager->getRepository(Category::class)->findAll();
-        foreach ($companyAdmins as $companyAdmin) {
+
+        for ($i = 0; $i < 15; $i++) {
             $companyMainMedia = $faker->randomElement($medias);
             $companyMedias = $faker->randomElements($medias, 5);
 
             $company = new Company();
             $company
                 ->setStatus($faker->randomElement($status))
+                ->setOwner($faker->randomElement($companyAdmins))
                 ->setName($faker->company)
                 ->setDescription($faker->text(255))
                 ->setMainMedia($companyMainMedia)
@@ -67,16 +69,13 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
             foreach ($companyMedias as $companyMedia) {
                 $company->addMedia($companyMedia);
             }
-            for ($i = 0; $i < random_int(1, 5); $i++) {
+            for ($j = 0; $j < random_int(1, 5); $j++) {
                 $company->addCategory($faker->randomElement($categories));
             }
 
             $manager->persist($company);
 
-            $companyAdmin->setCompany($company);
-            $manager->persist($companyAdmin);
-
-            for ($i = 0; $i < 20; $i++) {
+            for ($h = 0; $h < 20; $h++) {
                 $user = new User();
                 $user->setEmail($faker->email)
                     ->setFirstname($faker->firstName)
@@ -94,8 +93,8 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
                 $manager->persist($user);
             }
         }
-
         $manager->flush();
+
     }
 
     public function getDependencies(): array

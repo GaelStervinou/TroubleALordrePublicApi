@@ -61,7 +61,8 @@ class InvitationFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             UserFixtures::class,
-            MediaFixtures::class
+            MediaFixtures::class,
+            CompanyFixtures::class,
         ];
     }
 }
