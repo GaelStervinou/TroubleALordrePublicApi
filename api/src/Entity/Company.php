@@ -65,9 +65,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 #[ApiResource(
     operations: [
-        new GetCollection(),
-        new Get(
+        new GetCollection(
             normalizationContext: ['groups' => ['company:collection:read']],
+        ),
+        new Get(
             security: 'object.isActive()
                 or user.isAdmin() 
                 or object == user.getCompany()'
@@ -163,6 +164,7 @@ class Company implements TimestampableEntityInterface
     private ?string $description = null;
 
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'companies')]
+    #[Groups(['company:collection:read', 'company:admin:read'])]
     private Collection $categories;
 
     public function __construct()
