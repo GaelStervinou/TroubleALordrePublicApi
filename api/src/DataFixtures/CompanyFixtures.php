@@ -76,7 +76,7 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
             $companyAdmin->setCompany($company);
             $manager->persist($companyAdmin);
 
-            for ($i = 0; $i < 8; $i++) {
+            for ($i = 0; $i < 20; $i++) {
                 $user = new User();
                 $user->setEmail($faker->email)
                     ->setFirstname($faker->firstName)

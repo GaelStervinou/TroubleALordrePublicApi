@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 trait TimestampableTrait
 {
     #[ORM\Column]
-    #[Groups(['toilet:admin:read'])]
+    #[Groups(['company:read'])]
     private ?DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]

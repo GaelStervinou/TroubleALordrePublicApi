@@ -22,7 +22,7 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
             $usersCompany = $company->getUsers();
 
 
-            $randomValue = random_int(0, 13);
+            $randomValue = random_int(1, 5);
 
             for ($i = 0; $i < $randomValue; $i++) {
                 $service = new Service();

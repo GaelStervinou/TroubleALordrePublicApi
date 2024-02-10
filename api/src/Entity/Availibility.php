@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\TimestampableTrait;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\AvailibilityRepository;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
@@ -56,22 +57,22 @@ class Availibility implements TimestampableEntityInterface
     /*
      * start_time => dispo spécifique, liée à un troublemaker uniquement et qui correspond à un jour + un horaire précis. Donc pas de day possible avec start_time / end_time
      */
-    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    #[ORM\Column(nullable: true)]
     #[Groups(['availability:read', 'availability:write'])]
     #[Assert\GreaterThan(value: "now()", message: "La date de disponibilité ne peut pas être inférieure à aujourd'hui")]
     #[Assert\Expression('this.getDay() === null', 'Vous ne pouvez pas ajouter d\'heure spécifique à un jour de la semaine')]
     #[Assert\Expression('this.getTroubleMakerId() !== null', 'Vous deveez associer ce temps de travail spécifique à un prestataire.')]
-    private ?\DateTimeImmutable $start_time = null;
+    private ?DateTimeImmutable $start_time = null;
 
     /*
      * end_time => dispo spécifique, liée à un troublemaker uniquement et qui correspond à un jour + un horaire précis. Donc pas de day possible avec start_time / end_time
      */
-    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    #[ORM\Column(nullable: true)]
     #[Groups(['availability:read', 'availability:write'])]
     #[Assert\GreaterThan(propertyPath: "start_time", message: "La date de fin doit être postérieure à la date de début")]
     #[Assert\Expression('this.getDay() === null', 'Vous ne pouvez pas ajouter d\'heure spécifique à un jour de la semaine')]
     #[Assert\Expression('this.getTroubleMakerId() !== null', 'Vous deveez associer ce temps de travail spécifique à un prestataire.')]
-    private ?\DateTimeImmutable $end_time = null;
+    private ?DateTimeImmutable $end_time = null;
 
 
     #[ORM\Column(nullable: true)]
@@ -102,24 +103,24 @@ class Availibility implements TimestampableEntityInterface
         return $this->id;
     }
 
-    public function getStartTime(): ?\DateTimeImmutable
+    public function getStartTime(): ?DateTimeImmutable
     {
         return $this->start_time;
     }
 
-    public function setStartTime(\DateTimeImmutable $start_time): static
+    public function setStartTime(DateTimeImmutable $start_time): static
     {
         $this->start_time = $start_time;
 
         return $this;
     }
 
-    public function getEndTime(): ?\DateTimeImmutable
+    public function getEndTime(): ?DateTimeImmutable
     {
         return $this->end_time;
     }
 
-    public function setEndTime(\DateTimeImmutable $end_time): static
+    public function setEndTime(DateTimeImmutable $end_time): static
     {
         $this->end_time = $end_time;
 

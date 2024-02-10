@@ -24,6 +24,7 @@ class RateFixtures extends Fixture implements DependentFixtureInterface
                 ->setCustomer($reservation->getCustomer())
                 ->setService($reservation->getService())
                 ->setReservation($reservation)
+                ->setContent($faker->text(255))
                 ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 days', '-4 hours')))
                 ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 days', '-4 hours')));
             $manager->persist($rate);

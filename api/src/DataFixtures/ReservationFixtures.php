@@ -33,7 +33,7 @@ class ReservationFixtures extends Fixture implements DependentFixtureInterface
 
                 $serviceTroubleMakers = $service->getUsers();
 
-                $randomValue = rand(0, 3);
+                $randomValue = random_int(0, 3);
 
                 for ($i = 0; $i < $randomValue; $i++) {
                     $reservation = new Reservation();
