@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Category;
 use App\Entity\Company;
 use App\Entity\Media;
 use App\Entity\User;
@@ -37,6 +38,7 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
 
         $companyAdmins = $manager->getRepository(User::class)->findByRole('ROLE_COMPANY_ADMIN', false);
         $medias = $manager->getRepository(Media::class)->findAll();
+        $categories = $manager->getRepository(Category::class)->findAll();
         foreach ($companyAdmins as $companyAdmin) {
             $companyMainMedia = $faker->randomElement($medias);
             $companyMedias = $faker->randomElements($medias, 5);
@@ -57,6 +59,9 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
             foreach($companyMedias as $companyMedia) {
                 $company->addMedia($companyMedia);
             }
+            for($i = 0; $i < random_int(1, 5); $i++) {
+                $company->addCategory($faker->randomElement($categories));
+            }
             $manager->persist($company);
 
             $companyAdmin->setCompany($company);
@@ -75,6 +80,8 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
                     ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')));
                 $manager->persist($user);
             }
+
+
         }
 
         $manager->flush();
@@ -85,6 +92,7 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
         return [
             UserFixtures::class,
             MediaFixtures::class,
+            CategoryFixtures::class,
         ];
     }
 }

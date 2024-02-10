@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Availibility;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,33 +17,23 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class AvailibilityRepository extends ServiceEntityRepository
 {
+    public const DEFAULT_PAGINATION_LIMIT = 7;
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Availibility::class);
     }
 
-//    /**
-//     * @return Availibility[] Returns an array of Availibility objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('a.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getTroubleMakerAvailabilityFromDateToDate(
+        \DateTimeImmutable $dateFrom,
+        \DateTimeImmutable $dateTo,
+        int $limit = self::DEFAULT_PAGINATION_LIMIT,
+        int $page = 1
+    ): Collection
+    {
+        if (1 > $page) {
+            $page = 1;
+        }
 
-//    public function findOneBySomeField($value): ?Availibility
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $this->createQueryBuilder();
+    }
 }

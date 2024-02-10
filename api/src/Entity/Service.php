@@ -100,11 +100,6 @@ class Service implements TimestampableEntityInterface
     #[Groups(['service:read', 'service:write'])]
     private ?string $description = null;
 
-    #[ORM\ManyToOne(inversedBy: 'services')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['service:read', 'service:write', 'reservation:read'])]
-    private ?Category $category = null;
-
     #[ORM\OneToMany(mappedBy: 'service', targetEntity: Reservation::class)]
     private Collection $reservations;
 
@@ -184,18 +179,6 @@ class Service implements TimestampableEntityInterface
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    public function getCategory(): ?Category
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?Category $category): static
-    {
-        $this->category = $category;
 
         return $this;
     }

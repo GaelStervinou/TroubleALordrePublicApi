@@ -23,12 +23,12 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
-    uriTemplate: '/categories/{id}/services',
+    uriTemplate: '/categories/{id}/companies',
     operations: [
         new GetCollection(),
     ],
     uriVariables: [
-        'id' => new Link(fromProperty: 'services', fromClass: Category::class)
+        'id' => new Link(fromProperty: 'companies', fromClass: Category::class)
     ],
     order: ['createdAt' => 'DESC']
 )]
@@ -70,15 +70,16 @@ class Category implements TimestampableEntityInterface
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['category:read', 'category:write', 'service:read', 'reservation:read'])]
+    #[Groups(['category:read', 'category:write', 'company:collection:read', 'company:read', 'reservation:read'])]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'category', targetEntity: Service::class)]
-    private Collection $services;
+    #[ORM\ManyToMany(targetEntity: Company::class, mappedBy: 'categories')]
+    private Collection $companies;
+
 
     public function __construct()
     {
-        $this->services = new ArrayCollection();
+        $this->companies = new ArrayCollection();
     }
 
     public function getId(): ?UuidInterface
@@ -99,30 +100,27 @@ class Category implements TimestampableEntityInterface
     }
 
     /**
-     * @return Collection<int, Service>
+     * @return Collection<int, Company>
      */
-    public function getServices(): Collection
+    public function getCompanies(): Collection
     {
-        return $this->services;
+        return $this->companies;
     }
 
-    public function addService(Service $service): static
+    public function addCompany(Company $company): static
     {
-        if (!$this->services->contains($service)) {
-            $this->services->add($service);
-            $service->setCategory($this);
+        if (!$this->companies->contains($company)) {
+            $this->companies->add($company);
+            $company->addCategory($this);
         }
 
         return $this;
     }
 
-    public function removeService(Service $service): static
+    public function removeCompany(Company $company): static
     {
-        if ($this->services->removeElement($service)) {
-            // set the owning side to null (unless already changed)
-            if ($service->getCategory() === $this) {
-                $service->setCategory(null);
-            }
+        if ($this->companies->removeElement($company)) {
+            $company->removeCategory($this);
         }
 
         return $this;

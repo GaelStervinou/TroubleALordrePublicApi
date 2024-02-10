@@ -169,7 +169,7 @@ class Reservation implements TimestampableEntityInterface
     private ?User $troubleMaker = null;
 
     #[ORM\OneToMany(mappedBy: 'reservation', targetEntity: Rate::class)]
-    #[Groups(['reservation:read'])]
+    #[Groups(['reservation:read', 'user:read'])]
     private Collection $rates;
 
     public function __construct()
@@ -355,5 +355,20 @@ class Reservation implements TimestampableEntityInterface
         }
 
         return $this;
+    }
+
+    public function getRateTotalForTroubleMaker(string $userId): array
+    {
+        return $this->getRates()->reduce(function (array $accumulator, Rate $rate) use ($userId): array {
+            if ($userId !== $rate->getCustomer()?->getId()) {
+                ++$accumulator['count'];
+                $accumulator[ 'total' ] += $rate->getValue();
+            }
+
+            return $accumulator;
+        }, [
+            'count' => 0,
+            'total' => 0
+        ]);
     }
 }

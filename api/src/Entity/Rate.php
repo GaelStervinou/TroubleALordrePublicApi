@@ -72,7 +72,7 @@ class Rate implements TimestampableEntityInterface
         min: 0,
         max: 5,
     )]
-    #[Groups(['rate:read', 'rate:write', 'reservation:read'])]
+    #[Groups(['rate:read', 'rate:write', 'reservation:read', 'user:read'])]
     private ?float $value = null;
 
     #[ORM\ManyToOne(inversedBy: 'rates')]

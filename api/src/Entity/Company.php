@@ -67,6 +67,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(),
         new Get(
+            normalizationContext: ['groups' => ['company:collection:read']],
             security: 'object.isActive()
                 or user.isAdmin() 
                 or object == user.getCompany()'
@@ -101,11 +102,11 @@ class Company implements TimestampableEntityInterface
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['company:read', 'company:write', 'company:update', 'service:read', 'reservation:read'])]
+    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'service:read', 'reservation:read'])]
     private ?string $name = null;
 
     #[ORM\ManyToOne]
-    #[Groups(['company:read', 'company:write', 'company:update', 'company:update', 'service:read', 'reservation:read'])]
+    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'company:update', 'service:read', 'reservation:read'])]
     private ?Media $mainMedia = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Media::class)]
@@ -138,22 +139,31 @@ class Company implements TimestampableEntityInterface
     private Collection $users;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['company:read', 'company:admin:read'])]
     private ?string $address = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['company:read', 'company:admin:read'])]
     private ?string $zipCode = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['company:read', 'company:admin:read'])]
     private ?string $city = null;
 
     #[ORM\Column]
+    #[Groups(['company:read', 'company:admin:read'])]
     private ?float $lat = null;
 
     #[ORM\Column]
+    #[Groups(['company:read', 'company:admin:read'])]
     private ?float $lng = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['company:read', 'company:admin:read'])]
     private ?string $description = null;
+
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'companies')]
+    private Collection $categories;
 
     public function __construct()
     {
@@ -161,6 +171,7 @@ class Company implements TimestampableEntityInterface
         $this->services = new ArrayCollection();
         $this->users = new ArrayCollection();
         $this->medias = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): ?UuidInterface
@@ -428,7 +439,7 @@ class Company implements TimestampableEntityInterface
         }, 0);
     }
 
-    #[Groups(['company:read', 'company:admin:read'])]
+    #[Groups(['company:collection:read', 'company:read', 'company:admin:read'])]
     public function getAverageServicesRatesFromCustomer(): ?float
     {
         $services = $this->getServices();
@@ -442,7 +453,45 @@ class Company implements TimestampableEntityInterface
                 'count' => 0,
                 'total' => 0
             ]);
+        if (0 === $ratesTotalAndCount['count']) {
+            return null;
+        }
 
         return $ratesTotalAndCount['total'] / $ratesTotalAndCount['count'];
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    #[Groups(['company:read'])]
+    public function getCompanyActiveTroubleMakers(): Collection
+    {
+        return $this->users->filter(function (User $user) {
+            return $user->isTroubleMaker() && $user->isActive();
+        });
+    }
+
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): static
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): static
+    {
+        $this->categories->removeElement($category);
+
+        return $this;
     }
 }

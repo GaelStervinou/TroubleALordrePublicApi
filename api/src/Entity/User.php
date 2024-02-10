@@ -17,6 +17,7 @@ use App\Entity\Trait\SoftDeleteTrait;
 use App\Entity\Trait\TimestampableTrait;
 use App\Interface\SoftDeleteInterface;
 use App\Interface\TimestampableEntityInterface;
+use App\State\TroubleMakerPlanningStateProvider;
 use App\State\User\UserMeProvider;
 use App\State\UserResetPasswordStateProvider;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -77,6 +78,16 @@ use Symfony\Component\Validator\Constraints\NotBlank;
         )
     ]
 )]
+
+#[ApiResource(
+    operations: [
+        new Get(
+            uriTemplate: '/users/{userId}/{serviceId}',
+            normalizationContext: ['groups' => ['user:planning:read']],
+            provider: TroubleMakerPlanningStateProvider::class,
+        )
+    ]
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, TimestampableEntityInterface, SoftDeleteInterface
 {
     use TimestampableTrait;
@@ -126,7 +137,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         minMessage: 'Votre prénom doit faire 2 caractères minimum.',
         maxMessage: 'Votre prénom doit faire 50 caractères maximum.',
     )]
-    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read'])]
+    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read', 'company:read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 80)]
@@ -137,7 +148,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         minMessage: 'Votre nom doit faire 2 caractères minimum.',
         maxMessage: 'Votre nom doit faire 80 caractères maximum.',
     )]
-    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read'])]
+    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read', 'company:read'])]
     private ?string $lastname = null;
 
     #[ORM\Column (options: ['default' => UserStatusEnum::USER_STATUS_PENDING])]
@@ -566,7 +577,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
 
     public function isAdmin(): bool
     {
-        return in_array(UserRolesEnum::ADMIN, $this->getRoles(), true);
+        return in_array(UserRolesEnum::ADMIN->value, $this->getRoles(), true);
     }
 
     public function isUser(): bool
@@ -576,12 +587,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
 
     public function isTroubleMaker(): bool
     {
-        return in_array(UserRolesEnum::TROUBLE_MAKER, $this->getRoles(), true);
+        return in_array(UserRolesEnum::TROUBLE_MAKER->value, $this->getRoles(), true);
     }
 
     public function isCompanyAdmin(): bool
     {
-        return in_array(UserRolesEnum::COMPANY_ADMIN, $this->getRoles(), true) && $this->getCompany()?->isActive();
+        return in_array(UserRolesEnum::COMPANY_ADMIN->value, $this->getRoles(), true) && $this->getCompany()?->isActive();
     }
 
     public function getCompany(): ?Company
@@ -606,5 +617,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         $this->kbis = $kbis;
 
         return $this;
+    }
+
+    #[Groups(['user:read'])]
+    public function getTroubleMakerAverageRate(): ?float
+    {
+        if (!$this->isTroubleMaker()) {
+            return null;
+        }
+        $userRates = $this->getReservationsTroubleMaker()->reduce(function (array $accumulator, Reservation $reservation): array {
+            $reservationRates = $reservation->getRateTotalForTroubleMaker($this->getId());
+            $accumulator[ 'count' ] += $reservationRates['count'];
+            $accumulator[ 'total' ] += $reservationRates[ 'total' ];
+            return $accumulator;
+        }, ['count' => 0, 'total' => 0]);
+        if (0 === $userRates['count']) {
+            return null;
+        }
+        return $userRates['total'] / $userRates['count'];
     }
 }
