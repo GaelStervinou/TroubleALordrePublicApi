@@ -64,7 +64,7 @@ class Service implements TimestampableEntityInterface
 
     #[ORM\ManyToOne(inversedBy: 'services')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['service:read', 'service:write', 'reservation:read', 'company:read'])]
+    #[Groups(['service:read', 'service:write', 'reservation:read'])]
     private ?Company $company = null;
 
     #[ORM\Column]
