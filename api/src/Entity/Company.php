@@ -68,11 +68,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
         new GetCollection(
             normalizationContext: ['groups' => ['company:collection:read']],
         ),
-        new Get(
-            security: 'object.isActive()
-                or user.isAdmin() 
-                or object == user.getCompany()'
-        ),
+        new Get(),
         new Post(
             security: 'user.isUser() and user.company == null'
         ),

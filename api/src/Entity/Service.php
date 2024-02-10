@@ -59,6 +59,7 @@ class Service implements TimestampableEntityInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
+    #[Groups('company:read')]
     private ?UuidInterface $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'services')]
@@ -78,7 +79,7 @@ class Service implements TimestampableEntityInterface
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['service:read', 'service:write', 'reservation:read'])]
+    #[Groups(['service:read', 'service:write', 'reservation:read', 'company:read'])]
     private ?string $name = null;
 
     #[ORM\Column()]
@@ -97,13 +98,14 @@ class Service implements TimestampableEntityInterface
         minMessage: "La description doit avoir au moins {{ limit }} caractères",
         maxMessage: "La description ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['service:read', 'service:write'])]
+    #[Groups(['service:read', 'service:write', 'company:read'])]
     private ?string $description = null;
 
     #[ORM\OneToMany(mappedBy: 'service', targetEntity: Reservation::class)]
     private Collection $reservations;
 
     #[ORM\OneToMany(mappedBy: 'service', targetEntity: Rate::class)]
+    #[Groups(['company:read'])]
     private Collection $rates;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'service')]

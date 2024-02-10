@@ -64,6 +64,7 @@ class Rate implements TimestampableEntityInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
+    #[Groups('company:read', 'rate:read')]
     private ?UuidInterface $id = null;
 
     #[ORM\Column]
@@ -72,11 +73,12 @@ class Rate implements TimestampableEntityInterface
         min: 0,
         max: 5,
     )]
-    #[Groups(['rate:read', 'rate:write', 'reservation:read', 'user:read'])]
+    #[Groups(['rate:read', 'rate:write', 'reservation:read', 'user:read', 'company:read'])]
     private ?float $value = null;
 
     #[ORM\ManyToOne(inversedBy: 'rates')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['rate:read', 'rate:write', 'reservation:read', 'user:read', 'company:read'])]
     private ?User $customer = null;
 
     #[ORM\ManyToOne(inversedBy: 'rates')]
