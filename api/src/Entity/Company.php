@@ -467,11 +467,11 @@ class Company implements TimestampableEntityInterface
      * @return Collection<int, User>
      */
     #[Groups(['company:read'])]
-    public function getCompanyActiveTroubleMakers(): Collection
+    public function getCompanyActiveTroubleMakers(): array
     {
         return $this->users->filter(function (User $user) {
             return $user->isTroubleMaker() && $user->isActive();
-        });
+        })->getValues();
     }
 
     /**
