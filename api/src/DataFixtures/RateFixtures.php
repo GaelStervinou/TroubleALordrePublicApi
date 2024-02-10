@@ -1,13 +1,9 @@
 <?php
 
 namespace App\DataFixtures;
-use ApiPlatform\Metadata\GraphQl\Query;
-use App\Entity\Company;
-use App\Entity\Invitation;
+
 use App\Entity\Rate;
 use App\Entity\Reservation;
-use App\Entity\User;
-use App\Enum\UserStatusEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -22,21 +18,15 @@ class RateFixtures extends Fixture implements DependentFixtureInterface
         $reservations = $manager->getRepository(Reservation::class)->findAll();
 
         foreach ($reservations as $reservation) {
-
-            $rateTypes = $reservation->getService()->getCategory()->getRateTypes();
-
-            foreach ($rateTypes as $rateType) {
-                $rate = new Rate();
-                $rate->setReservation($reservation)
-                    ->setRateType($rateType)
-                    ->setValue($faker->numberBetween(0, 5))
-                    ->setCustomer($reservation->getCustomer())
-                    ->setService($reservation->getService())
-                    ->setReservation($reservation)
-                    ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 days', '-4 hours')))
-                    ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 days', '-4 hours')));
-                $manager->persist($rate);
-            }
+            $rate = new Rate();
+            $rate->setReservation($reservation)
+                ->setValue($faker->numberBetween(0, 5))
+                ->setCustomer($reservation->getCustomer())
+                ->setService($reservation->getService())
+                ->setReservation($reservation)
+                ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 days', '-4 hours')))
+                ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 days', '-4 hours')));
+            $manager->persist($rate);
         }
 
         $manager->flush();
@@ -47,7 +37,6 @@ class RateFixtures extends Fixture implements DependentFixtureInterface
         return [
             UserFixtures::class,
             ReservationFixtures::class,
-            RateTypeFixtures::class
         ];
     }
 }

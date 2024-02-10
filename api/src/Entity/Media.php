@@ -41,7 +41,7 @@ class Media
     private ?string $path = null;
 
     #[ORM\ManyToOne(inversedBy: 'medias')]
-    private ?Service $service = null;
+    private ?Company $company = null;
 
     public function getId(): ?UuidInterface
     {
@@ -60,14 +60,14 @@ class Media
         return $this;
     }
 
-    public function getService(): ?Service
+    public function getCompany(): ?Company
     {
-        return $this->service;
+        return $this->company;
     }
 
-    public function setService(?Service $service): static
+    public function setCompany(?Company $company): static
     {
-        $this->service = $service;
+        $this->company = $company;
 
         return $this;
     }

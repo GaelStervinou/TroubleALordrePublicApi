@@ -3,7 +3,6 @@
 namespace App\DataFixtures;
 
 use App\Entity\Category;
-use App\Entity\City;
 use App\Entity\Company;
 use App\Entity\Service;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -18,7 +17,6 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
         $faker = Factory::create('fr_FR');
 
         $categories = $manager->getRepository(Category::class)->findAll();
-        $cities = $manager->getRepository(City::class)->findAll();
         $companies = $manager->getRepository(Company::class)->findAll();
 
         foreach ($companies as $company) {
@@ -40,12 +38,7 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
                         ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')))
                         ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')));
 
-                    $randomTotalCities = rand(1, 2);
-                    for ($j = 0; $j < $randomTotalCities; $j++) {
-                        $service->addCity($cities[$j]);
-                    }
-
-                    $randomTotalUserService = rand(1, 2);
+                    $randomTotalUserService = random_int(1, 2);
                     for ($k = 0; $k < $randomTotalUserService; $k++) {
                         $service->addUser($usersCompany[$k]);
                     }
@@ -62,8 +55,7 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             CategoryFixtures::class,
-            CityFixtures::class,
-            CompanyFixtures::class
+            MediaFixtures::class
         ];
     }
 }

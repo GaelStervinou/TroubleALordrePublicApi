@@ -61,15 +61,15 @@ use Symfony\Component\Serializer\Attribute\Groups;
     ],
     order: ['createdAt' => 'DESC']
 )]
-#[UniqueEntity(fields: ['name', 'kbis'], message: 'Ce nom existe déjà')]
+#[UniqueEntity(fields: ['name'], message: 'Ce nom existe déjà')]
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(),
         new Get(
-            security: 'user.isAdmin() 
-                or object == user.getCompany()
-                or object.isActive()'
+            security: 'object.isActive()
+                or user.isAdmin() 
+                or object == user.getCompany()'
         ),
         new Post(
             security: 'user.isUser() and user.company == null'
@@ -101,27 +101,23 @@ class Company implements TimestampableEntityInterface
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['company:read', 'company:write', 'company:update', 'service:read', 'reservation:read' ])]
+    #[Groups(['company:read', 'company:write', 'company:update', 'service:read', 'reservation:read'])]
     private ?string $name = null;
 
-    #[ORM\Column(length: 5)]
-    #[Assert\Length(
-        min: 5,
-        max: 5,
-        minMessage: "Le kbis invalide",
-        maxMessage: "Le kbis invalide"
-    )]
-    #[Groups(['company:read', 'company:write'])]
-    private ?string $kbis = null;
-
     #[ORM\ManyToOne]
-    #[Groups(['company:read', 'company:write', 'company:update', 'company:update','service:read', 'reservation:read'])]
-    private ?Media $media = null;
+    #[Groups(['company:read', 'company:write', 'company:update', 'company:update', 'service:read', 'reservation:read'])]
+    private ?Media $mainMedia = null;
+
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Media::class)]
+    #[Groups(['company:read', 'company:write', 'reservation:read'])]
+    private Collection $medias;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Invitation::class)]
+    #[Groups('company:admin:read')]
     private Collection $invitations;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Service::class)]
+    #[Groups(['company:read', 'company:admin:read'])]
     private Collection $services;
 
     #[ORM\Column(length: 10, options: ['default' => CompanyStatusEnum::PENDING])]
@@ -138,13 +134,33 @@ class Company implements TimestampableEntityInterface
     private ?CompanyStatusEnum $status = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]
+    #[Groups('company:admin:read')]
     private Collection $users;
+
+    #[ORM\Column(length: 255)]
+    private ?string $address = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $zipCode = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $city = null;
+
+    #[ORM\Column]
+    private ?float $lat = null;
+
+    #[ORM\Column]
+    private ?float $lng = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
 
     public function __construct()
     {
         $this->invitations = new ArrayCollection();
         $this->services = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->medias = new ArrayCollection();
     }
 
     public function getId(): ?UuidInterface
@@ -164,26 +180,14 @@ class Company implements TimestampableEntityInterface
         return $this;
     }
 
-    public function getKbis(): ?string
+    public function getMainMedia(): ?Media
     {
-        return $this->kbis;
+        return $this->mainMedia;
     }
 
-    public function setKbis(string $kbis): static
+    public function setMainMedia(?Media $mainMedia): static
     {
-        $this->kbis = $kbis;
-
-        return $this;
-    }
-
-    public function getMedia(): ?Media
-    {
-        return $this->media;
-    }
-
-    public function setMedia(?Media $media): static
-    {
-        $this->media = $media;
+        $this->mainMedia = $mainMedia;
 
         return $this;
     }
@@ -308,5 +312,137 @@ class Company implements TimestampableEntityInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Media>
+     */
+    public function getMedias(): Collection
+    {
+        return $this->medias;
+    }
+
+    public function addMedia(Media $media): static
+    {
+        if (!$this->medias->contains($media)) {
+            $this->medias->add($media);
+            $media->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(string $address): static
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    public function getZipCode(): ?string
+    {
+        return $this->zipCode;
+    }
+
+    public function setZipCode(string $zipCode): static
+    {
+        $this->zipCode = $zipCode;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(string $city): static
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getLat(): ?float
+    {
+        return $this->lat;
+    }
+
+    public function setLat(float $lat): static
+    {
+        $this->lat = $lat;
+
+        return $this;
+    }
+
+    public function getLng(): ?float
+    {
+        return $this->lng;
+    }
+
+    public function setLng(float $lng): static
+    {
+        $this->lng = $lng;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    #[Groups(['company:read', 'company:admin:read'])]
+    public function getMinimumServicePrice(): float
+    {
+        return $this->getServices()->reduce(function (int $accumulator, Service $value) {
+            $servicePrice = $value->getPrice();
+            if (0 === $accumulator || $accumulator > $servicePrice) {
+                return $servicePrice;
+            }
+            return $accumulator;
+        }, 0);
+    }
+
+    #[Groups(['company:read', 'company:admin:read'])]
+    public function getMaximumServicePrice(): float
+    {
+        return $this->getServices()->reduce(function (int $accumulator, Service $value) {
+            $servicePrice = $value->getPrice();
+            if ($accumulator < $servicePrice) {
+                return $servicePrice;
+            }
+            return $accumulator;
+        }, 0);
+    }
+
+    #[Groups(['company:read', 'company:admin:read'])]
+    public function getAverageServicesRatesFromCustomer(): ?float
+    {
+        $services = $this->getServices();
+
+        $ratesTotalAndCount = $services->reduce(function (array $accumulator, Service $value) {
+                $accumulator[ 'count' ] = $value->getRatesFromCustomersCountAndTotal()[ 'count' ];
+                $accumulator[ 'total' ] = $value->getRatesFromCustomersCountAndTotal()[ 'total' ];
+
+                return $accumulator;
+            }, [
+                'count' => 0,
+                'total' => 0
+            ]);
+
+        return $ratesTotalAndCount['total'] / $ratesTotalAndCount['count'];
     }
 }

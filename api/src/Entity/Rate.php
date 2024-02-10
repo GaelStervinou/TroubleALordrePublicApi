@@ -49,8 +49,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
         new Post(
             security: 'object.getUser() == user 
                 and object.getReservation().getCustomer() == user
-                and object.getReservation().isFinished()
-                and object.getRateType().getCategory() == object.getReservation().getService().getCategory()'
+                and object.getReservation().isFinished()'
         )
     ],
     normalizationContext: ['groups' => ['rate:read']],
@@ -87,11 +86,6 @@ class Rate implements TimestampableEntityInterface
     #[ORM\ManyToOne(inversedBy: 'rates')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Service $service = null;
-
-    #[ORM\ManyToOne(inversedBy: 'rates')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['rate:read', 'rate:write', 'reservation:read'])]
-    private ?RateType $rateType = null;
 
     public function getId(): ?UuidInterface
     {
@@ -146,15 +140,8 @@ class Rate implements TimestampableEntityInterface
         return $this;
     }
 
-    public function getRateType(): ?RateType
+    public function isCustomerRate(): bool
     {
-        return $this->rateType;
-    }
-
-    public function setRateType(?RateType $rateType): static
-    {
-        $this->rateType = $rateType;
-
-        return $this;
+        return $this->getCustomer() === $this->reservation->getCustomer();
     }
 }

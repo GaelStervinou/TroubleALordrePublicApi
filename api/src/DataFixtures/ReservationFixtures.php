@@ -2,9 +2,6 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Category;
-use App\Entity\City;
-use App\Entity\Company;
 use App\Entity\Reservation;
 use App\Entity\Service;
 use App\Entity\User;
@@ -65,7 +62,7 @@ class ReservationFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             UserFixtures::class,
-            CompanyFixtures::class,
+            MediaFixtures::class,
             ServiceFixtures::class,
         ];
     }

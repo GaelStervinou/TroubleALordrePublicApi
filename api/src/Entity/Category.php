@@ -76,14 +76,9 @@ class Category implements TimestampableEntityInterface
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Service::class)]
     private Collection $services;
 
-    #[ORM\OneToMany(mappedBy: 'category', targetEntity: RateType::class)]
-    #[Groups(['category:read'])]
-    private Collection $rateTypes;
-
     public function __construct()
     {
         $this->services = new ArrayCollection();
-        $this->rateTypes = new ArrayCollection();
     }
 
     public function getId(): ?UuidInterface
@@ -127,36 +122,6 @@ class Category implements TimestampableEntityInterface
             // set the owning side to null (unless already changed)
             if ($service->getCategory() === $this) {
                 $service->setCategory(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, RateType>
-     */
-    public function getRateTypes(): Collection
-    {
-        return $this->rateTypes;
-    }
-
-    public function addRateType(RateType $rateType): static
-    {
-        if (!$this->rateTypes->contains($rateType)) {
-            $this->rateTypes->add($rateType);
-            $rateType->setCategory($this);
-        }
-
-        return $this;
-    }
-
-    public function removeRateType(RateType $rateType): static
-    {
-        if ($this->rateTypes->removeElement($rateType)) {
-            // set the owning side to null (unless already changed)
-            if ($rateType->getCategory() === $this) {
-                $rateType->setCategory(null);
             }
         }
 
