@@ -10,17 +10,46 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\OpenApi\Model\Operation;
+use ApiPlatform\OpenApi\Model\RequestBody;
+use App\Controller\Action\CreateMediaAction;
 use App\Repository\MediaRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints\NotNull;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
 
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
+#[Vich\Uploadable()]
 #[ApiResource(
     operations: [
         new GetCollection(),
-        new Get(),
-        new Post(),
+        new Get(
+        ),
+        new Post(
+            controller: CreateMediaAction::class,
+            openapi: new Operation(
+                requestBody: new RequestBody(
+                    content: new \ArrayObject([
+                        'multipart/form-data' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'file' => [
+                                        'type' => 'string',
+                                        'format' => 'binary'
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ])
+                )
+            ),
+            deserialize: false,
+        ),
         new Patch(),
         new Delete()
     ],
@@ -34,15 +63,25 @@ class Media
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:collection:read', 'company:read'])]
+    #[Groups(['company:collection:read', 'company:read', 'media:read'])]
     private ?UuidInterface $id = null;
 
+    #[ApiProperty(types: ['https://schema.org/contentUrl'])]
+    #[Groups('media:read')]
+    public ?string $contentUrl = null;
+
+    #[UploadableField(mapping: 'media', fileNameProperty: 'path')]
+    #[NotNull]
+    public ?File $file = null;
+
     #[ORM\Column(length: 255)]
-    #[Groups(['media:read', 'media:write', 'service:read', 'company:collection:read', 'company:read'])]
-    private ?string $path = null;
+    #[Groups(['service:read', 'company:collection:read', 'company:read'])]
+    public ?string $path = null;
 
     #[ORM\ManyToOne(inversedBy: 'medias')]
     private ?Company $company = null;
+
+
 
     public function getId(): ?UuidInterface
     {
@@ -69,6 +108,18 @@ class Media
     public function setCompany(?Company $company): static
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    public function getContentUrl(): ?string
+    {
+        return $this->contentUrl;
+    }
+
+    public function setContentUrl(?string $contentUrl): self
+    {
+        $this->contentUrl = $contentUrl;
 
         return $this;
     }

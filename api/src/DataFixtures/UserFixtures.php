@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Media;
 use App\Entity\User;
 use App\Enum\UserRolesEnum;
 use App\Enum\UserStatusEnum;
@@ -14,6 +15,14 @@ class UserFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
+        $profilePictureNames = [
+            'pp-1.jpeg',
+            'pp-2.jpeg',
+            'pp-3.jpeg',
+            'pp-4.jpeg',
+            'pp-5.jpeg',
+            'pp-6.jpeg',
+        ];
 
         $status = [
             UserStatusEnum::USER_STATUS_BANNED,
@@ -40,6 +49,11 @@ class UserFixtures extends Fixture
                 ->setPassword($pwd)
                 ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')))
                 ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')));
+
+            $profilePicture = (new Media())
+                ->setPath($faker->randomElement($profilePictureNames));
+            $manager->persist($profilePicture);
+            $user->setProfilePicture($profilePicture);
             $manager->persist($user);
         }
 
@@ -57,6 +71,11 @@ class UserFixtures extends Fixture
                     ->setPassword($pwd)
                     ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')))
                     ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')));
+
+                $profilePicture = (new Media())
+                    ->setPath($faker->randomElement($profilePictureNames));
+                $manager->persist($profilePicture);
+                $user->setProfilePicture($profilePicture);
                 $manager->persist($user);
             }
         }
