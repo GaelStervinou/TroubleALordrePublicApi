@@ -43,7 +43,8 @@ class TroubleMakerPlanningStateProvider implements ProviderInterface
             return [];
         }
         $service = $this->entityManager->getRepository(Service::class)->find($uriVariables[ 'serviceId' ]);
-        if (!$service) {
+        if (!$service || $service->getCompany() !== $user->getCompany()) {
+            //TODO peut-être rajouter une exception plutôt ou alors un link dans al décla de l'opération jsp
             return [];
         }
         $offset = $this->pagination->getOffset($operation, $context);
@@ -179,9 +180,8 @@ class TroubleMakerPlanningStateProvider implements ProviderInterface
             $date = $fromDate->format('Y-m-d');
             $minimumTime = $minAndMaxTimes[ $date ][ 'minimumStartTime' ];
             $maximumEndTime = $minAndMaxTimes[ $date ][ 'maximumEndTime' ];
-            //TODO faire ça pour arrondir à la dizaine de min au dessus
-            //$fullTime = round(strtotime($minimumTime->format('Y-m-d H:i'))/60)*60;
-            //$date = \DateTimeImmutable::createFromFormat('U', $fullTime);
+            $minimumTime = ceil($minimumTime/300)*300;
+            $maximumEndTime = ceil($maximumEndTime/300)*300;
 
             $slots = $this->getAllPossibleSlotsByDay($minimumTime, $maximumEndTime, $duration);
 
