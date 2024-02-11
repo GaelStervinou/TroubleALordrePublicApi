@@ -180,9 +180,9 @@ class TroubleMakerPlanningStateProvider implements ProviderInterface
             //TODO en gros on va récupérer tous els slots possibles avec getAllPossibleSlots(). ensuite on boucle dessus. On boucle sur les shifts. Si le start time du slot est plus grand que le start time du shift
             //TODO et que le endtime du slot est plus petit que celui du shift, on l'ajoute à un tableau.
             //TODO ensuite, on boucle sur ce tableau et dedans on boucle sur les unavailabilities. Si le start time du slot est plus grand, on le vire, pas besoin de check le endtime. FIN
-            foreach ($shifts as $day) {
+            /*foreach ($shifts as $day) {
                 foreach ($ava)
-            }
+            }*/
 
 
 
@@ -192,6 +192,7 @@ class TroubleMakerPlanningStateProvider implements ProviderInterface
 
     private function getAllPossibleSlots(\DateTimeImmutable $date, \DateTimeImmutable $minimumTime, \DateTimeImmutable $maximumTime, int $duration): array
     {
+
 
     }
 }
