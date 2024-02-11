@@ -44,7 +44,6 @@ class TroubleMakerPlanningStateProvider implements ProviderInterface
         }
         $service = $this->entityManager->getRepository(Service::class)->find($uriVariables[ 'serviceId' ]);
         if (!$service || $service->getCompany() !== $user->getCompany()) {
-            //TODO peut-être rajouter une exception plutôt ou alors un link dans al décla de l'opération jsp
             return [];
         }
         $offset = $this->pagination->getOffset($operation, $context);

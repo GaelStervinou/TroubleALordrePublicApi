@@ -8,7 +8,9 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
+use App\Entity\Trait\BlameableTrait;
 use App\Entity\Trait\TimestampableTrait;
+use App\Interface\BlameableEntityInterface;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\RateRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -29,16 +31,32 @@ use Symfony\Component\Serializer\Attribute\Groups;
     ],
     order: ['createdAt' => 'DESC']
 )]
+
 #[ApiResource(
     uriTemplate: '/users/{id}/rates',
     operations: [
         new GetCollection(
-            normalizationContext: ['groups' => ['rate:read']],
+            normalizationContext: ['groups' => ['rate:by-user:read']],
             securityMessage: "Vous n'avez pas accès à cette ressource",
+            name: Rate::USER_RATES_AS_CUSTOMER_OPERATION_NAME,
         ),
     ],
     uriVariables: [
-        'id' => new Link(fromProperty: 'rates', fromClass: User::class)
+        'id',
+    ],
+    order: ['createdAt' => 'DESC']
+)]
+#[ApiResource(
+    uriTemplate: '/users/{id}/services/rates',
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['rate:by-user:read']],
+            securityMessage: "Vous n'avez pas accès à cette ressource",
+            name: Rate::USER_RATES_AS_TROUBLE_MAKER_OPERATION_NAME,
+        ),
+    ],
+    uriVariables: [
+        'id',
     ],
     order: ['createdAt' => 'DESC']
 )]
@@ -55,16 +73,20 @@ use Symfony\Component\Serializer\Attribute\Groups;
     normalizationContext: ['groups' => ['rate:read']],
     denormalizationContext: ['groups' => ['rate:write']],
 )]
-class Rate implements TimestampableEntityInterface
+class Rate implements TimestampableEntityInterface, BlameableEntityInterface
 {
     use TimestampableTrait;
+    use BlameableTrait;
+
+    public const USER_RATES_AS_CUSTOMER_OPERATION_NAME = "user_rates_as_customer";
+    public const USER_RATES_AS_TROUBLE_MAKER_OPERATION_NAME = "user_rates_as_trouble_maker";
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups('company:read', 'rate:read')]
+    #[Groups(['company:read', 'rate:read', 'rate:by-user:read'])]
     private ?UuidInterface $id = null;
 
     #[ORM\Column]
@@ -73,12 +95,12 @@ class Rate implements TimestampableEntityInterface
         min: 0,
         max: 5,
     )]
-    #[Groups(['rate:read', 'rate:write', 'reservation:read', 'user:read', 'company:read'])]
+    #[Groups(['rate:read', 'rate:write', 'reservation:read', 'user:read', 'company:read', 'rate:by-user:read'])]
     private ?float $value = null;
 
     #[ORM\ManyToOne(inversedBy: 'rates')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['rate:read', 'rate:write', 'reservation:read', 'user:read', 'company:read'])]
+    #[Groups(['rate:read', 'rate:write', 'reservation:read', 'user:read', 'company:read', 'rate:by-user:read'])]
     private ?User $customer = null;
 
     #[ORM\ManyToOne(inversedBy: 'rates')]
@@ -87,9 +109,11 @@ class Rate implements TimestampableEntityInterface
 
     #[ORM\ManyToOne(inversedBy: 'rates')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['rate:by-user:read'])]
     private ?Service $service = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['rate:by-user:read'])]
     private ?string $content = null;
 
     public function getId(): ?UuidInterface

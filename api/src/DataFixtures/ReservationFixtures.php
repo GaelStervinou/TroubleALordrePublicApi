@@ -18,6 +18,7 @@ class ReservationFixtures extends Fixture implements DependentFixtureInterface
         $faker = Factory::create('fr_FR');
 
         $customers = $manager->getRepository(User::class)->findByRole('ROLE_USER', false);
+        $customers = $manager->getRepository(User::class)->findByRole('ROLE_USER', false);
         $services = $manager->getRepository(Service::class)->findAll();
         $status = [
             ReservationStatusEnum::ACTIVE,
@@ -53,6 +54,25 @@ class ReservationFixtures extends Fixture implements DependentFixtureInterface
                     $manager->persist($reservation);
                 }
             }
+        }
+
+        foreach ($services as $service) {
+            $serviceTroubleMakers = $service->getUsers();
+            $troubleMakerReservation = new Reservation();
+            $troubleMakerReservation->setCustomer($serviceTroubleMakers->last())
+                ->setService($service)
+                ->setTroubleMaker($serviceTroubleMakers->first())
+                ->setAddress($faker->address)
+                ->setPrice($service->getPrice())
+                ->setDuration($service->getDuration())
+                ->setStatus($faker->randomElement($status))
+                ->setPaymentIntentId($faker->regexify('[A-Z]{2}[0-9]{3}'))
+                ->setDescription($service->getDescription())
+                ->setDate(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 hours', '+ 5 days')))
+                ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')))
+                ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')));
+
+            $manager->persist($troubleMakerReservation);
         }
 
         $manager->flush();
