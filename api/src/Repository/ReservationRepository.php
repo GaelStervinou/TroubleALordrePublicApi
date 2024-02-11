@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Reservation;
+use App\Enum\ReservationStatusEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\Persistence\ManagerRegistry;
@@ -30,9 +31,12 @@ class ReservationRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('r')
             ->select()
             ->where('(r.troubleMaker = :userId AND r.date BETWEEN :dateFrom AND :dateTo)')
+            ->andWhere('r.status IN (:status)')
             ->setParameter('userId', $userId, ParameterType::STRING)
             ->setParameter('dateFrom', $dateFrom)
-            ->setParameter('dateTo', $dateTo);
+            ->setParameter('dateTo', $dateTo)
+            ->setParameter('status', [ReservationStatusEnum::PENDING, ReservationStatusEnum::ACTIVE])
+        ;
 
         return $query->getQuery()->execute();
     }

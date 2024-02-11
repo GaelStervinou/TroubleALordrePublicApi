@@ -43,7 +43,6 @@ class AvailibilityRepository extends ServiceEntityRepository
             ->setParameter('dateTo', $dateTo)
             ->setParameter('companyId', $companyId, ParameterType::STRING)
             ->orderBy('a.day', 'ASC')
-            ->orderBy('a.start_time', 'ASC')
         ;
 
         return $query->getQuery()->execute();

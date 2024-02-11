@@ -26,17 +26,17 @@ use Symfony\Component\Serializer\Attribute\Groups;
 )]
 class Planning
 {
-    private ?\DateTimeImmutable $date = null;
+    #[Groups(['planning:read'])]
+    private ?string $date = null;
+    #[Groups(['planning:read'])]
     private array $shifts = [];
 
-    #[Groups(['planning:read'])]
-    public function getDate(): ?\DateTimeImmutable
+    public function getDate(): ?string
     {
         return $this->date;
     }
 
-    #[Groups(['planning:read'])]
-    public function setDate(?\DateTimeImmutable $date): self
+    public function setDate(?string $date): self
     {
         $this->date = $date;
 
@@ -51,6 +51,21 @@ class Planning
     public function setShifts(array $shifts): self
     {
         $this->shifts = $shifts;
+
+        return $this;
+    }
+
+    public function formatThisShiftsFromTimestampToString(): self
+    {
+        $shifts = $this->getShifts();
+        foreach ($shifts as $index => $shift) {
+            $shifts[$index] = [
+                'startTime' => \DateTimeImmutable::createFromFormat('U', $shift['startTime'])->format('H:i'),
+                'endTime' =>  \DateTimeImmutable::createFromFormat('U', $shift['endTime'])->format('H:i')
+            ];
+        }
+
+        $this->setShifts($shifts);
 
         return $this;
     }
