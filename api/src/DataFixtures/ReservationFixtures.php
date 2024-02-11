@@ -47,7 +47,7 @@ class ReservationFixtures extends Fixture implements DependentFixtureInterface
                         ->setStatus($faker->randomElement($status))
                         ->setPaymentIntentId($faker->regexify('[A-Z]{2}[0-9]{3}'))
                         ->setDescription($service->getDescription())
-                        ->setDate(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 hours', '+ 5 days')))
+                        ->setDate(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '+ 5 days')))
                         ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')))
                         ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')));
 
@@ -68,7 +68,7 @@ class ReservationFixtures extends Fixture implements DependentFixtureInterface
                 ->setStatus($faker->randomElement($status))
                 ->setPaymentIntentId($faker->regexify('[A-Z]{2}[0-9]{3}'))
                 ->setDescription($service->getDescription())
-                ->setDate(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 hours', '+ 5 days')))
+                ->setDate(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '+ 5 days')))
                 ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')))
                 ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')));
 
