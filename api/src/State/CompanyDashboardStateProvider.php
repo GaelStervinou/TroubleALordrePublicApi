@@ -23,7 +23,7 @@ class CompanyDashboardStateProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
-        if (!($operation instanceof CollectionOperationInterface)) {
+        if ($operation instanceof CollectionOperationInterface) {
             return [];
         }
 
@@ -38,7 +38,7 @@ class CompanyDashboardStateProvider implements ProviderInterface
         $previousMonthReservations = $reservationRepository->getCompanyReservationsFromDateToDate(
             \DateTimeImmutable::createFromFormat('U', strtotime("-2 months", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s')))),
             \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(23, 59)->format('Y-m-d H:i:s')))),
-            $uriVariables[ 'companyId' ]
+            $uriVariables[ 'id' ]
         );
 
         $companyDashboard->setNumberOfReservationsPreviousMonth(count($previousMonthReservations));
@@ -47,8 +47,10 @@ class CompanyDashboardStateProvider implements ProviderInterface
         $currentMonthReservations = $reservationRepository->getCompanyReservationsFromDateToDate(
             \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s')))),
             $todayDate,
-            $uriVariables[ 'companyId' ]
+            $uriVariables[ 'id' ]
         );
+
+        $companyDashboard->setId($uriVariables[ 'id' ]);
 
         $companyDashboard->setMonthsSalesAmountCurrentMonth($this->calculateMonthSales($currentMonthReservations));
         $formattedReservationsAndSalesAmountCurrentMonth = $this->associateDayOfMonthToReservationNumberAndSalesAmount($currentMonthReservations);
@@ -57,7 +59,7 @@ class CompanyDashboardStateProvider implements ProviderInterface
         /*$bestTroubleMaker = $reservationRepository->getCompanyBestTroubleMakerFromDateToDate(
             \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s')))),
             $todayDate,
-            $uriVariables[ 'companyId' ]
+            $uriVariables[ 'id' ]
         );
         dd($bestTroubleMaker);*/
         return $companyDashboard;

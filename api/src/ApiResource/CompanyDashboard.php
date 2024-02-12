@@ -3,6 +3,7 @@
 namespace App\ApiResource;
 
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -12,10 +13,13 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
     operations: [
-        new GetCollection(
-            uriTemplate: '/companies/{companyId}/dashboard',
+        new Get(
+            uriTemplate: '/companies/{id}/dashboard',
+            uriVariables: [
+                'id'
+            ],
             requirements: [
-                'companyId' => '[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}',
+                'id' => '[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}',
             ],
             normalizationContext: ['groups' => ['company:dashboard:read']],
             name: 'company_dashboard',
@@ -26,6 +30,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
 )]
 class CompanyDashboard
 {
+    #[ApiProperty(identifier: true)]
+    #[Groups(['company:dashboard:read'])]
+    private ?string $id = null;
     #[Groups(['company:dashboard:read'])]
     private array $reservationsCurrentMonth = [];
     #[Groups(['company:dashboard:read'])]
@@ -102,6 +109,17 @@ class CompanyDashboard
     public function setBestTroubleMaker(?User $bestTroubleMaker): CompanyDashboard
     {
         $this->bestTroubleMaker = $bestTroubleMaker;
+        return $this;
+    }
+
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
+    public function setId(string $id): self
+    {
+        $this->id = $id;
         return $this;
     }
 }
