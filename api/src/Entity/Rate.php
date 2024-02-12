@@ -100,7 +100,7 @@ class Rate implements TimestampableEntityInterface, BlameableEntityInterface
 
     #[ORM\ManyToOne(inversedBy: 'rates')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['rate:read', 'rate:write', 'reservation:read', 'user:read', 'company:read', 'rate:by-user:read'])]
+    #[Groups(['rate:read', 'rate:write', 'reservation:read', 'user:read', 'company:read'])]
     private ?User $customer = null;
 
     #[ORM\ManyToOne(inversedBy: 'rates')]
