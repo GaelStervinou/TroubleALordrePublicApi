@@ -18,7 +18,7 @@ class ReservationFixtures extends Fixture implements DependentFixtureInterface
         $faker = Factory::create('fr_FR');
 
         $customers = $manager->getRepository(User::class)->findByRole('ROLE_USER', false);
-        $customers = $manager->getRepository(User::class)->findByRole('ROLE_USER', false);
+        $troubleMakers = $manager->getRepository(User::class)->findByRole('ROLE_TROUBLE_MAKER', false);
         $services = $manager->getRepository(Service::class)->findAll();
         $status = [
             ReservationStatusEnum::ACTIVE,
@@ -31,7 +31,7 @@ class ReservationFixtures extends Fixture implements DependentFixtureInterface
 
             foreach ($services as $service) {
 
-                $serviceTroubleMakers = $service->getUsers();
+                $serviceTroubleMakers = $service->getCompany()->getUsers();
 
                 $randomValue = random_int(0, 3);
 
@@ -56,9 +56,9 @@ class ReservationFixtures extends Fixture implements DependentFixtureInterface
         }
 
         foreach ($services as $service) {
-            $serviceTroubleMakers = $service->getUsers();
+            $serviceTroubleMakers = $service->getCompany()->getUsers();
             $troubleMakerReservation = new Reservation();
-            $troubleMakerReservation->setCustomer($serviceTroubleMakers->last())
+            $troubleMakerReservation->setCustomer($faker->randomElement($troubleMakers))
                 ->setService($service)
                 ->setTroubleMaker($serviceTroubleMakers->first())
                 ->setAddress($faker->address)
