@@ -16,12 +16,24 @@ class SendEmailAction extends AbstractController
         $this->mailerService = $mailerService;
     }
 
-    #[Route('/send-email', name: 'send-email', methods: ['GET'])]
-    public function testMailer(): Response
+    #[Route('/send-email', name: 'send-email', methods: ['POST'])]
+    public function sendEmail(array $options, int $templateId = 3): Response
+    {
+        try {
+            $this->mailerService->sendEmail($options, $templateId);
+
+            return new Response('E-mail envoyé');
+        } catch (\Exception $e) {
+            return new Response('Erreur lors de l\'envoi de l\'e-mail : ' . $e->getMessage());
+        }
+    }
+
+    #[Route('/test-email', name: 'send-email', methods: ['GET'])]
+    public function testMail(): Response
     {
         // Options pour l'e-mail de test
         $options = [
-            'emailTo' => 'louisantoine920@gmail.com',
+            'emailTo' => 'test@gmail.com',
             'lastnameTo' => 'NomDuDestinataire',
             'firstnameTo' => 'PrenomDuDestinataire',
             'validationToken' => 'TokenDeValidation',

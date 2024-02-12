@@ -1,11 +1,15 @@
-<h1>Welcome {{ email.toName }}!</h1>
+<h1>Bienvenue {{ firstnameTo }} !</h1>
 
 <p>
-    You signed up as {{ username }} the following email:
+    Merci de vous être inscrit sur Trouble à l'ordre public. Pour activer votre compte, veuillez cliquer sur le lien ci-dessous.
 </p>
-<p><code>{{ email.to[0].address }}</code></p>
-
 <p>
-    <a href="#">Click here to activate your account</a>
-    (this link is valid until {{ expiration_date|date('F jS') }})
+    <a href="{{ validationLink }}">Activer mon compte</a>
+</p>
+<p>
+    Si vous n'avez pas demandé à vous inscrire sur Trouble à l'ordre public, veuillez ignorer cet email.
+</p>
+<p>
+    Cordialement,
+    L'équipe Trouble à l'ordre public
 </p>

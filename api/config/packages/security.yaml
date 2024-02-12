@@ -62,6 +62,7 @@ security:
         - { path: ^/plannings, method: GET, roles: PUBLIC_ACCESS }
         - { path: ^/medias, method: GET, roles: PUBLIC_ACCESS }
         - { path: ^/users/verify-email/, method: GET, roles: PUBLIC_ACCESS }
+        - { path: ^/validate-account/, method: PATCH, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }

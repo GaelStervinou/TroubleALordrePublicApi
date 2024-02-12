@@ -51,7 +51,7 @@ class RequestResetPasswordLink
     public function setUrlWithToken(string $token): RequestResetPasswordLink
     {
         //TODO peut-être changer ça pour mettre le lien de l'app ( front )
-        $this->url = $_ENV['APP_URL'] . '/reset-password?token=' . $token;
+        $this->url = 'url' . '/reset-password?token=' . $token;
         return $this;
     }
 }

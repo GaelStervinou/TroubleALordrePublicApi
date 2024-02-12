@@ -7,16 +7,20 @@ use App\Enum\UserStatusEnum;
 use Exception;
 use InvalidArgumentException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Service\MailerService;
 
 final class UserService
 {
     private const DEFAULT_STATUS = UserStatusEnum::USER_STATUS_PENDING;
     private const DEFAULT_ROLES = ['ROLE_USER'];
+
     public function __construct(
         private User $user,
         private UserPasswordHasherInterface $passwordHasher,
+        private MailerService $mailerService
     )
     {
+        $this->mailerService = $mailerService;
     }
 
     public function createUser(): User
@@ -25,6 +29,16 @@ final class UserService
         $this->setDefaultStatus();
         $this->setDefaultRoles();
         $this->setValidationToken();
+
+        $this->mailerService->sendEmail(
+            [
+                'emailTo' => $this->user->getEmail(),
+                'lastnameTo' => $this->user->getLastname(),
+                'firstnameTo' => $this->user->getFirstname(),
+                'validationToken' => $this->user->getValidationToken(),
+            ],
+            MailerService::VERIFY_ACCOUNT_TEMPLATE_ID
+        );
 
         return $this->user;
     }
@@ -38,6 +52,14 @@ final class UserService
             $this->setDefaultStatus();
             $this->setValidationToken();
         }
+
+        return $this->user;
+    }
+
+    public function validateAccount(): User
+    {
+        $this->user->setStatus(UserStatusEnum::USER_STATUS_ACTIVE);
+        $this->user->setValidationToken(null);
 
         return $this->user;
     }

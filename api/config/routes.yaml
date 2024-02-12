@@ -3,12 +3,19 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
 auth:
     path: /auth
     methods: ['POST']
+
 api_refresh_token:
     path: /token/refresh
+
 send_email:
     path: /send-email
     methods: ['GET']
 
+validate_account:
+    path: /validate-account/{token}
+    controller: 'App\Controller\Action\ValidateAccountAction'
+    methods: ['PATCH']

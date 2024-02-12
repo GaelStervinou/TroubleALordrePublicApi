@@ -8,12 +8,11 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\State\ProcessorInterface;
 use App\Enum\UserStatusEnum;
 use App\Entity\User;
-//use App\Service\MailerService;
-use App\Service\MailerService;
 use App\Service\UserService;
 use Exception;
 use http\Exception\InvalidArgumentException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Service\MailerService;
 
 final class UserPasswordHasherStateProcessor implements ProcessorInterface
 {
@@ -31,7 +30,7 @@ final class UserPasswordHasherStateProcessor implements ProcessorInterface
         if (!$data instanceof User) {
             return;
         }
-        $userService = new UserService($data, $this->passwordHasher);
+        $userService = new UserService($data, $this->passwordHasher, $this->mailerService);
 
         if ($operation instanceof Post) {
             $data = $userService->createUser();

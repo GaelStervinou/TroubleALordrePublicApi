@@ -30,11 +30,27 @@ final class RequestResetPasswordAction extends AbstractController
         }
         //TODO envoyer le mail
 
-
+        
 
         $user->setResetPasswordToken(uniqid('', true));
         $this->userRepository->save($user, true);
 
-        return $requestResetPasswordLink->setUrlWithToken($user->getResetPasswordToken());
+        $userActual = $this->userRepository->findOneBy(['email' => $requestResetPasswordLink->getEmail()]);
+
+        $this->mailerService->sendEmail([
+            'emailTo' => 'fanatiiik.fury@gmail.com',
+            'resetToken' => $userActual->getResetPasswordToken(),
+            'firstnameTo' => $userActual->getFirstname(),
+            'lastnameTo' => $userActual->getLastname(),
+        ], 2);
+
+        // $this->mailerService->send([
+        //     'emailTo' => $user->getEmail(),
+        //     'validationToken' => $user->getResetPasswordToken(),
+        //     'firstnameTo' => $user->getFirstname(),
+        //     'lastnameTo' => $user->getLastname(),
+        // ], 2);
+
+        return $requestResetPasswordLink->setUrlWithToken($userActual->getResetPasswordToken());
     }
 }
