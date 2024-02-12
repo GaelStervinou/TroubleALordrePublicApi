@@ -34,16 +34,14 @@ use Symfony\Component\Serializer\Attribute\Groups;
     order: ['createdAt' => 'DESC']
 )]
 #[ApiResource(
-    uriTemplate: '/companies/{id}/users',
+    uriTemplate: '/users/{id}/owned-companies',
     operations: [
         new GetCollection(
-            normalizationContext: ['groups' => ['user:read']],
-            security: 'user.isAdmin() 
-                or (object == user.getCompany() and user.isCompanyAdmin())'
+            normalizationContext: ['groups' => ['user:companies:read']],
         ),
     ],
     uriVariables: [
-        'id' => new Link(fromProperty: 'users', fromClass: Company::class)
+        'id' => new Link(fromProperty: 'ownedCompanies', fromClass: User::class)
     ],
     order: ['createdAt' => 'DESC']
 )]

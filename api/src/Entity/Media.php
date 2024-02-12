@@ -75,7 +75,7 @@ class Media
     public ?File $file = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['service:read', 'company:collection:read', 'company:read'])]
+    #[Groups(['company:collection:read', 'company:read'])]
     public ?string $path = null;
 
     #[ORM\ManyToOne(inversedBy: 'medias')]

@@ -62,15 +62,28 @@ use Symfony\Component\Validator\Constraints\NotBlank;
     normalizationContext: ['groups' => ['user:read']],
 )]
 #[ApiResource(
-    uriTemplate: '/users/{id}/companies',
+    uriTemplate: '/users/{id}/company',
     operations: [
         new GetCollection(
             normalizationContext: ['groups' => ['user:companies:read']],
         ),
     ],
     uriVariables: [
-        'id' => new Link(fromProperty: 'companies', fromClass: User::class)
+        'id' => new Link(fromProperty: 'company', fromClass: User::class)
     ],
+    order: ['createdAt' => 'DESC']
+)]
+#[ApiResource(
+    uriTemplate: '/companies/{id}/users',
+    operations: [
+        new GetCollection(
+            uriVariables: [
+                'id' => new Link(fromProperty: 'users', fromClass: Company::class)
+            ],
+            normalizationContext: ['groups' => ['user:read']],
+        ),
+    ],
+
     order: ['createdAt' => 'DESC']
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, TimestampableEntityInterface, SoftDeleteInterface
