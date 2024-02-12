@@ -88,7 +88,7 @@ class Service implements TimestampableEntityInterface
         min: 300,
         max: 86400
     )]
-    #[Groups(['service:read', 'service:write'])]
+    #[Groups(['service:read', 'service:write', 'company:read'])]
     private ?int $duration = null;
 
     #[ORM\Column(type: Types::TEXT)]
