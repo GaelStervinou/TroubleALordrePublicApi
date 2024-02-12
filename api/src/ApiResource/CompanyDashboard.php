@@ -36,15 +36,25 @@ class CompanyDashboard
     #[Groups(['company:dashboard:read'])]
     private array $reservationsCurrentMonth = [];
     #[Groups(['company:dashboard:read'])]
+    private array $reservationsPreviousMonth = [];
+    #[Groups(['company:dashboard:read'])]
+    private int $numberOfReservationsCurrentMonth = 0;
+    #[Groups(['company:dashboard:read'])]
     private int $numberOfReservationsPreviousMonth = 0;
     #[Groups(['company:dashboard:read'])]
     private array $monthSalesCurrentMonth = [];
+    #[Groups(['company:dashboard:read'])]
+    private array $monthSalesPreviousMonth = [];
     #[Groups(['company:dashboard:read'])]
     private float $monthsSalesAmountCurrentMonth = 0;
     #[Groups(['company:dashboard:read'])]
     private float $monthSalesNumberPreviousMonth = 0;
     #[Groups(['company:dashboard:read'])]
     private ?User $bestTroubleMaker = null;
+    #[Groups(['company:dashboard:read'])]
+    private float $averageRateForCurrentMonth = 0;
+    #[Groups(['company:dashboard:read'])]
+    private float $averageRateForPreviousMonth = 0;
 
     public function getReservationsCurrentMonth(): array
     {
@@ -54,6 +64,17 @@ class CompanyDashboard
     public function setReservationsCurrentMonth(array $reservationsCurrentMonth): CompanyDashboard
     {
         $this->reservationsCurrentMonth = $reservationsCurrentMonth;
+        return $this;
+    }
+
+    public function getReservationsPreviousMonth(): array
+    {
+        return $this->reservationsPreviousMonth;
+    }
+
+    public function setReservationsPreviousMonth(array $reservationsPreviousMonth): CompanyDashboard
+    {
+        $this->reservationsPreviousMonth = $reservationsPreviousMonth;
         return $this;
     }
 
@@ -76,6 +97,17 @@ class CompanyDashboard
     public function setMonthSalesCurrentMonth(array $monthSalesCurrentMonth): CompanyDashboard
     {
         $this->monthSalesCurrentMonth = $monthSalesCurrentMonth;
+        return $this;
+    }
+
+    public function getMonthSalesPreviousMonth(): array
+    {
+        return $this->monthSalesPreviousMonth;
+    }
+
+    public function setMonthSalesPreviousMonth(array $monthSalesPreviousMonth): CompanyDashboard
+    {
+        $this->monthSalesPreviousMonth = $monthSalesPreviousMonth;
         return $this;
     }
 
@@ -120,6 +152,39 @@ class CompanyDashboard
     public function setId(string $id): self
     {
         $this->id = $id;
+        return $this;
+    }
+
+    public function getNumberOfReservationsCurrentMonth(): int
+    {
+        return $this->numberOfReservationsCurrentMonth;
+    }
+
+    public function setNumberOfReservationsCurrentMonth(int $numberOfReservationsCurrentMonth): self
+    {
+        $this->numberOfReservationsCurrentMonth = $numberOfReservationsCurrentMonth;
+        return $this;
+    }
+
+    public function getAverageRateForCurrentMonth(): float
+    {
+        return $this->averageRateForCurrentMonth;
+    }
+
+    public function setAverageRateForCurrentMonth(float $averageRateForCurrentMonth): CompanyDashboard
+    {
+        $this->averageRateForCurrentMonth = $averageRateForCurrentMonth;
+        return $this;
+    }
+
+    public function getAverageRateForPreviousMonth(): float
+    {
+        return $this->averageRateForPreviousMonth;
+    }
+
+    public function setAverageRateForPreviousMonth(float $averageRateForPreviousMonth): CompanyDashboard
+    {
+        $this->averageRateForPreviousMonth = $averageRateForPreviousMonth;
         return $this;
     }
 }

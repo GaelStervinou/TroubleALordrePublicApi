@@ -126,11 +126,10 @@ class Reservation implements TimestampableEntityInterface
     #[Groups(['reservation:write', 'reservation:read'])]
     private ?\DateTimeImmutable $date = null;
 
-    #[ORM\Column(length: 50, options: ['default' => ReservationStatusEnum::PENDING])]
+    #[ORM\Column(length: 50, options: ['default' => ReservationStatusEnum::ACTIVE])]
     #[Assert\Choice(
         choices: [
             ReservationStatusEnum::ACTIVE,
-            ReservationStatusEnum::PENDING,
             ReservationStatusEnum::CANCELED,
             ReservationStatusEnum::FINISHED,
             ReservationStatusEnum::REFUNDED,
@@ -318,11 +317,6 @@ class Reservation implements TimestampableEntityInterface
     public function isActive(): bool
     {
         return $this->status === ReservationStatusEnum::ACTIVE;
-    }
-
-    public function isPending(): bool
-    {
-        return $this->status === ReservationStatusEnum::PENDING;
     }
 
     public function isCanceled(): bool

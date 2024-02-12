@@ -187,6 +187,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Company::class)]
     #[Groups(['user:companies:read'])]
     private Collection $ownedCompanies;
+    #[Groups(['company:dashboard:read'])]
+    private int $currentMonthTotalReservations = 0;
 
     public function __construct()
     {
@@ -671,6 +673,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
             }
         }
 
+        return $this;
+    }
+
+    public function getCurrentMonthTotalReservations(): int
+    {
+        return $this->currentMonthTotalReservations;
+    }
+
+    public function setCurrentMonthTotalReservations(int $currentMonthTotalReservations): self
+    {
+        $this->currentMonthTotalReservations = $currentMonthTotalReservations;
         return $this;
     }
 }

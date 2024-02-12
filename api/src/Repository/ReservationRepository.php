@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use App\Entity\Media;
+use App\Entity\Rate;
 use App\Entity\Reservation;
 use App\Entity\Service;
 use App\Entity\User;
@@ -39,7 +41,7 @@ class ReservationRepository extends ServiceEntityRepository
             ->setParameter('userId', $userId, ParameterType::STRING)
             ->setParameter('dateFrom', $dateFrom)
             ->setParameter('dateTo', $dateTo)
-            ->setParameter('status', [ReservationStatusEnum::PENDING, ReservationStatusEnum::ACTIVE]);
+            ->setParameter('status', [ReservationStatusEnum::FINISHED, ReservationStatusEnum::ACTIVE]);
 
         return $query->getQuery()->execute();
     }
@@ -82,7 +84,25 @@ class ReservationRepository extends ServiceEntityRepository
             ->setMaxResults(1)
         ;
 
+        return $query->getQuery()->execute();
+    }
 
+    public function getRateForCompanyReservationsFromDateToDate(
+        \DateTimeImmutable $dateFrom,
+        \DateTimeImmutable $dateTo,
+        string             $companyId
+    ): array
+    {
+        $query = $this->createQueryBuilder('r')
+            ->select('ra.value')
+            ->leftJoin(Service::class, 's', Join::WITH, 'r.service = s.id')
+            ->leftJoin(Rate::class, 'ra', Join::WITH, 's.id = ra.reservation')
+            ->where('s.company = :companyId AND r.date BETWEEN :dateFrom AND :dateTo AND r.status = :status')
+            ->setParameter('companyId', $companyId, ParameterType::STRING)
+            ->setParameter('dateFrom', $dateFrom)
+            ->setParameter('dateTo', $dateTo)
+            ->setParameter('status', ReservationStatusEnum::FINISHED->value, ParameterType::STRING)
+        ;
 
         return $query->getQuery()->execute();
     }

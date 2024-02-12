@@ -6,8 +6,10 @@ use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\ApiResource\CompanyDashboard;
+use App\Entity\Rate;
 use App\Entity\Reservation;
 use App\Entity\User;
+use App\Repository\RateRepository;
 use App\Repository\ReservationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -28,7 +30,7 @@ class CompanyDashboardStateProvider implements ProviderInterface
             return [];
         }
 
-        $companyDashboard = new CompanyDashboard();
+        $companyDashboard = (new CompanyDashboard())->setId($uriVariables[ 'id' ]);
         /**
          * @var $reservationRepository ReservationRepository
          */
@@ -48,26 +50,49 @@ class CompanyDashboardStateProvider implements ProviderInterface
         $companyDashboard->setNumberOfReservationsPreviousMonth(count($previousMonthReservations));
         $companyDashboard->setMonthSalesNumberPreviousMonth($this->calculateMonthSales($previousMonthReservations));
 
-        $currentMonthDateTo = \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s'))));
+        $currentMonthDateFrom = \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s'))));
 
         $currentMonthReservations = $reservationRepository->getCompanyReservationsFromDateToDate(
-            $currentMonthDateTo,
+            $currentMonthDateFrom,
             $todayDate,
             $uriVariables[ 'id' ]
         );
+        $companyDashboard->setNumberOfReservationsCurrentMonth(count($currentMonthReservations));
+        $formattedReservationsAndSalesAmountPreviousMonth = $this->associateDayOfMonthToReservationNumberAndSalesAmount($previousMonthReservations, $previousMonthDateFrom, $previousMonthDateTo, 0);
+        $companyDashboard->setReservationsPreviousMonth($formattedReservationsAndSalesAmountPreviousMonth[ 'reservationsByDate' ]);
+        $companyDashboard->setMonthSalesPreviousMonth($formattedReservationsAndSalesAmountPreviousMonth[ 'salesAmountByDate' ]);
 
-        $companyDashboard->setId($uriVariables[ 'id' ]);
 
         $companyDashboard->setMonthsSalesAmountCurrentMonth($this->calculateMonthSales($currentMonthReservations));
-        $formattedReservationsAndSalesAmountCurrentMonth = $this->associateDayOfMonthToReservationNumberAndSalesAmount($currentMonthReservations, $currentMonthDateTo, $todayDate, 0);
+        $formattedReservationsAndSalesAmountCurrentMonth = $this->associateDayOfMonthToReservationNumberAndSalesAmount($currentMonthReservations, $currentMonthDateFrom, $todayDate, 0);
         $companyDashboard->setReservationsCurrentMonth($formattedReservationsAndSalesAmountCurrentMonth[ 'reservationsByDate' ]);
         $companyDashboard->setMonthSalesCurrentMonth($formattedReservationsAndSalesAmountCurrentMonth[ 'salesAmountByDate' ]);
-        $bestTroubleMakerId = $reservationRepository->getCompanyBestTroubleMakerFromDateToDate(
+        $bestTroubleMakerData = $reservationRepository->getCompanyBestTroubleMakerFromDateToDate(
             \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s')))),
             $todayDate,
             $uriVariables[ 'id' ]
-        )[0]['id'];
-        $bestTroubleMaker = $this->entityManager->getRepository(User::class)->find($bestTroubleMakerId->serialize());
+        )[0];
+
+        $bestTroubleMaker = $this->entityManager->getRepository(User::class)->find($bestTroubleMakerData['id']->serialize());
+        if ($bestTroubleMaker) {
+            $companyDashboard->setBestTroubleMaker($bestTroubleMaker->setCurrentMonthTotalReservations($bestTroubleMakerData['best_trouble_maker']));
+        }
+
+        /**
+         * @var $rateRepository RateRepository
+         */
+        $rateRepository = $this->entityManager->getRepository(Rate::class);
+        $companyDashboard->setAverageRateForPreviousMonth((float)$rateRepository->getRatesForCompanyReservationsFromDateToDate(
+            $previousMonthDateFrom,
+            $previousMonthDateTo,
+            $uriVariables[ 'id' ]
+        ));
+        $companyDashboard->setAverageRateForCurrentMonth((float)$rateRepository->getRatesForCompanyReservationsFromDateToDate(
+            $currentMonthDateFrom,
+            $todayDate,
+            $uriVariables[ 'id' ]
+        ));
+        //TODO CA par jour mois d'avant + nombre de resa du user
         return $companyDashboard;
     }
 

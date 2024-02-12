@@ -3,7 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Rate;
+use App\Entity\Reservation;
+use App\Entity\Service;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ParameterType;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -21,28 +25,22 @@ class RateRepository extends ServiceEntityRepository
         parent::__construct($registry, Rate::class);
     }
 
-//    /**
-//     * @return Rate[] Returns an array of Rate objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('r.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getRatesForCompanyReservationsFromDateToDate(
+        \DateTimeImmutable $dateFrom,
+        \DateTimeImmutable $dateTo,
+        string             $companyId
+    ) {
+        $query = $this->createQueryBuilder('r')
+            ->select('AVG(r.value)')
+            ->leftJoin(Service::class, 's', Join::WITH, 'r.service = s.id')
+            ->leftJoin(Reservation::class, 'res', Join::WITH, 'r.reservation = res.id')
+            ->where('res.date BETWEEN :dateFrom AND :dateTo')
+            ->andWhere('s.company = :companyId')
+            ->setParameter('companyId', $companyId, ParameterType::STRING)
+            ->setParameter('dateFrom', $dateFrom)
+            ->setParameter('dateTo', $dateTo)
+        ;
 
-//    public function findOneBySomeField($value): ?Rate
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        return $query->getQuery()->getSingleScalarResult();
+    }
 }

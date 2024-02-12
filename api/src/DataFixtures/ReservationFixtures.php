@@ -22,7 +22,6 @@ class ReservationFixtures extends Fixture implements DependentFixtureInterface
         $services = $manager->getRepository(Service::class)->findAll();
         $status = [
             ReservationStatusEnum::ACTIVE,
-            ReservationStatusEnum::PENDING,
             ReservationStatusEnum::CANCELED,
             ReservationStatusEnum::FINISHED,
             ReservationStatusEnum::REFUNDED
