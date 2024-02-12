@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
@@ -13,6 +16,7 @@ use App\Entity\Trait\TimestampableTrait;
 use App\Enum\CompanyStatusEnum;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\CompanyRepository;
+use App\State\SearchCompaniesStateProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,18 +25,19 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Attribute\Groups;
 
-#[ApiResource(
-    uriTemplate: '/companies/{id}/services',
-    operations: [
-        new GetCollection(
-            normalizationContext: ['groups' => ['service:read']],
-        ),
-    ],
-    uriVariables: [
-        'id' => new Link(fromProperty: 'services', fromClass: Company::class)
-    ],
-    order: ['createdAt' => 'DESC']
-)]
+#[
+    ApiResource(
+        uriTemplate: '/companies/{id}/services',
+        operations: [
+            new GetCollection(
+                normalizationContext: ['groups' => ['service:read']],
+            ),
+        ],
+        uriVariables: [
+            'id' => new Link(fromProperty: 'services', fromClass: Company::class)
+        ],
+        order: ['createdAt' => 'DESC']
+    )]
 #[ApiResource(
     uriTemplate: '/users/{id}/owned-companies',
     operations: [
@@ -66,6 +71,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
         new GetCollection(
             normalizationContext: ['groups' => ['company:collection:read']],
         ),
+        new GetCollection(
+            uriTemplate: '/companies/search',
+            name: Company::COMPANY_SEARCH_ROUTE
+        ),
         new Get(),
         new Post(
             security: 'user.isUser() and user.company == null'
@@ -79,10 +88,13 @@ use Symfony\Component\Serializer\Attribute\Groups;
     denormalizationContext: ['groups' => ['company:write']],
     order: ['createdAt' => 'DESC'],
 )]
+#[ApiFilter(SearchFilter::class, properties: ['categories.id' => 'exact'])]
+#[ApiFilter(RangeFilter::class, properties: ['services.price'])]
 class Company implements TimestampableEntityInterface
 {
     use TimestampableTrait;
 
+    public const COMPANY_SEARCH_ROUTE = 'companies_search';
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\Column(type: 'uuid', unique: true)]
@@ -451,19 +463,19 @@ class Company implements TimestampableEntityInterface
         $services = $this->getServices();
 
         $ratesTotalAndCount = $services->reduce(function (array $accumulator, Service $value) {
-                $accumulator[ 'count' ] = $value->getRatesFromCustomersCountAndTotal()[ 'count' ];
-                $accumulator[ 'total' ] = $value->getRatesFromCustomersCountAndTotal()[ 'total' ];
+            $accumulator[ 'count' ] = $value->getRatesFromCustomersCountAndTotal()[ 'count' ];
+            $accumulator[ 'total' ] = $value->getRatesFromCustomersCountAndTotal()[ 'total' ];
 
-                return $accumulator;
-            }, [
-                'count' => 0,
-                'total' => 0
-            ]);
-        if (0 === $ratesTotalAndCount['count']) {
+            return $accumulator;
+        }, [
+            'count' => 0,
+            'total' => 0
+        ]);
+        if (0 === $ratesTotalAndCount[ 'count' ]) {
             return null;
         }
 
-        return $ratesTotalAndCount['total'] / $ratesTotalAndCount['count'];
+        return $ratesTotalAndCount[ 'total' ] / $ratesTotalAndCount[ 'count' ];
     }
 
     /**

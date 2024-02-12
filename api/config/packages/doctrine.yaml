@@ -13,6 +13,10 @@ doctrine:
                 JSON_EXTRACT: Scienta\DoctrineJsonFunctions\Query\AST\Functions\Mysql\JsonExtract
                 JSON_SEARCH: Scienta\DoctrineJsonFunctions\Query\AST\Functions\Mysql\
                 JSON_GET_TEXT: Scienta\DoctrineJsonFunctions\Query\AST\Functions\Postgresql\JsonGetText
+                ST_DWithin: Jsor\Doctrine\PostGIS\Functions\ST_DWithin
+            numeric_functions:
+                ST_MakePoint: Jsor\Doctrine\PostGIS\Functions\ST_MakePoint
+                ST_Distance: Jsor\Doctrine\PostGIS\Functions\ST_Distance
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true
         report_fields_where_declared: true

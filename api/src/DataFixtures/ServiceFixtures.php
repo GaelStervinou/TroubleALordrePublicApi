@@ -18,26 +18,17 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
         $companies = $manager->getRepository(Company::class)->findAll();
 
         foreach ($companies as $company) {
-
-            $usersCompany = $company->getUsers();
-
-
-            $randomValue = random_int(1, 5);
+            $randomValue = random_int(1, 4);
 
             for ($i = 0; $i < $randomValue; $i++) {
                 $service = new Service();
                 $service->setName($faker->word)
                     ->setCompany($company)
                     ->setDescription($faker->text)
-                    ->setDuration($faker->numberBetween(300, 86400))
+                    ->setDuration($faker->numberBetween(300, 7200))
                     ->setPrice($faker->randomFloat(2, 0, 1000))
                     ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')))
                     ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')));
-
-                $randomTotalUserService = random_int(1, 2);
-                for ($k = 0; $k < $randomTotalUserService; $k++) {
-                    $service->addUser($usersCompany[ $k ]);
-                }
 
                 $manager->persist($service);
             }
