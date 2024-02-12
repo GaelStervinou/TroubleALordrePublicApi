@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Reservation;
 use App\Entity\Service;
+use App\Entity\User;
 use App\Enum\ReservationStatusEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\ParameterType;
@@ -24,8 +25,9 @@ class ReservationRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Reservation::class);
     }
+
     public function getTroubleMakerReservationsFromDateToDate(
-        string $userId,
+        string             $userId,
         \DateTimeImmutable $dateFrom,
         \DateTimeImmutable $dateTo
     ): array
@@ -37,8 +39,7 @@ class ReservationRepository extends ServiceEntityRepository
             ->setParameter('userId', $userId, ParameterType::STRING)
             ->setParameter('dateFrom', $dateFrom)
             ->setParameter('dateTo', $dateTo)
-            ->setParameter('status', [ReservationStatusEnum::PENDING, ReservationStatusEnum::ACTIVE])
-        ;
+            ->setParameter('status', [ReservationStatusEnum::PENDING, ReservationStatusEnum::ACTIVE]);
 
         return $query->getQuery()->execute();
     }
@@ -46,7 +47,7 @@ class ReservationRepository extends ServiceEntityRepository
     public function getCompanyReservationsFromDateToDate(
         \DateTimeImmutable $dateFrom,
         \DateTimeImmutable $dateTo,
-        string $companyId
+        string             $companyId
     ): array
     {
         $query = $this->createQueryBuilder('r')
@@ -56,8 +57,7 @@ class ReservationRepository extends ServiceEntityRepository
             ->setParameter('companyId', $companyId, ParameterType::STRING)
             ->setParameter('dateFrom', $dateFrom)
             ->setParameter('dateTo', $dateTo)
-            ->setParameter('status', ReservationStatusEnum::FINISHED->value, ParameterType::STRING)
-        ;
+            ->setParameter('status', ReservationStatusEnum::FINISHED->value, ParameterType::STRING);
 
         return $query->getQuery()->execute();
     }
@@ -65,18 +65,24 @@ class ReservationRepository extends ServiceEntityRepository
     public function getCompanyBestTroubleMakerFromDateToDate(
         \DateTimeImmutable $dateFrom,
         \DateTimeImmutable $dateTo,
-        string $companyId
-    ): string
+        string             $companyId
+    ): array
     {
         $query = $this->createQueryBuilder('r')
-            ->select('COUNT(r.troubleMaker) AS BEST, MAX(BEST) AS BEST_TRUC')
+            ->select('u.id, COUNT(r.troubleMaker) as best_trouble_maker')
+            ->leftJoin(User::class, 'u', Join::WITH, 'r.troubleMaker = u.id')
             ->leftJoin(Service::class, 's', Join::WITH, 'r.service = s.id')
             ->where('s.company = :companyId AND r.date BETWEEN :dateFrom AND :dateTo AND r.status = :status')
             ->setParameter('companyId', $companyId, ParameterType::STRING)
             ->setParameter('dateFrom', $dateFrom)
             ->setParameter('dateTo', $dateTo)
             ->setParameter('status', ReservationStatusEnum::FINISHED->value, ParameterType::STRING)
+            ->groupBy('u.id')
+            ->orderBy('best_trouble_maker', 'DESC')
+            ->setMaxResults(1)
         ;
+
+
 
         return $query->getQuery()->execute();
     }

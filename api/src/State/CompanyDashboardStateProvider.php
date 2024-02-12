@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\ApiResource\CompanyDashboard;
 use App\Entity\Reservation;
+use App\Entity\User;
 use App\Repository\ReservationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -35,17 +36,22 @@ class CompanyDashboardStateProvider implements ProviderInterface
         $todayDate = new \DateTimeImmutable();
 
 
+        $previousMonthDateFrom = \DateTimeImmutable::createFromFormat('U', strtotime("-2 months", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s'))));
+        $previousMonthDateTo = \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(23, 59)->format('Y-m-d H:i:s'))));
+
         $previousMonthReservations = $reservationRepository->getCompanyReservationsFromDateToDate(
-            \DateTimeImmutable::createFromFormat('U', strtotime("-2 months", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s')))),
-            \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(23, 59)->format('Y-m-d H:i:s')))),
+            $previousMonthDateFrom,
+            $previousMonthDateTo,
             $uriVariables[ 'id' ]
         );
 
         $companyDashboard->setNumberOfReservationsPreviousMonth(count($previousMonthReservations));
         $companyDashboard->setMonthSalesNumberPreviousMonth($this->calculateMonthSales($previousMonthReservations));
 
+        $currentMonthDateTo = \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s'))));
+
         $currentMonthReservations = $reservationRepository->getCompanyReservationsFromDateToDate(
-            \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s')))),
+            $currentMonthDateTo,
             $todayDate,
             $uriVariables[ 'id' ]
         );
@@ -53,15 +59,15 @@ class CompanyDashboardStateProvider implements ProviderInterface
         $companyDashboard->setId($uriVariables[ 'id' ]);
 
         $companyDashboard->setMonthsSalesAmountCurrentMonth($this->calculateMonthSales($currentMonthReservations));
-        $formattedReservationsAndSalesAmountCurrentMonth = $this->associateDayOfMonthToReservationNumberAndSalesAmount($currentMonthReservations);
-        $companyDashboard->setReservationsCurrentMonth($formattedReservationsAndSalesAmountCurrentMonth['reservationsByDate']);
-        $companyDashboard->setMonthSalesCurrentMonth($formattedReservationsAndSalesAmountCurrentMonth['salesAmountByDate']);
-        /*$bestTroubleMaker = $reservationRepository->getCompanyBestTroubleMakerFromDateToDate(
+        $formattedReservationsAndSalesAmountCurrentMonth = $this->associateDayOfMonthToReservationNumberAndSalesAmount($currentMonthReservations, $currentMonthDateTo, $todayDate, 0);
+        $companyDashboard->setReservationsCurrentMonth($formattedReservationsAndSalesAmountCurrentMonth[ 'reservationsByDate' ]);
+        $companyDashboard->setMonthSalesCurrentMonth($formattedReservationsAndSalesAmountCurrentMonth[ 'salesAmountByDate' ]);
+        $bestTroubleMakerId = $reservationRepository->getCompanyBestTroubleMakerFromDateToDate(
             \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s')))),
             $todayDate,
             $uriVariables[ 'id' ]
-        );
-        dd($bestTroubleMaker);*/
+        )[0]['id'];
+        $bestTroubleMaker = $this->entityManager->getRepository(User::class)->find($bestTroubleMakerId->serialize());
         return $companyDashboard;
     }
 
@@ -69,12 +75,12 @@ class CompanyDashboardStateProvider implements ProviderInterface
     {
         return array_reduce($reservations, static function ($amount, $reservation) {
             return $amount + $reservation->getPrice();
-        },0);
+        }, 0);
+
     }
 
-    private function associateDayOfMonthToReservationNumberAndSalesAmount(array $reservations): array
+    private function associateDayOfMonthToReservationNumberAndSalesAmount(array $reservations, \DateTimeImmutable $dateFrom, \DateTimeImmutable $dateTo, mixed $value): array
     {
-        //TODO remplir les jours qui sont vides
         $finalArrayNumberOfReservations = [];
         $finalArraySalesAmount = [];
         /**
@@ -83,20 +89,41 @@ class CompanyDashboardStateProvider implements ProviderInterface
         foreach ($reservations as $reservation) {
             $date = $reservation->getDate()?->format('Y-m-d');
             if (array_key_exists($date, $finalArrayNumberOfReservations)) {
-                $finalArrayNumberOfReservations[$date]++;
+                $finalArrayNumberOfReservations[ $date ]++;
             } else {
-                $finalArrayNumberOfReservations[$date] = 1;
+                $finalArrayNumberOfReservations[ $date ] = 1;
             }
 
             if (array_key_exists($date, $finalArraySalesAmount)) {
-                $finalArraySalesAmount[$date] += $reservation->getPrice();
+                $finalArraySalesAmount[ $date ] += $reservation->getPrice();
             } else {
-                $finalArraySalesAmount[$date] = $reservation->getPrice();
+                $finalArraySalesAmount[ $date ] = $reservation->getPrice();
             }
         }
+
         return [
-            'reservationsByDate' => $finalArrayNumberOfReservations,
-            'salesAmountByDate' => $finalArraySalesAmount
+            'reservationsByDate' => $this->fillMissingDaysWithSpecificValue($finalArrayNumberOfReservations, $dateFrom, $dateTo, $value),
+            'salesAmountByDate' => $this->fillMissingDaysWithSpecificValue($finalArraySalesAmount, $dateFrom, $dateTo, $value)
         ];
+    }
+
+    private function fillMissingDaysWithSpecificValue(array $datas, \DateTimeImmutable $dateFrom, \DateTimeImmutable $dateTo, mixed $value): array
+    {
+        $dateFromToString = $dateFrom->format('Y-m-d');
+        $dateToToTime = strtotime($dateTo->format('Y-m-d'));
+        $dateFromToTime = strtotime($dateFromToString);
+        $diffInDays = round(($dateToToTime - $dateFromToTime) / (60 * 60 * 24));
+
+        $orderedByDateDatas = [];
+        for ($i=0; $i<=$diffInDays; $i++) {
+            if(!array_key_exists($dateFromToString, $datas)) {
+                $orderedByDateDatas[$dateFromToString] = $value;
+            } else {
+                $orderedByDateDatas[$dateFromToString] = $datas[$dateFromToString];
+            }
+            $dateFrom =  $dateFrom->add(new \DateInterval('P1D'));
+            $dateFromToString = $dateFrom->format('Y-m-d');
+        }
+        return $orderedByDateDatas;
     }
 }
