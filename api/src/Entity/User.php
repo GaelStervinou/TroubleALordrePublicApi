@@ -194,7 +194,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     private ?string $kbis = null;
 
     #[ORM\ManyToOne]
-    #[Groups(['company:read', 'rate:by-user:read', 'company:dashboard:read'])]
+    #[Groups(['company:read', 'rate:by-user:read', 'company:dashboard:read', 'user:read'])]
     private ?Media $profilePicture = null;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Company::class)]
