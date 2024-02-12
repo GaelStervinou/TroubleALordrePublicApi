@@ -191,6 +191,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         minMessage: "Le kbis invalide",
         maxMessage: "Le kbis invalide"
     )]
+    #[Groups(['user:read', 'company:read', 'company:admin:read', 'company:dashboard:read'])]
     private ?string $kbis = null;
 
     #[ORM\ManyToOne]
