@@ -19,3 +19,8 @@ validate_account:
     path: /validate-account/{token}
     controller: 'App\Controller\Action\ValidateAccountAction'
     methods: ['PATCH']
+
+reset_password:
+    path: /auth/reset-password/{token}
+    controller: 'App\Controller\Action\ResetPasswordAction'
+    methods: ['PATCH']

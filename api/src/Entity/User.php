@@ -62,19 +62,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
     normalizationContext: ['groups' => ['user:read']],
 )]
 #[ApiResource(
-    operations: [
-        new Patch(
-            uriTemplate: '/auth/reset-password/{token}',
-            normalizationContext: ['groups' => ['user:read']],
-            denormalizationContext: ['groups' => ['user:reset-password']],
-            validationContext: ['groups' => ['user:reset-password']],
-            read: false,
-            provider: UserResetPasswordStateProvider::class,
-            processor: UserPasswordHasherStateProcessor::class,
-        )
-    ]
-)]
-#[ApiResource(
     uriTemplate: '/users/{id}/companies',
     operations: [
         new GetCollection(

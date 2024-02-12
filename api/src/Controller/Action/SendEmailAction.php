@@ -37,6 +37,7 @@ class SendEmailAction extends AbstractController
             'lastnameTo' => 'NomDuDestinataire',
             'firstnameTo' => 'PrenomDuDestinataire',
             'validationToken' => 'TokenDeValidation',
+            'resetToken' => 'TokenDeReset'
         ];
 
         $templateId = 3;
