@@ -43,7 +43,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             normalizationContext: ['groups' => ['user:reservation:read']],
-            security: 'user.isAdmin() or object.getCustomer() == user.getId()',
             securityMessage: "Vous n'avez pas accès à cette ressource",
             name: Reservation::USER_RESERVATIONS_AS_CUSTOMERS,
         ),
@@ -58,8 +57,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             normalizationContext: ['groups' => ['user:reservation:read']],
-            security: 'user.isAdmin() or object.getTroubleMaker() == user.getId()',
-            securityMessage: "Vous n'avez pas accès à cette ressource",
             name: Reservation::USER_RESERVATIONS_AS_TROUBLE_MAKERS,
         ),
     ],
