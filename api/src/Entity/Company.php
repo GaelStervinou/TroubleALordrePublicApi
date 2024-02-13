@@ -77,7 +77,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
         ),
         new Get(),
         new Post(
-            security: 'user.isUser() and user.company == null'
+            denormalizationContext: ['groups' => ['company:post']],
+            security: 'user.isCompanyAdmin() && user.isActive()',
+            securityMessage: 'Vous ne pouvez pas créer d\'établissement.',
         ),
         new Patch(
             denormalizationContext: ['groups' => ['company:update']],
@@ -110,15 +112,15 @@ class Company implements TimestampableEntityInterface
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'service:read', 'reservation:read', 'user:companies:read'])]
+    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'service:read', 'reservation:read', 'user:companies:read', 'company:post'])]
     private ?string $name = null;
 
     #[ORM\ManyToOne]
-    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'company:update', 'service:read', 'reservation:read', 'user:companies:read'])]
+    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'company:update', 'service:read', 'reservation:read', 'user:companies:read', 'company:post'])]
     private ?Media $mainMedia = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Media::class)]
-    #[Groups(['company:read', 'company:write', 'reservation:read', 'user:companies:read'])]
+    #[Groups(['company:read', 'company:write', 'reservation:read', 'user:companies:read', 'company:post'])]
     private Collection $medias;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Invitation::class)]
@@ -147,31 +149,31 @@ class Company implements TimestampableEntityInterface
     private Collection $users;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:read', 'company:admin:read', 'user:companies:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post'])]
     private ?string $address = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:read', 'company:admin:read', 'user:companies:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post'])]
     private ?string $zipCode = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:read', 'company:admin:read', 'user:companies:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post'])]
     private ?string $city = null;
 
     #[ORM\Column]
-    #[Groups(['company:read', 'company:admin:read', 'user:companies:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post'])]
     private ?float $lat = null;
 
     #[ORM\Column]
-    #[Groups(['company:read', 'company:admin:read', 'user:companies:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post'])]
     private ?float $lng = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:read', 'company:admin:read', 'user:companies:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post'])]
     private ?string $description = null;
 
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'companies')]
-    #[Groups(['company:collection:read', 'company:admin:read', 'company:read', 'user:companies:read'])]
+    #[Groups(['company:collection:read', 'company:admin:read', 'company:read', 'user:companies:read', 'company:post'])]
     private Collection $categories;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Availibility::class)]

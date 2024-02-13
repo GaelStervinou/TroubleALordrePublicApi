@@ -62,18 +62,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
     normalizationContext: ['groups' => ['user:read']],
 )]
 #[ApiResource(
-    uriTemplate: '/users/{id}/company',
-    operations: [
-        new GetCollection(
-            normalizationContext: ['groups' => ['user:companies:read']],
-        ),
-    ],
-    uriVariables: [
-        'id' => new Link(fromProperty: 'company', fromClass: User::class)
-    ],
-    order: ['createdAt' => 'DESC']
-)]
-#[ApiResource(
     uriTemplate: '/companies/{id}/users',
     operations: [
         new GetCollection(
