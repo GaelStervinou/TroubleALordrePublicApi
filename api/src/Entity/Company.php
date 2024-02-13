@@ -101,7 +101,7 @@ class Company implements TimestampableEntityInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:collection:read', 'user:reservation:read'])]
+    #[Groups(['company:collection:read', 'user:reservation:read', 'user:companies:read'])]
     private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 255)]
@@ -554,5 +554,23 @@ class Company implements TimestampableEntityInterface
         $this->owner = $owner;
 
         return $this;
+    }
+
+    #[Groups(['company:read'])]
+    public function getCustomerRates(): array
+    {
+        $rates = [];
+        foreach($this->getServices() as $service) {
+            $rates[] = $service->getRates()->filter(function (Rate $rate) {
+                return $rate->isCustomerRate();
+            });
+        }
+        $finalRates = [];
+        foreach ($rates as $rate) {
+            foreach ($rate as $value) {
+                $finalRates[] = $value;
+            }
+        }
+        return $finalRates;
     }
 }

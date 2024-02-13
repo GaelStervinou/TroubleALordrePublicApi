@@ -113,7 +113,7 @@ class Rate implements TimestampableEntityInterface, BlameableEntityInterface
     private ?Service $service = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['rate:by-user:read'])]
+    #[Groups(['rate:by-user:read', 'company:read'])]
     private ?string $content = null;
 
     public function getId(): ?UuidInterface

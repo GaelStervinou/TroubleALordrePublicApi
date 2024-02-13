@@ -105,7 +105,6 @@ class Service implements TimestampableEntityInterface
     private Collection $reservations;
 
     #[ORM\OneToMany(mappedBy: 'service', targetEntity: Rate::class)]
-    #[Groups(['company:read'])]
     private Collection $rates;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'service')]
