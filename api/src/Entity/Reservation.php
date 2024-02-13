@@ -155,12 +155,12 @@ class Reservation implements TimestampableEntityInterface
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:read'])]
+    #[Groups(['reservation:read', 'user:reservation:read'])]
     private ?User $customer = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservationsTroubleMaker')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:read', 'reservation:write'])]
+    #[Groups(['reservation:read', 'reservation:write', 'user:reservation:read'])]
     private ?User $troubleMaker = null;
 
     #[ORM\OneToMany(mappedBy: 'reservation', targetEntity: Rate::class)]
