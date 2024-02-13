@@ -6,7 +6,7 @@
 # Versions
 # hadolint ignore=DL3007
 FROM dunglas/frankenphp:latest-alpine AS frankenphp_upstream
-FROM composer/composer:2-bin AS composer_upstream
+FROM composer/composer:2.6.6-bin AS composer_upstream
 
 
 # The different stages of this Dockerfile are meant to be built into separate images
