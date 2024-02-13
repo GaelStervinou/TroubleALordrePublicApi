@@ -184,7 +184,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     private ?Media $profilePicture = null;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Company::class)]
-    #[Groups(['user:companies:read'])]
     private Collection $ownedCompanies;
     #[Groups(['company:dashboard:read'])]
     private int $currentMonthTotalReservations = 0;
