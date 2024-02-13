@@ -30,7 +30,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     uriVariables: [
         'id' => new Link(fromProperty: 'companies', fromClass: Category::class)
     ],
-    order: ['createdAt' => 'DESC']
+    order: ['createdAt' => 'DESC'],
 )]
 #[UniqueEntity(fields: ['name'], message: 'Cette catégorie existe déjà')]
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]

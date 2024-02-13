@@ -624,16 +624,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         if (!$this->isTroubleMaker()) {
             return null;
         }
-        $userRates = $this->getReservationsTroubleMaker()->reduce(function (array $accumulator, Reservation $reservation): array {
+        $userRates = $this->getTroubleMakerRatesTotalAndCount();
+        if (0 === $userRates['count']) {
+            return null;
+        }
+        return $userRates['total'] / $userRates['count'];
+    }
+
+    private function getTroubleMakerRatesTotalAndCount(): array
+    {
+        return $this->getReservationsTroubleMaker()->reduce(function (array $accumulator, Reservation $reservation): array {
             $reservationRates = $reservation->getRateTotalForTroubleMaker($this->getId());
             $accumulator[ 'count' ] += $reservationRates['count'];
             $accumulator[ 'total' ] += $reservationRates[ 'total' ];
             return $accumulator;
         }, ['count' => 0, 'total' => 0]);
-        if (0 === $userRates['count']) {
-            return null;
-        }
-        return $userRates['total'] / $userRates['count'];
     }
 
     public function getProfilePicture(): ?Media
@@ -687,5 +692,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     {
         $this->currentMonthTotalReservations = $currentMonthTotalReservations;
         return $this;
+    }
+
+
+    private function getCustomerRatesTotalAndCount(): array
+    {
+        return $this->getReservations()->reduce(function (array $accumulator, Reservation $reservation): array {
+            $reservationRates = $reservation->getRateTotalForCustomer($this->getId());
+            $accumulator[ 'count' ] += $reservationRates['count'];
+            $accumulator[ 'total' ] += $reservationRates[ 'total' ];
+            return $accumulator;
+        }, ['count' => 0, 'total' => 0]);
+    }
+
+    #[Groups(['user:read'])]
+    public function getUserAverageRatesValue(): ?float
+    {
+        $userCustomerRates = $this->getCustomerRatesTotalAndCount();
+        $userTroubleMakerRates = $this->getTroubleMakerRatesTotalAndCount();
+        if (0 === $userCustomerRates['count'] && 0 === $userTroubleMakerRates['count']) {
+            return null;
+        }
+        $receivedRatesCount = $userCustomerRates['count'] + $userTroubleMakerRates['count'];
+        return ($userCustomerRates['total'] + $userTroubleMakerRates['total']) / ($receivedRatesCount);
+    }
+
+    #[Groups(['user:read'])]
+    public function getUserReservationsAsCustomerCount(): int
+    {
+        return $this->getReservations()->count();
+    }
+
+    #[Groups(['user:read'])]
+    public function getUserReservationsAsTroubleMakerCount(): int
+    {
+        return $this->getReservationsTroubleMaker()->count();
+    }
+
+    #[Groups(['user:read'])]
+    public function getRatesReceivedCount(): int
+    {
+        $userCustomerRates = $this->getCustomerRatesTotalAndCount();
+        $userTroubleMakerRates = $this->getTroubleMakerRatesTotalAndCount();
+        return $userCustomerRates['count'] + $userTroubleMakerRates['count'];
     }
 }

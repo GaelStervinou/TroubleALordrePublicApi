@@ -36,7 +36,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(
             normalizationContext: ['groups' => ['rate:read']],
-            security: 'user.isCompanyAdmin() and id == user.getCompany().getId()',
+            security: 'user.isCompanyAdmin() and  in user.getOwnedCompanies().toArray()',
             securityMessage: "Vous n'avez pas accès à cette ressource",
         ),
     ],
@@ -60,7 +60,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
             security: 'user.isAdmin() 
                 or (user.isCompanyAdmin() and object.getCompany() == user.getCompany())
                 and object.getCompany().isActive()',
-            securityMessage: "Vous n'avez pas accès à cette ressource",
+            securityMessage: "Vous ne pouvez pas créer d'invitations",
         ),
         new Delete(
             security: 'user.isAdmin() 

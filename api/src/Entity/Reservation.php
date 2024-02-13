@@ -364,4 +364,18 @@ class Reservation implements TimestampableEntityInterface
             'total' => 0
         ]);
     }
+    public function getRateTotalForCustomer(string $userId): array
+    {
+        return $this->getRates()->reduce(function (array $accumulator, Rate $rate) use ($userId): array {
+            if ($userId === $rate->getCustomer()?->getId()) {
+                ++$accumulator['count'];
+                $accumulator[ 'total' ] += $rate->getValue();
+            }
+
+            return $accumulator;
+        }, [
+            'count' => 0,
+            'total' => 0
+        ]);
+    }
 }
