@@ -16,7 +16,8 @@ use App\Entity\Trait\TimestampableTrait;
 use App\Enum\CompanyStatusEnum;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\CompanyRepository;
-use App\State\SearchCompaniesStateProvider;
+use App\State\CreateAndUpdateStateProcessor;
+use App\State\CreateCompanyStateProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -77,8 +78,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
         new Get(),
         new Post(
             denormalizationContext: ['groups' => ['company:post']],
-            security: 'user.isCompanyAdmin() && user.isActive()',
+            security: 'user.isCompanyAdmin()',
             securityMessage: 'Vous ne pouvez pas créer d\'établissement.',
+            processor: CreateCompanyStateProcessor::class,
         ),
         new Patch(
             denormalizationContext: ['groups' => ['company:update']],
@@ -130,7 +132,7 @@ class Company implements TimestampableEntityInterface
     #[Groups(['company:read', 'company:admin:read', 'user:companies:read'])]
     private Collection $services;
 
-    #[ORM\Column(length: 10, options: ['default' => CompanyStatusEnum::PENDING])]
+    #[ORM\Column(length: 10, options: ['default' => CompanyStatusEnum::PENDING->value])]
     #[Assert\Choice(
         choices: [
             CompanyStatusEnum::PENDING,
@@ -141,7 +143,7 @@ class Company implements TimestampableEntityInterface
         message: "Le status n'est pas valide"
     )]
     #[Groups(['company:read', 'admin:company:update', 'user:companies:read'])]
-    private ?CompanyStatusEnum $status = null;
+    private ?CompanyStatusEnum $status = CompanyStatusEnum::PENDING;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]
     #[Groups('company:admin:read', 'user:companies:read')]
