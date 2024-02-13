@@ -61,7 +61,7 @@ class Category implements TimestampableEntityInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:collection:read', 'company:read'])]
+    #[Groups(['company:collection:read', 'company:read', 'category:read'])]
     private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 30)]
