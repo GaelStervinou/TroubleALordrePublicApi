@@ -42,9 +42,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     uriTemplate: '/users/{id}/reservations',
     operations: [
         new GetCollection(
-            normalizationContext: ['groups' => ['reservation:read']],
-            security: 'user.isAdmin or id == user.getId()',
+            normalizationContext: ['groups' => ['user:reservation:read']],
+            security: 'user.isAdmin() or object.getCustomer() == user.getId()',
             securityMessage: "Vous n'avez pas accès à cette ressource",
+            name: Reservation::USER_RESERVATIONS_AS_CUSTOMERS,
         ),
     ],
     uriVariables: [
@@ -56,11 +57,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     uriTemplate: '/users/trouble-maker/{id}/reservations',
     operations: [
         new GetCollection(
-            normalizationContext: ['groups' => ['reservation:read']],
-            security: 'user.isAdmin()
-                        or (id == user.getId() and user.isTroubleMaker())
-                        or (user.isCompanyAdmin() and id == user.getCompany().getId())',
+            normalizationContext: ['groups' => ['user:reservation:read']],
+            security: 'user.isAdmin() or object.getTroubleMaker() == user.getId()',
             securityMessage: "Vous n'avez pas accès à cette ressource",
+            name: Reservation::USER_RESERVATIONS_AS_TROUBLE_MAKERS,
         ),
     ],
     uriVariables: [
@@ -101,11 +101,15 @@ class Reservation implements TimestampableEntityInterface
 {
     use TimestampableTrait;
 
+    public const USER_RESERVATIONS_AS_CUSTOMERS = 'users_reservations_as_customer';
+    public const USER_RESERVATIONS_AS_TROUBLE_MAKERS = 'users_reservations_as_trouble_maker';
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
+    #[Groups(['user:reservation:read'])]
     private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 255)]
@@ -123,7 +127,7 @@ class Reservation implements TimestampableEntityInterface
 
     #[ORM\Column()]
     #[Assert\GreaterThan('today', message: "La date ne peut pas être antérieure à aujourd'hui")]
-    #[Groups(['reservation:write', 'reservation:read'])]
+    #[Groups(['reservation:write', 'reservation:read', 'user:reservation:read'])]
     private ?\DateTimeImmutable $date = null;
 
     #[ORM\Column(length: 50, options: ['default' => ReservationStatusEnum::ACTIVE])]
@@ -136,20 +140,20 @@ class Reservation implements TimestampableEntityInterface
         ],
         message: "Le status n'est pas valide"
     )]
-    #[Groups(['reservation:update'])]
+    #[Groups(['reservation:update', 'user:reservation:read'])]
     private ?ReservationStatusEnum $status = null;
 
     #[ORM\Column()]
-    #[Groups(['reservation:read'])]
+    #[Groups(['reservation:read', 'user:reservation:read'])]
     private ?int $duration = null;
 
     #[ORM\Column]
-    #[Groups(['reservation:read'])]
+    #[Groups(['reservation:read', 'user:reservation:read'])]
     private ?float $price = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:read', 'reservation:write'])]
+    #[Groups(['reservation:read', 'reservation:write', 'user:reservation:read'])]
     private ?Service $service = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]

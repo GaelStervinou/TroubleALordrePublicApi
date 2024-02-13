@@ -102,7 +102,7 @@ class Company implements TimestampableEntityInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:collection:read'])]
+    #[Groups(['company:collection:read', 'user:reservation:read'])]
     private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 255)]
@@ -112,11 +112,11 @@ class Company implements TimestampableEntityInterface
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'service:read', 'reservation:read', 'user:companies:read', 'company:post'])]
+    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'service:read', 'reservation:read', 'user:companies:read', 'company:post', 'user:reservation:read'])]
     private ?string $name = null;
 
     #[ORM\ManyToOne]
-    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'company:update', 'service:read', 'reservation:read', 'user:companies:read', 'company:post'])]
+    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'company:update', 'service:read', 'reservation:read', 'user:companies:read', 'company:post', 'user:reservation:read'])]
     private ?Media $mainMedia = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Media::class)]
@@ -149,15 +149,15 @@ class Company implements TimestampableEntityInterface
     private Collection $users;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post', 'user:reservation:read'])]
     private ?string $address = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post', 'user:reservation:read'])]
     private ?string $zipCode = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post', 'user:reservation:read'])]
     private ?string $city = null;
 
     #[ORM\Column]

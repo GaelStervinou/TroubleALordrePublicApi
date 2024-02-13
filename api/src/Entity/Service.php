@@ -59,12 +59,12 @@ class Service implements TimestampableEntityInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups('company:read', 'rate:by-user:read')]
+    #[Groups(['company:read', 'rate:by-user:read', 'user:reservation:read'])]
     private ?UuidInterface $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'services')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['service:read', 'service:write', 'reservation:read'])]
+    #[Groups(['service:read', 'service:write', 'reservation:read', 'user:reservation:read'])]
     private ?Company $company = null;
 
     #[ORM\Column]
@@ -79,7 +79,7 @@ class Service implements TimestampableEntityInterface
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['service:read', 'service:write', 'reservation:read', 'company:read', 'rate:by-user:read'])]
+    #[Groups(['service:read', 'service:write', 'reservation:read', 'company:read', 'rate:by-user:read', 'user:reservation:read'])]
     private ?string $name = null;
 
     #[ORM\Column()]
@@ -88,7 +88,7 @@ class Service implements TimestampableEntityInterface
         min: 300,
         max: 86400
     )]
-    #[Groups(['service:read', 'service:write', 'company:read'])]
+    #[Groups(['service:read', 'service:write', 'company:read', 'user:reservation:read'])]
     private ?int $duration = null;
 
     #[ORM\Column(type: Types::TEXT)]
