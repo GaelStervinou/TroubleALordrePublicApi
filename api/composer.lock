@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b0098568f0d9f8f87ca992a9d5f5e865",
+    "content-hash": "1c3ff9dc1d941f13a96a1ba68d5c15f7",
     "packages": [
         {
             "name": "api-platform/core",
@@ -1824,17 +1824,17 @@
             "time": "2023-02-15T13:44:18+00:00"
         },
         {
-            "name": "jsor/doctrine-postgis",
-            "version": "v2.2.0",
+            "name": "jsor-gael-stervinou/doctrine-postgis",
+            "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jsor/doctrine-postgis.git",
-                "reference": "be9bf2b66633621164dcb26c8f0d01701a950fa5"
+                "url": "https://github.com/GaelStervinou/doctrine-postgis.git",
+                "reference": "7c9ad234ce820b0dc33d891f2659062d9d67498c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jsor/doctrine-postgis/zipball/be9bf2b66633621164dcb26c8f0d01701a950fa5",
-                "reference": "be9bf2b66633621164dcb26c8f0d01701a950fa5",
+                "url": "https://api.github.com/repos/GaelStervinou/doctrine-postgis/zipball/7c9ad234ce820b0dc33d891f2659062d9d67498c",
+                "reference": "7c9ad234ce820b0dc33d891f2659062d9d67498c",
                 "shasum": ""
             },
             "require": {
@@ -1852,6 +1852,7 @@
             "suggest": {
                 "doctrine/orm": "For using with the Doctrine ORM"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -1888,10 +1889,9 @@
                 "spatial"
             ],
             "support": {
-                "issues": "https://github.com/jsor/doctrine-postgis/issues",
-                "source": "https://github.com/jsor/doctrine-postgis/tree/v2.2.0"
+                "source": "https://github.com/GaelStervinou/doctrine-postgis/tree/main"
             },
-            "time": "2023-04-26T20:17:57+00:00"
+            "time": "2024-02-13T09:10:24+00:00"
         },
         {
             "name": "lcobucci/clock",
@@ -9837,7 +9837,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "jsor-gael-stervinou/doctrine-postgis": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
