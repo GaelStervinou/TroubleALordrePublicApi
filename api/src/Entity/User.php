@@ -591,7 +591,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
 
     public function isCompanyAdmin(): bool
     {
-        return in_array(UserRolesEnum::COMPANY_ADMIN->value, $this->getRoles(), true) && $this->getCompany()?->isActive();
+        return in_array(UserRolesEnum::COMPANY_ADMIN->value, $this->getRoles(), true);
     }
 
     public function getCompany(): ?Company

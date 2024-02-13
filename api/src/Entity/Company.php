@@ -25,19 +25,18 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Attribute\Groups;
 
-#[
-    ApiResource(
-        uriTemplate: '/companies/{id}/services',
-        operations: [
-            new GetCollection(
-                normalizationContext: ['groups' => ['service:read']],
-            ),
-        ],
-        uriVariables: [
-            'id' => new Link(fromProperty: 'services', fromClass: Company::class)
-        ],
-        order: ['createdAt' => 'DESC']
-    )]
+#[ApiResource(
+    uriTemplate: '/companies/{id}/services',
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['service:read']],
+        ),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'services', fromClass: Company::class)
+    ],
+    order: ['createdAt' => 'DESC']
+)]
 #[ApiResource(
     uriTemplate: '/users/{id}/owned-companies',
     operations: [
