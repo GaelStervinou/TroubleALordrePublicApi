@@ -39,8 +39,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(),
         new Get(),
         new Post(
-            security: '(user.isCompanyAdmin() and object.getCompany() == user.getCompany() and object.getCompany().isActive())
-                        or user.isAdmin()'
+            security: 'is_granted("SERVICE_CREATE")'
         ),
         new Patch(
             security: 'user.isCompanyAdmin() and object.getCompany() == user.getCompany()'
@@ -107,16 +106,10 @@ class Service implements TimestampableEntityInterface
     #[ORM\OneToMany(mappedBy: 'service', targetEntity: Rate::class)]
     private Collection $rates;
 
-    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'service')]
-    #[Groups(['service:read', 'service:write'])]
-    private Collection $users;
-
     public function __construct()
     {
-        $this->cities = new ArrayCollection();
         $this->reservations = new ArrayCollection();
         $this->rates = new ArrayCollection();
-        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?UuidInterface
@@ -239,33 +232,6 @@ class Service implements TimestampableEntityInterface
             if ($rate->getService() === $this) {
                 $rate->setService(null);
             }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUsers(): Collection
-    {
-        return $this->users;
-    }
-
-    public function addUser(User $user): static
-    {
-        if (!$this->users->contains($user)) {
-            $this->users->add($user);
-            $user->addService($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): static
-    {
-        if ($this->users->removeElement($user)) {
-            $user->removeService($this);
         }
 
         return $this;

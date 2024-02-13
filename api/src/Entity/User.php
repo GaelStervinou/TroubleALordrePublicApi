@@ -166,9 +166,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     #[ORM\OneToMany(mappedBy: 'troubleMaker', targetEntity: Availibility::class)]
     private Collection $availibilities;
 
-    #[ORM\ManyToMany(targetEntity: Service::class, inversedBy: 'users')]
-    private Collection $service;
-
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Company $company = null;
 
@@ -200,7 +197,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         $this->rates = new ArrayCollection();
         $this->unavailibilities = new ArrayCollection();
         $this->availibilities = new ArrayCollection();
-        $this->service = new ArrayCollection();
         $this->ownedCompanies = new ArrayCollection();
     }
 
@@ -546,30 +542,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
                 $availibility->setTroubleMaker(null);
             }
         }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Service>
-     */
-    public function getService(): Collection
-    {
-        return $this->service;
-    }
-
-    public function addService(Service $service): static
-    {
-        if (!$this->service->contains($service)) {
-            $this->service->add($service);
-        }
-
-        return $this;
-    }
-
-    public function removeService(Service $service): static
-    {
-        $this->service->removeElement($service);
 
         return $this;
     }
