@@ -48,9 +48,6 @@ use Symfony\Component\Validator\Constraints as Assert;
             securityPostDenormalize: "is_granted('SERVICE_EDIT', object)",
             processor: CreateAndUpdateStateProcessor::class,
         ),
-        new Delete(
-            securityPostDenormalize: 'user.isAdmin() or object.getCompany().getOwner() == user'
-        ),
     ],
     normalizationContext: ['groups' => ['service:read']],
     denormalizationContext: ['groups' => ['service:write']],
