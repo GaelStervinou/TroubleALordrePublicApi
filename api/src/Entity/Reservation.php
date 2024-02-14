@@ -119,7 +119,7 @@ class Reservation implements TimestampableEntityInterface
         minMessage: "La description doit avoir au moins {{ limit }} caractères",
         maxMessage: "La description ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['reservation:read'])]
+    #[Groups(['reservation:read', 'reservation:write'])]
     private ?string $description = null;
 
     #[ORM\Column()]
@@ -141,11 +141,11 @@ class Reservation implements TimestampableEntityInterface
     private ?ReservationStatusEnum $status = null;
 
     #[ORM\Column()]
-    #[Groups(['reservation:read', 'user:reservation:read'])]
+    #[Groups(['reservation:read', 'user:reservation:read', 'reservation:write'])]
     private ?int $duration = null;
 
     #[ORM\Column]
-    #[Groups(['reservation:read', 'user:reservation:read'])]
+    #[Groups(['reservation:read', 'user:reservation:read', 'reservation:write'])]
     private ?float $price = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
