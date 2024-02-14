@@ -13,7 +13,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\TimestampableTrait;
 use App\Interface\TimestampableEntityInterface;
-use App\Repository\AvailibilityRepository;
+use App\Repository\AvailabilityRepository;
 use App\State\CreateAndUpdateStateProcessor;
 use App\State\CreateAvailabilityStateProcessor;
 use App\State\UserAvailabilitiesStateProvider;
@@ -25,17 +25,15 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: AvailibilityRepository::class)]
+#[ORM\Entity(repositoryClass: AvailabilityRepository::class)]
 #[UniqueEntity(fields: ['day', 'company'], message: "Vous ne pouvez renseigner qu'un horaire journalier par établissement et par jour")]
 #[ApiResource(
     operations: [
         new Post(
-            uriTemplate: '/availabilities',
             securityPostDenormalize: "is_granted('AVAILABILITY_CREATE', object)",
             processor: CreateAndUpdateStateProcessor::class,
         ),
         new Patch(
-            uriTemplate: '/availabilities',
             denormalizationContext: ['groups' => ['availability:update']],
             securityPostDenormalize: 'user.isCompanyAdmin() and object.getTroubleMaker().getCompany().getOwner() == user',
             processor: CreateAndUpdateStateProcessor::class,
@@ -48,7 +46,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: ['groups' => ['availability:write']],
     order: ['createdAt' => 'DESC'],
 )]
-class Availibility implements TimestampableEntityInterface
+class Availability implements TimestampableEntityInterface
 {
     use TimestampableTrait;
 

@@ -12,13 +12,13 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\TimestampableTrait;
 use App\Interface\TimestampableEntityInterface;
-use App\Repository\UnavailibilityRepository;
+use App\Repository\UnavailabilityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: UnavailibilityRepository::class)]
+#[ORM\Entity(repositoryClass: UnavailabilityRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(),
@@ -40,7 +40,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 or (user.isCompanyAdmin() and object.getTroubleMaker().getCompany() == user.getCompany()) 
                 or user.isAdmin()'
 )]
-class Unavailibility implements TimestampableEntityInterface
+class Unavailability implements TimestampableEntityInterface
 {
     use TimestampableTrait;
 

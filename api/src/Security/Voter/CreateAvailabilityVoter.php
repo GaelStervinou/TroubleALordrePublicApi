@@ -2,7 +2,7 @@
 
 namespace App\Security\Voter;
 
-use App\Entity\Availibility;
+use App\Entity\Availability;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -15,7 +15,7 @@ class CreateAvailabilityVoter extends Voter
     protected function supports(string $attribute, mixed $subject): bool
     {
         return self::CREATE === $attribute
-            && $subject instanceof Availibility;
+            && $subject instanceof Availability;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -26,7 +26,7 @@ class CreateAvailabilityVoter extends Voter
         if (!$user instanceof UserInterface) {
             return false;
         }
-        /**@var $subject Availibility */
+        /**@var $subject Availability */
         $company = $subject->getCompany();
         $troubleMaker = $subject->getTroubleMaker();
         if ($company && (

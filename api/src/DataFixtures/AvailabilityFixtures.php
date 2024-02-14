@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Availibility;
+use App\Entity\Availability;
 use App\Entity\Company;
 use DateInterval;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -11,7 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use function Symfony\Component\Clock\now;
 
-class AvailibilityFixtures extends Fixture implements DependentFixtureInterface
+class AvailabilityFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -19,7 +19,7 @@ class AvailibilityFixtures extends Fixture implements DependentFixtureInterface
         $companies = $manager->getRepository(Company::class)->findAll();
         foreach ($companies as $company) {
             for ($i=1; $i<=7;$i++) {
-                $availibility = (new Availibility())
+                $availibility = (new Availability())
                     ->setCompany($company)
                     ->setDay($i)
                     ->setCompanyStartTime('08:30')
@@ -35,7 +35,7 @@ class AvailibilityFixtures extends Fixture implements DependentFixtureInterface
                     $hours = random_int(1, 8);
                     $endDate = $startDate->add(new DateInterval("PT{$hours}H"));
 
-                    $availibility = (new Availibility())
+                    $availibility = (new Availability())
                         ->setTroubleMaker($troubleMaker)
                         ->setStartTime($startDate)
                         ->setEndTime($endDate)

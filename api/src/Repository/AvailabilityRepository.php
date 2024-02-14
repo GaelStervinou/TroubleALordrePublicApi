@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Availibility;
+use App\Entity\Availability;
 use App\Entity\Company;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -12,20 +12,20 @@ use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Availibility>
+ * @extends ServiceEntityRepository<Availability>
  *
- * @method Availibility|null find($id, $lockMode = null, $lockVersion = null)
- * @method Availibility|null findOneBy(array $criteria, array $orderBy = null)
- * @method Availibility[]    findAll()
- * @method Availibility[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Availability|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Availability|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Availability[]    findAll()
+ * @method Availability[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AvailibilityRepository extends ServiceEntityRepository
+class AvailabilityRepository extends ServiceEntityRepository
 {
     public const DEFAULT_PAGINATION_LIMIT = 7;
 
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Availibility::class);
+        parent::__construct($registry, Availability::class);
     }
 
     public function getTroubleMakerAvailabilityFromDateToDate(

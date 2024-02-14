@@ -152,7 +152,7 @@ class Company implements TimestampableEntityInterface
     #[Groups(['company:collection:read', 'company:admin:read', 'company:read', 'user:companies:read', 'company:post'])]
     private Collection $categories;
 
-    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Availibility::class)]
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Availability::class)]
     private Collection $availibilities;
 
     #[ORM\ManyToOne(inversedBy: 'ownedCompanies')]
@@ -492,14 +492,14 @@ class Company implements TimestampableEntityInterface
     }
 
     /**
-     * @return Collection<int, Availibility>
+     * @return Collection<int, Availability>
      */
     public function getAvailibilities(): Collection
     {
         return $this->availibilities;
     }
 
-    public function addAvailibility(Availibility $availibility): static
+    public function addAvailibility(Availability $availibility): static
     {
         if (!$this->availibilities->contains($availibility)) {
             $this->availibilities->add($availibility);
@@ -509,7 +509,7 @@ class Company implements TimestampableEntityInterface
         return $this;
     }
 
-    public function removeAvailibility(Availibility $availibility): static
+    public function removeAvailibility(Availability $availibility): static
     {
         if ($this->availibilities->removeElement($availibility)) {
             // set the owning side to null (unless already changed)

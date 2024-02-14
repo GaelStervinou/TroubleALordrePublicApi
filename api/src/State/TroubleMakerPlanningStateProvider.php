@@ -8,14 +8,14 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\Pagination\Pagination;
 use ApiPlatform\State\ProviderInterface;
 use App\ApiResource\Planning;
-use App\Entity\Availibility;
+use App\Entity\Availability;
 use App\Entity\Reservation;
 use App\Entity\Service;
-use App\Entity\Unavailibility;
+use App\Entity\Unavailability;
 use App\Entity\User;
-use App\Repository\AvailibilityRepository;
+use App\Repository\AvailabilityRepository;
 use App\Repository\ReservationRepository;
-use App\Repository\UnavailibilityRepository;
+use App\Repository\UnavailabilityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
@@ -48,13 +48,13 @@ class TroubleMakerPlanningStateProvider implements ProviderInterface
         }
         $offset = $this->pagination->getOffset($operation, $context);
         /**
-         * @var $availibilityRepository AvailibilityRepository
+         * @var $availibilityRepository AvailabilityRepository
          */
-        $availibilityRepository = $this->entityManager->getRepository(Availibility::class);
+        $availibilityRepository = $this->entityManager->getRepository(Availability::class);
         /**
-         * @var $unavailabilitiesRepository UnavailibilityRepository
+         * @var $unavailabilitiesRepository UnavailabilityRepository
          */
-        $unavailabilitiesRepository = $this->entityManager->getRepository(Unavailibility::class);
+        $unavailabilitiesRepository = $this->entityManager->getRepository(Unavailability::class);
         /**
          * @var $reservationRepository ReservationRepository
          */
@@ -107,7 +107,7 @@ class TroubleMakerPlanningStateProvider implements ProviderInterface
         }
 
         /**
-         * @var $unavailability Unavailibility
+         * @var $unavailability Unavailability
          */
         foreach ($userUnavailabilities as $unavailability) {
             $startTime = $unavailability->getStartTime();
@@ -125,7 +125,7 @@ class TroubleMakerPlanningStateProvider implements ProviderInterface
         $shifts = [];
 
         /**
-         * @var $availability Availibility
+         * @var $availability Availability
          */
         $minAndMaxTimes = [];
         $doneDays = [];

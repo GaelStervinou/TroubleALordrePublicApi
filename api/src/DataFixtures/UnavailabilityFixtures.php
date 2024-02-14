@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Unavailibility;
+use App\Entity\Unavailability;
 use App\Entity\User;
 use DateInterval;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -25,7 +25,7 @@ class UnavailabilityFixtures extends Fixture implements DependentFixtureInterfac
                 $hours = random_int(1, 8);
                 $endDate = $startDate->add(new DateInterval("PT{$hours}H"));
 
-                $unavailability = (new Unavailibility())
+                $unavailability = (new Unavailability())
                     ->setTroubleMaker($troubleMaker)
                     ->setStartTime($startDate)
                     ->setEndTime($endDate)

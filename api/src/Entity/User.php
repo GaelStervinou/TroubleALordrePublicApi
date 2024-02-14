@@ -160,10 +160,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Rate::class)]
     private Collection $rates;
 
-    #[ORM\OneToMany(mappedBy: 'troubleMaker', targetEntity: Unavailibility::class)]
+    #[ORM\OneToMany(mappedBy: 'troubleMaker', targetEntity: Unavailability::class)]
     private Collection $unavailibilities;
 
-    #[ORM\OneToMany(mappedBy: 'troubleMaker', targetEntity: Availibility::class)]
+    #[ORM\OneToMany(mappedBy: 'troubleMaker', targetEntity: Availability::class)]
     private Collection $availibilities;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
@@ -486,14 +486,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     }
 
     /**
-     * @return Collection<int, Unavailibility>
+     * @return Collection<int, Unavailability>
      */
     public function getUnavailibilities(): Collection
     {
         return $this->unavailibilities;
     }
 
-    public function addUnavailibility(Unavailibility $unavailibility): static
+    public function addUnavailibility(Unavailability $unavailibility): static
     {
         if (!$this->unavailibilities->contains($unavailibility)) {
             $this->unavailibilities->add($unavailibility);
@@ -503,7 +503,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         return $this;
     }
 
-    public function removeUnavailibility(Unavailibility $unavailibility): static
+    public function removeUnavailibility(Unavailability $unavailibility): static
     {
         if ($this->unavailibilities->removeElement($unavailibility)) {
             // set the owning side to null (unless already changed)
@@ -516,14 +516,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     }
 
     /**
-     * @return Collection<int, Availibility>
+     * @return Collection<int, Availability>
      */
     public function getAvailibilities(): Collection
     {
         return $this->availibilities;
     }
 
-    public function addAvailibility(Availibility $availibility): static
+    public function addAvailibility(Availability $availibility): static
     {
         if (!$this->availibilities->contains($availibility)) {
             $this->availibilities->add($availibility);
@@ -533,7 +533,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         return $this;
     }
 
-    public function removeAvailibility(Availibility $availibility): static
+    public function removeAvailibility(Availability $availibility): static
     {
         if ($this->availibilities->removeElement($availibility)) {
             // set the owning side to null (unless already changed)

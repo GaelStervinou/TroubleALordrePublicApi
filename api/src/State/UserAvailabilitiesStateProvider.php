@@ -9,9 +9,9 @@ use ApiPlatform\State\Pagination\Pagination;
 use ApiPlatform\State\ProviderInterface;
 use ApiPlatform\Validator\Exception\ValidationException;
 use App\ApiResource\Planning;
-use App\Entity\Availibility;
+use App\Entity\Availability;
 use App\Entity\User;
-use App\Repository\AvailibilityRepository;
+use App\Repository\AvailabilityRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -48,9 +48,9 @@ class UserAvailabilitiesStateProvider implements ProviderInterface
         }
 
         /**
-         * @var $availibilityRepository AvailibilityRepository
+         * @var $availibilityRepository AvailabilityRepository
          */
-        $availibilityRepository = $this->entityManager->getRepository(Availibility::class);
+        $availibilityRepository = $this->entityManager->getRepository(Availability::class);
 
         $offset = $this->pagination->getOffset($operation, $context);
         $dateFrom = (new \DateTimeImmutable())->setTime(0, 0)->add(new \DateInterval("P{$offset}D"));
@@ -81,7 +81,7 @@ class UserAvailabilitiesStateProvider implements ProviderInterface
         $shifts = [];
 
         /**
-         * @var $availability Availibility
+         * @var $availability Availability
          */
         $minAndMaxTimes = [];
         $doneDays = [];
