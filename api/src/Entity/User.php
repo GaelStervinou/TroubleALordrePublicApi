@@ -84,7 +84,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:read', 'user:read', 'company:admin:read', 'rate:by-user:read', 'company:dashboard:read', 'invitation:read', 'reservation:read'])]
+    #[Groups(['company:read', 'user:read', 'company:admin:read', 'rate:by-user:read', 'company:dashboard:read', 'invitation:read', 'reservation:read', 'user:admin:read'])]
     private ?UuidInterface $id = null;
     #[Assert\NotBlank]
     #[Assert\Email]
@@ -113,7 +113,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     private ?string $verifyPassword = null;
 
     #[ORM\Column(type: 'json')]
-    #[Groups(['user:read', 'reservation:read'])]
+    #[Groups(['user:read', 'reservation:read', 'user:admin:read'])]
     private array $roles = [];
 
     #[ORM\Column(length: 50)]
@@ -124,7 +124,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         minMessage: 'Votre prénom doit faire 2 caractères minimum.',
         maxMessage: 'Votre prénom doit faire 50 caractères maximum.',
     )]
-    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read', 'company:read', 'company:admin:read', 'rate:by-user:read', 'company:dashboard:read', 'user:reservation:read', 'invitation:read'])]
+    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read', 'company:read', 'company:admin:read', 'rate:by-user:read', 'company:dashboard:read', 'user:reservation:read', 'invitation:read', 'user:admin:read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 80)]
@@ -135,11 +135,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         minMessage: 'Votre nom doit faire 2 caractères minimum.',
         maxMessage: 'Votre nom doit faire 80 caractères maximum.',
     )]
-    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read', 'company:read', 'company:admin:read', 'rate:by-user:read', 'company:dashboard:read', 'user:reservation:read', 'invitation:read'])]
+    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read', 'company:read', 'company:admin:read', 'rate:by-user:read', 'company:dashboard:read', 'user:reservation:read', 'invitation:read', 'user:admin:read'])]
     private ?string $lastname = null;
 
     #[ORM\Column (options: ['default' => UserStatusEnum::USER_STATUS_PENDING])]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:admin:read'])]
     private ?UserStatusEnum $status = null;
 
     #[ORM\Column(length: 255, nullable: true)]
