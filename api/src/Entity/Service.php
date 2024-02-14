@@ -12,6 +12,7 @@ use ApiPlatform\Metadata\Post;
 use App\Entity\Trait\TimestampableTrait;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\ServiceRepository;
+use App\State\CreateAndUpdateStateProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -21,15 +22,14 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
-    uriTemplate: '/users/{id}/services',
+    uriTemplate: '/companies/{id}/services',
     operations: [
         new GetCollection(
             normalizationContext: ['groups' => ['service:read']],
-            securityMessage: "Vous n'avez pas accès à cette ressource",
         ),
     ],
     uriVariables: [
-        'id' => new Link(fromProperty: 'services', fromClass: User::class)
+        'id' => new Link(fromProperty: 'services', fromClass: Company::class)
     ],
     order: ['createdAt' => 'DESC']
 )]
@@ -39,10 +39,13 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(),
         new Get(),
         new Post(
-            security: 'is_granted("SERVICE_CREATE")'
+            securityPostDenormalize: "is_granted('SERVICE_CREATE', object)",
+            processor: CreateAndUpdateStateProcessor::class,
         ),
         new Patch(
-            security: 'user.isCompanyAdmin() and object.getCompany() == user.getCompany()'
+            denormalizationContext: ['groups' => ['service:update']],
+            securityPostDenormalize: "is_granted('SERVICE_EDIT', object)",
+            processor: CreateAndUpdateStateProcessor::class,
         )
     ],
     normalizationContext: ['groups' => ['service:read']],
@@ -68,7 +71,7 @@ class Service implements TimestampableEntityInterface
 
     #[ORM\Column]
     #[Assert\PositiveOrZero]
-    #[Groups(['service:read', 'service:write', 'company:read'])]
+    #[Groups(['service:read', 'service:write', 'company:read', 'service:update'])]
     private ?float $price = null;
 
     #[ORM\Column(length: 255)]
@@ -78,7 +81,7 @@ class Service implements TimestampableEntityInterface
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['service:read', 'service:write', 'reservation:read', 'company:read', 'rate:by-user:read', 'user:reservation:read'])]
+    #[Groups(['service:read', 'service:write', 'reservation:read', 'company:read', 'rate:by-user:read', 'user:reservation:read', 'service:update'])]
     private ?string $name = null;
 
     #[ORM\Column()]
@@ -87,7 +90,7 @@ class Service implements TimestampableEntityInterface
         min: 300,
         max: 86400
     )]
-    #[Groups(['service:read', 'service:write', 'company:read', 'user:reservation:read'])]
+    #[Groups(['service:read', 'service:write', 'company:read', 'user:reservation:read', 'service:update'])]
     private ?int $duration = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -97,7 +100,7 @@ class Service implements TimestampableEntityInterface
         minMessage: "La description doit avoir au moins {{ limit }} caractères",
         maxMessage: "La description ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['service:read', 'service:write', 'company:read'])]
+    #[Groups(['service:read', 'service:write', 'company:read', 'service:update'])]
     private ?string $description = null;
 
     #[ORM\OneToMany(mappedBy: 'service', targetEntity: Reservation::class)]

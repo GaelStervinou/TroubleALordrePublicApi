@@ -33,7 +33,7 @@ class ReservationFixtures extends Fixture implements DependentFixtureInterface
 
                 $serviceTroubleMakers = $service->getCompany()->getUsers();
 
-                $randomValue = random_int(0, 3);
+                $randomValue = random_int(1, 2);
 
                 for ($i = 0; $i < $randomValue; $i++) {
                     $reservation = new Reservation();
@@ -51,27 +51,23 @@ class ReservationFixtures extends Fixture implements DependentFixtureInterface
                         ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')));
 
                     $manager->persist($reservation);
+
+                    $troubleMakerReservation = new Reservation();
+                    $troubleMakerReservation->setCustomer($faker->randomElement($serviceTroubleMakers))
+                        ->setService($service)
+                        ->setTroubleMaker($faker->randomElement($serviceTroubleMakers))
+                        ->setAddress($faker->address)
+                        ->setPrice($service->getPrice())
+                        ->setDuration($service->getDuration())
+                        ->setStatus($faker->randomElement($status))
+                        ->setPaymentIntentId($faker->regexify('[A-Z]{2}[0-9]{3}'))
+                        ->setDescription($service->getDescription())
+                        ->setDate(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '+ 5 days')))
+                        ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')))
+                        ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')));
+
                 }
             }
-        }
-
-        foreach ($services as $service) {
-            $serviceTroubleMakers = $service->getCompany()->getUsers();
-            $troubleMakerReservation = new Reservation();
-            $troubleMakerReservation->setCustomer($faker->randomElement($troubleMakers))
-                ->setService($service)
-                ->setTroubleMaker($serviceTroubleMakers->first())
-                ->setAddress($faker->address)
-                ->setPrice($service->getPrice())
-                ->setDuration($service->getDuration())
-                ->setStatus($faker->randomElement($status))
-                ->setPaymentIntentId($faker->regexify('[A-Z]{2}[0-9]{3}'))
-                ->setDescription($service->getDescription())
-                ->setDate(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '+ 5 days')))
-                ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')))
-                ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 months')));
-
-            $manager->persist($troubleMakerReservation);
         }
 
         $manager->flush();

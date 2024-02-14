@@ -38,12 +38,12 @@ final readonly class RatesAboutUserExtension implements QueryCollectionExtension
         }
         if (Rate::USER_RATES_AS_CUSTOMER_OPERATION_NAME === $operation->getName()) {
             $rootAlias = $queryBuilder->getRootAliases()[0];
-            $queryBuilder->orWhere(sprintf('%s.createdBy <> :searchedUserId AND %s.customer = :searchedUserId', $rootAlias, $rootAlias));
+            $queryBuilder->orWhere(sprintf('%s.isTroubleMakerRated = FALSE AND %s.rated = :searchedUserId', $rootAlias, $rootAlias));
             $queryBuilder->setParameter('searchedUserId',$userId );
         } elseif (Rate::USER_RATES_AS_TROUBLE_MAKER_OPERATION_NAME === $operation->getName()) {
             $rootAlias = $queryBuilder->getRootAliases()[0];
             $queryBuilder->leftJoin(Reservation::class, 'r', Join::WITH, sprintf('%s.reservation = r.id', $rootAlias));
-            $queryBuilder->orWhere(sprintf('%s.createdBy <> :searchedUserId AND r.troubleMaker = :searchedUserId', $rootAlias));
+            $queryBuilder->orWhere(sprintf('%s.isTroubleMakerRated = TRUE AND %s.rated = :searchedUserId', $rootAlias, $rootAlias));
             $queryBuilder->setParameter('searchedUserId',$userId );
         }
     }

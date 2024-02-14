@@ -467,7 +467,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     {
         if (!$this->rates->contains($rate)) {
             $this->rates->add($rate);
-            $rate->setCustomer($this);
+            $rate->setRated($this);
         }
 
         return $this;
@@ -477,8 +477,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     {
         if ($this->rates->removeElement($rate)) {
             // set the owning side to null (unless already changed)
-            if ($rate->getCustomer() === $this) {
-                $rate->setCustomer(null);
+            if ($rate->getRated() === $this) {
+                $rate->setRated(null);
             }
         }
 
@@ -605,7 +605,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     private function getTroubleMakerRatesTotalAndCount(): array
     {
         return $this->getReservationsTroubleMaker()->reduce(function (array $accumulator, Reservation $reservation): array {
-            $reservationRates = $reservation->getRateTotalForTroubleMaker($this->getId());
+            $reservationRates = $reservation->getRateTotalForTroubleMaker();
             $accumulator[ 'count' ] += $reservationRates['count'];
             $accumulator[ 'total' ] += $reservationRates[ 'total' ];
             return $accumulator;
@@ -669,7 +669,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     private function getCustomerRatesTotalAndCount(): array
     {
         return $this->getReservations()->reduce(function (array $accumulator, Reservation $reservation): array {
-            $reservationRates = $reservation->getRateTotalForCustomer($this->getId());
+            $reservationRates = $reservation->getRateTotalForCustomer();
             $accumulator[ 'count' ] += $reservationRates['count'];
             $accumulator[ 'total' ] += $reservationRates[ 'total' ];
             return $accumulator;

@@ -101,7 +101,7 @@ class Rate implements TimestampableEntityInterface, BlameableEntityInterface
     #[ORM\ManyToOne(inversedBy: 'rates')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['rate:read', 'rate:write', 'reservation:read', 'user:read', 'company:read'])]
-    private ?User $customer = null;
+    private ?User $rated = null;
 
     #[ORM\ManyToOne(inversedBy: 'rates')]
     #[ORM\JoinColumn(nullable: false)]
@@ -115,6 +115,9 @@ class Rate implements TimestampableEntityInterface, BlameableEntityInterface
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['rate:by-user:read', 'company:read'])]
     private ?string $content = null;
+
+    #[ORM\Column]
+    private ?bool $isTroubleMakerRated = null;
 
     public function getId(): ?UuidInterface
     {
@@ -133,14 +136,14 @@ class Rate implements TimestampableEntityInterface, BlameableEntityInterface
         return $this;
     }
 
-    public function getCustomer(): ?User
+    public function getRated(): ?User
     {
-        return $this->customer;
+        return $this->rated;
     }
 
-    public function setCustomer(?User $customer): static
+    public function setRated(?User $rated): static
     {
-        $this->customer = $customer;
+        $this->rated = $rated;
 
         return $this;
     }
@@ -171,7 +174,7 @@ class Rate implements TimestampableEntityInterface, BlameableEntityInterface
 
     public function isCustomerRate(): bool
     {
-        return $this->getCustomer() === $this->reservation->getCustomer();
+        return $this->isTroubleMakerRated();
     }
 
     public function getContent(): ?string
@@ -182,6 +185,18 @@ class Rate implements TimestampableEntityInterface, BlameableEntityInterface
     public function setContent(?string $content): static
     {
         $this->content = $content;
+
+        return $this;
+    }
+
+    public function isTroubleMakerRated(): ?bool
+    {
+        return $this->isTroubleMakerRated;
+    }
+
+    public function setIsTroubleMakerRated(bool $isTroubleMakerRated): static
+    {
+        $this->isTroubleMakerRated = $isTroubleMakerRated;
 
         return $this;
     }

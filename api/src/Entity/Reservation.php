@@ -347,10 +347,10 @@ class Reservation implements TimestampableEntityInterface
         return $this;
     }
 
-    public function getRateTotalForTroubleMaker(string $userId): array
+    public function getRateTotalForTroubleMaker(): array
     {
-        return $this->getRates()->reduce(function (array $accumulator, Rate $rate) use ($userId): array {
-            if ($userId !== $rate->getCustomer()?->getId()) {
+        return $this->getRates()->reduce(function (array $accumulator, Rate $rate): array {
+            if ($rate->isTroubleMakerRated()) {
                 ++$accumulator['count'];
                 $accumulator[ 'total' ] += $rate->getValue();
             }
@@ -361,10 +361,11 @@ class Reservation implements TimestampableEntityInterface
             'total' => 0
         ]);
     }
-    public function getRateTotalForCustomer(string $userId): array
+    //TODO changer customer_id par rated_id + is_trouble_maker_rated à false qd on note le customer ==> comme ça on a toujours l'id de la même concernée par la note. Donc fixer tout le reste qui en dépend ( les routes users/id/rates etc )
+    public function getRateTotalForCustomer(): array
     {
-        return $this->getRates()->reduce(function (array $accumulator, Rate $rate) use ($userId): array {
-            if ($userId === $rate->getCustomer()?->getId()) {
+        return $this->getRates()->reduce(function (array $accumulator, Rate $rate): array {
+            if (!$rate->isTroubleMakerRated()) {
                 ++$accumulator['count'];
                 $accumulator[ 'total' ] += $rate->getValue();
             }
