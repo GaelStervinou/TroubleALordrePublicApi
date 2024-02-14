@@ -48,22 +48,7 @@ use Symfony\Component\Validator\Constraints\Choice;
     operations: [
         new GetCollection(
             normalizationContext: ['groups' => ['invitation:read']],
-            security: 'user.isAdmin() 
-                or (object == user.getCompany() and user.isCompanyAdmin())'
-        ),
-    ],
-    uriVariables: [
-        'id' => new Link(fromProperty: 'invitations', fromClass: Company::class)
-    ],
-    order: ['createdAt' => 'DESC']
-)]
-#[ApiResource(
-    uriTemplate: '/companies/{id}/invitations',
-    operations: [
-        new GetCollection(
-            normalizationContext: ['groups' => ['rate:read']],
-            security: 'user.isCompanyAdmin() and  in user.getOwnedCompanies().toArray()',
-            securityMessage: "Vous n'avez pas accès à cette ressource",
+            name: self::COMPANY_INVITATIONS_ROUTE_NAME,
         ),
     ],
     uriVariables: [
@@ -84,7 +69,7 @@ use Symfony\Component\Validator\Constraints\Choice;
         ),
         new Post(
             securityMessage: "Vous ne pouvez pas créer d'invitations",
-            securityPostDenormalize: '(user.isAdmin() 
+            securityPostDenormalize: '(user.isAdmin()
                 or (object.getCompany().getOwner() === user))
                 and object.getCompany().isActive()',
             processor: CreateInvitationStateProcessor::class,
@@ -104,6 +89,7 @@ class Invitation implements TimestampableEntityInterface, SoftDeleteInterface
     use TimestampableTrait;
     use SoftDeleteTrait;
     public const MY_INVITATIONS_ROUTE_NAME = 'users_my_invitations';
+    public const COMPANY_INVITATIONS_ROUTE_NAME = 'companies_invitations';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
@@ -46,7 +47,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             denormalizationContext: ['groups' => ['service:update']],
             securityPostDenormalize: "is_granted('SERVICE_EDIT', object)",
             processor: CreateAndUpdateStateProcessor::class,
-        )
+        ),
+        new Delete(),
     ],
     normalizationContext: ['groups' => ['service:read']],
     denormalizationContext: ['groups' => ['service:write']],
