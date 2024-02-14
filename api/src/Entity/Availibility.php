@@ -14,6 +14,7 @@ use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\TimestampableTrait;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\AvailibilityRepository;
+use App\State\UserAvailabilitiesStateProvider;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,23 +22,6 @@ use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ApiResource(
-    uriTemplate: '/users/{id}/availabilities',
-    operations: [
-        new GetCollection(
-            security: 'user.isCompanyAdmin() and object.getTroubleMaker().getCompany().getOwner() == user'
-        ),
-    ],
-    uriVariables: [
-        'id' => new Link(fromProperty: 'availibilities', fromClass: User::class),
-    ],
-    normalizationContext: ['groups' => ['availability:read']],
-    denormalizationContext: ['groups' => ['availability:write']],
-    order: ['createdAt' => 'DESC'],
-    security: '(user.isTroubleMaker() and object.getTroubleMaker() == user)
-                or (user.isCompanyAdmin() and object.getTroubleMaker().getCompany() == user.getCompany()) 
-                or user.isAdmin()'
-)]
 #[ORM\Entity(repositoryClass: AvailibilityRepository::class)]
 #[ApiResource(
     operations: [

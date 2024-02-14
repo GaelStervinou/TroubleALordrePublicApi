@@ -4,9 +4,11 @@ namespace App\ApiResource;
 
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use App\Entity\User;
 use App\State\TroubleMakerPlanningStateProvider;
+use App\State\UserAvailabilitiesStateProvider;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
@@ -23,6 +25,19 @@ use Symfony\Component\Serializer\Attribute\Groups;
         )
     ],
     paginationItemsPerPage: 7
+)]
+#[ApiResource(
+    uriTemplate: '/users/{id}/availabilities',
+    operations: [
+        new GetCollection(
+            provider: UserAvailabilitiesStateProvider::class,
+        ),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'availibilities', fromClass: User::class),
+    ],
+    normalizationContext: ['groups' => ['planning:read']],
+    order: ['createdAt' => 'DESC'],
 )]
 class Planning
 {
