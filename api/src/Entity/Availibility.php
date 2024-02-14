@@ -14,19 +14,31 @@ use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\TimestampableTrait;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\AvailibilityRepository;
+use App\State\CreateAndUpdateStateProcessor;
+use App\State\CreateAvailabilityStateProcessor;
 use App\State\UserAvailabilitiesStateProvider;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AvailibilityRepository::class)]
+#[UniqueEntity(fields: ['day', 'company'], message: "Vous ne pouvez renseigner qu'un horaire journalier par établissement et par jour")]
 #[ApiResource(
     operations: [
         new Post(
-            securityPostDenormalize: 'user.isCompanyAdmin() and object.getTroubleMaker().getCompany().getOwner() == user'
+            uriTemplate: '/availabilities',
+            securityPostDenormalize: "is_granted('AVAILABILITY_CREATE', object)",
+            processor: CreateAndUpdateStateProcessor::class,
+        ),
+        new Patch(
+            uriTemplate: '/availabilities',
+            denormalizationContext: ['groups' => ['availability:update']],
+            securityPostDenormalize: 'user.isCompanyAdmin() and object.getTroubleMaker().getCompany().getOwner() == user',
+            processor: CreateAndUpdateStateProcessor::class,
         ),
         new Delete(
             securityPostDenormalize: 'user.isCompanyAdmin() and object.getTroubleMaker().getCompany().getOwner() == user'
@@ -35,9 +47,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: ['groups' => ['availability:read']],
     denormalizationContext: ['groups' => ['availability:write']],
     order: ['createdAt' => 'DESC'],
-    security: '(user.isTroubleMaker() and object.getTroubleMaker() == user)
-                or (user.isCompanyAdmin() and object.getTroubleMaker().getCompany() == user.getCompany()) 
-                or user.isAdmin()'
 )]
 class Availibility implements TimestampableEntityInterface
 {
@@ -55,21 +64,22 @@ class Availibility implements TimestampableEntityInterface
      * start_time => dispo spécifique, liée à un troublemaker uniquement et qui correspond à un jour + un horaire précis. Donc pas de day possible avec start_time / end_time
      */
     #[ORM\Column(nullable: true)]
-    #[Groups(['availability:read', 'availability:write'])]
-    #[Assert\GreaterThan(value: "now()", message: "La date de disponibilité ne peut pas être inférieure à aujourd'hui")]
+    #[Groups(['availability:read', 'availability:write', 'availability:update'])]
+    #[Assert\GreaterThan(value: "now", message: "La date de disponibilité ne peut pas être inférieure à l'heure actuelle")]
     #[Assert\Expression('this.getDay() === null', 'Vous ne pouvez pas ajouter d\'heure spécifique à un jour de la semaine')]
-    #[Assert\Expression('this.getTroubleMakerId() !== null', 'Vous deveez associer ce temps de travail spécifique à un prestataire.')]
-    private ?DateTimeImmutable $start_time = null;
+    #[Assert\Expression('this.getTroubleMaker() !== null', 'Vous devez associer ce temps de travail spécifique à un prestataire.')]
+    private ?DateTimeImmutable $startTime = null;
 
     /*
      * end_time => dispo spécifique, liée à un troublemaker uniquement et qui correspond à un jour + un horaire précis. Donc pas de day possible avec start_time / end_time
      */
     #[ORM\Column(nullable: true)]
-    #[Groups(['availability:read', 'availability:write'])]
-    #[Assert\GreaterThan(propertyPath: "start_time", message: "La date de fin doit être postérieure à la date de début")]
+    #[Groups(['availability:read', 'availability:write', 'availability:update'])]
+    #[Assert\GreaterThan(propertyPath: "startTime", message: "La date de fin doit être postérieure à la date de début")]
+    #[Assert\LessThan(value: "tomorrow", message: "La date de fin doit être postérieure à la date de début")]
     #[Assert\Expression('this.getDay() === null', 'Vous ne pouvez pas ajouter d\'heure spécifique à un jour de la semaine')]
-    #[Assert\Expression('this.getTroubleMakerId() !== null', 'Vous deveez associer ce temps de travail spécifique à un prestataire.')]
-    private ?DateTimeImmutable $end_time = null;
+    #[Assert\Expression('this.getTroubleMaker() !== null', 'Vous devez associer ce temps de travail spécifique à un prestataire.')]
+    private ?DateTimeImmutable $endTime = null;
 
 
     #[ORM\Column(nullable: true)]
@@ -87,13 +97,16 @@ class Availibility implements TimestampableEntityInterface
     private ?User $troubleMaker = null;
 
     #[ORM\ManyToOne(inversedBy: 'availibilities')]
+    #[Groups(['availability:read', 'availability:write', 'availability:update'])]
     private ?Company $company = null;
 
     #[ORM\Column(length: 5, nullable: true)]
-    private ?string $company_start_time = null;
+    #[Groups(['availability:read', 'availability:write', 'availability:update'])]
+    private ?string $companyStartTime = null;
 
     #[ORM\Column(length: 5, nullable: true)]
-    private ?string $company_end_time = null;
+    #[Groups(['availability:read', 'availability:write'])]
+    private ?string $companyEndTime = null;
 
     public function getId(): ?UuidInterface
     {
@@ -102,24 +115,24 @@ class Availibility implements TimestampableEntityInterface
 
     public function getStartTime(): ?DateTimeImmutable
     {
-        return $this->start_time;
+        return $this->startTime;
     }
 
-    public function setStartTime(DateTimeImmutable $start_time): static
+    public function setStartTime(DateTimeImmutable $startTime): static
     {
-        $this->start_time = $start_time;
+        $this->startTime = $startTime;
 
         return $this;
     }
 
     public function getEndTime(): ?DateTimeImmutable
     {
-        return $this->end_time;
+        return $this->endTime;
     }
 
-    public function setEndTime(DateTimeImmutable $end_time): static
+    public function setEndTime(DateTimeImmutable $endTime): static
     {
-        $this->end_time = $end_time;
+        $this->endTime = $endTime;
 
         return $this;
     }
@@ -162,24 +175,24 @@ class Availibility implements TimestampableEntityInterface
 
     public function getCompanyStartTime(): ?string
     {
-        return $this->company_start_time;
+        return $this->companyStartTime;
     }
 
-    public function setCompanyStartTime(?string $company_start_time): static
+    public function setCompanyStartTime(?string $companyStartTime): static
     {
-        $this->company_start_time = $company_start_time;
+        $this->companyStartTime = $companyStartTime;
 
         return $this;
     }
 
     public function getCompanyEndTime(): ?string
     {
-        return $this->company_end_time;
+        return $this->companyEndTime;
     }
 
-    public function setCompanyEndTime(?string $company_end_time): static
+    public function setCompanyEndTime(?string $companyEndTime): static
     {
-        $this->company_end_time = $company_end_time;
+        $this->companyEndTime = $companyEndTime;
 
         return $this;
     }
