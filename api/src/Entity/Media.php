@@ -63,11 +63,11 @@ class Media
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:collection:read', 'company:read', 'media:read', 'user:companies:read'])]
+    #[Groups(['company:collection:read', 'company:read', 'media:read', 'user:companies:read', 'invitation:read'])]
     private ?UuidInterface $id = null;
 
     #[ApiProperty(types: ['https://schema.org/contentUrl'])]
-    #[Groups(['media:read', 'company:collection:read', 'company:read', 'company:dashboard:read', 'rate:by-user:read', 'user:read', 'user:companies:read', 'user:reservation:read'])]
+    #[Groups(['media:read', 'company:collection:read', 'company:read', 'company:dashboard:read', 'rate:by-user:read', 'user:read', 'user:companies:read', 'user:reservation:read', 'invitation:read'])]
     public ?string $contentUrl = null;
 
     #[UploadableField(mapping: 'media', fileNameProperty: 'path')]

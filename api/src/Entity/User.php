@@ -84,11 +84,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:read', 'user:read', 'company:admin:read', 'rate:by-user:read', 'company:dashboard:read'])]
+    #[Groups(['company:read', 'user:read', 'company:admin:read', 'rate:by-user:read', 'company:dashboard:read', 'invitation:read'])]
     private ?UuidInterface $id = null;
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[Groups(['user:me:read', 'user:create', 'user:update', 'user:admin:read'])]
+    #[Groups(['user:me:read', 'user:create', 'user:update', 'user:admin:read', 'invitation:read'])]
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
     #[ORM\Column]
@@ -124,7 +124,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         minMessage: 'Votre prénom doit faire 2 caractères minimum.',
         maxMessage: 'Votre prénom doit faire 50 caractères maximum.',
     )]
-    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read', 'company:read', 'company:admin:read', 'rate:by-user:read', 'company:dashboard:read', 'user:reservation:read'])]
+    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read', 'company:read', 'company:admin:read', 'rate:by-user:read', 'company:dashboard:read', 'user:reservation:read', 'invitation:read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 80)]
@@ -135,7 +135,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         minMessage: 'Votre nom doit faire 2 caractères minimum.',
         maxMessage: 'Votre nom doit faire 80 caractères maximum.',
     )]
-    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read', 'company:read', 'company:admin:read', 'rate:by-user:read', 'company:dashboard:read', 'user:reservation:read'])]
+    #[Groups(['user:read', 'user:create', 'user:update', 'reservation:read', 'company:read', 'company:admin:read', 'rate:by-user:read', 'company:dashboard:read', 'user:reservation:read', 'invitation:read'])]
     private ?string $lastname = null;
 
     #[ORM\Column (options: ['default' => UserStatusEnum::USER_STATUS_PENDING])]
@@ -180,7 +180,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     private ?string $kbis = null;
 
     #[ORM\ManyToOne]
-    #[Groups(['company:read', 'rate:by-user:read', 'company:dashboard:read', 'user:read'])]
+    #[Groups(['company:read', 'rate:by-user:read', 'company:dashboard:read', 'user:read', 'invitation:read'])]
     private ?Media $profilePicture = null;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Company::class)]

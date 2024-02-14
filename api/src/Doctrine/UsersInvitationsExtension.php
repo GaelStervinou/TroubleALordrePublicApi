@@ -6,13 +6,15 @@ use ApiPlatform\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Extension\QueryItemExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
+use App\Entity\Invitation;
 use App\Entity\Rate;
 use App\Entity\Reservation;
+use App\Entity\User;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
 
-final readonly class RatesAboutUserExtension implements QueryCollectionExtensionInterface
+final readonly class UsersInvitationsExtension implements QueryCollectionExtensionInterface
 {
 
     public function __construct(
@@ -32,19 +34,15 @@ final readonly class RatesAboutUserExtension implements QueryCollectionExtension
         if (null === $operation) {
             return;
         }
-        $userId = $context['request']?->get('id');
-        if (!$userId) {
+
+        if (Invitation::MY_INVITATIONS_ROUTE_NAME !== $operation->getName()) {
             return;
         }
-        if (Rate::USER_RATES_AS_CUSTOMER_OPERATION_NAME === $operation->getName()) {
-            $rootAlias = $queryBuilder->getRootAliases()[0];
-            $queryBuilder->andWhere(sprintf('%s.isTroubleMakerRated = FALSE AND %s.rated = :searchedUserId', $rootAlias, $rootAlias));
-            $queryBuilder->setParameter('searchedUserId',$userId );
-        } elseif (Rate::USER_RATES_AS_TROUBLE_MAKER_OPERATION_NAME === $operation->getName()) {
-            $rootAlias = $queryBuilder->getRootAliases()[0];
-            $queryBuilder->leftJoin(Reservation::class, 'r', Join::WITH, sprintf('%s.reservation = r.id', $rootAlias));
-            $queryBuilder->andWhere(sprintf('%s.isTroubleMakerRated = TRUE AND %s.rated = :searchedUserId', $rootAlias, $rootAlias));
-            $queryBuilder->setParameter('searchedUserId',$userId );
+
+        if (!$this->security->isGranted("ROLE_ADMIN")) {
+            $rootAlias = $queryBuilder->getRootAliases()[ 0 ];
+            $queryBuilder->andWhere(sprintf('%s.receiver = :searchedUserId', $rootAlias));
+            $queryBuilder->setParameter('searchedUserId', $this->security->getUser()->getId());
         }
     }
 }

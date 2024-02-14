@@ -5,6 +5,7 @@ use ApiPlatform\Metadata\GraphQl\Query;
 use App\Entity\Company;
 use App\Entity\Invitation;
 use App\Entity\User;
+use App\Enum\InvitationStatusEnum;
 use App\Enum\UserStatusEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -38,7 +39,7 @@ class InvitationFixtures extends Fixture implements DependentFixtureInterface
                 $user->setEmail($faker->email)
                     ->setFirstname($faker->firstName)
                     ->setLastname($faker->lastName)
-                    ->setRoles(['ROLE_USER'])
+                    ->setRoles(['ROLE_TROUBLE_MAKER'])
                     ->setStatus($faker->randomElement($status))
                     ->setPassword($pwd)
                     ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')))
@@ -48,6 +49,7 @@ class InvitationFixtures extends Fixture implements DependentFixtureInterface
                 $invitation = new Invitation();
                 $invitation->setCompany($company)
                     ->setReceiver($user)
+                    ->setStatus(InvitationStatusEnum::PENDING->value)
                     ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 months', '-4 days')))
                     ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 months', '-4 days')));
                 $manager->persist($invitation);

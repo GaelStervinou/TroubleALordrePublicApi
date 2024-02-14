@@ -39,20 +39,6 @@ use Symfony\Component\Serializer\Attribute\Groups;
     ],
     order: ['createdAt' => 'DESC']
 )]
-#[ApiResource(
-    uriTemplate: '/companies/{id}/invitations',
-    operations: [
-        new GetCollection(
-            normalizationContext: ['groups' => ['invitation:read']],
-            security: 'user.isAdmin() 
-                or (object == user.getCompany() and user.isCompanyAdmin())'
-        ),
-    ],
-    uriVariables: [
-        'id' => new Link(fromProperty: 'invitations', fromClass: Company::class)
-    ],
-    order: ['createdAt' => 'DESC']
-)]
 #[UniqueEntity(fields: ['name'], message: 'Ce nom existe déjà')]
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 #[ApiResource(
@@ -92,7 +78,7 @@ class Company implements TimestampableEntityInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:collection:read', 'user:reservation:read', 'user:companies:read'])]
+    #[Groups(['company:collection:read', 'user:reservation:read', 'user:companies:read', 'invitation:read'])]
     private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 255)]
@@ -102,11 +88,11 @@ class Company implements TimestampableEntityInterface
         minMessage: "Le nom doit avoir au moins {{ limit }} caractères",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'service:read', 'reservation:read', 'user:companies:read', 'company:post', 'user:reservation:read'])]
+    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'service:read', 'reservation:read', 'user:companies:read', 'company:post', 'user:reservation:read', 'invitation:read'])]
     private ?string $name = null;
 
     #[ORM\ManyToOne]
-    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'company:update', 'service:read', 'reservation:read', 'user:companies:read', 'company:post', 'user:reservation:read'])]
+    #[Groups(['company:collection:read', 'company:read', 'company:write', 'company:update', 'company:update', 'service:read', 'reservation:read', 'user:companies:read', 'company:post', 'user:reservation:read', 'invitation:read'])]
     private ?Media $mainMedia = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Media::class)]
