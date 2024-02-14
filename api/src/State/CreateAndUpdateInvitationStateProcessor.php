@@ -10,7 +10,7 @@ use App\Entity\User;
 use App\Enum\UserStatusEnum;
 use App\Repository\UserRepository;
 
-class CreateInvitationStateProcessor implements ProcessorInterface
+class CreateAndUpdateInvitationStateProcessor implements ProcessorInterface
 {
     private UserRepository $userRepository;
     private ?CreateAndUpdateStateProcessor $createAndUpdateStateProcessor = null;

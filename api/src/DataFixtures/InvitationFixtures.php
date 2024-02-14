@@ -1,7 +1,6 @@
 <?php
 
 namespace App\DataFixtures;
-use ApiPlatform\Metadata\GraphQl\Query;
 use App\Entity\Company;
 use App\Entity\Invitation;
 use App\Entity\User;

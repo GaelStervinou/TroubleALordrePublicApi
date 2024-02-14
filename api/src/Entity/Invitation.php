@@ -17,7 +17,7 @@ use App\Enum\InvitationStatusEnum;
 use App\Interface\SoftDeleteInterface;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\InvitationRepository;
-use App\State\CreateInvitationStateProcessor;
+use App\State\CreateAndUpdateInvitationStateProcessor;
 use App\State\UpdateInvitationStateProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
@@ -72,7 +72,7 @@ use Symfony\Component\Validator\Constraints\Choice;
             securityPostDenormalize: '(user.isAdmin()
                 or (object.getCompany().getOwner() === user))
                 and object.getCompany().isActive()',
-            processor: CreateInvitationStateProcessor::class,
+            processor: CreateAndUpdateInvitationStateProcessor::class,
         ),
         new Patch(
             denormalizationContext: ['groups' => ['invitation:update']],
