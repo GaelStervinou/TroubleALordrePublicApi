@@ -78,7 +78,7 @@ class Company implements TimestampableEntityInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:collection:read', 'user:reservation:read', 'user:companies:read', 'invitation:read'])]
+    #[Groups(['company:collection:read', 'user:reservation:read', 'user:companies:read', 'invitation:read', 'reservation:read', 'reservation:read'])]
     private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 255)]
@@ -96,7 +96,7 @@ class Company implements TimestampableEntityInterface
     private ?Media $mainMedia = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Media::class)]
-    #[Groups(['company:read', 'company:write', 'reservation:read', 'user:companies:read', 'company:post'])]
+    #[Groups(['company:read', 'company:write', 'user:companies:read', 'company:post'])]
     private Collection $medias;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Invitation::class)]
@@ -125,15 +125,15 @@ class Company implements TimestampableEntityInterface
     private Collection $users;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post', 'user:reservation:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post', 'user:reservation:read', 'reservation:read'])]
     private ?string $address = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post', 'user:reservation:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post', 'user:reservation:read', 'reservation:read'])]
     private ?string $zipCode = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post', 'user:reservation:read'])]
+    #[Groups(['company:read', 'company:admin:read', 'user:companies:read', 'company:post', 'user:reservation:read', 'reservation:read'])]
     private ?string $city = null;
 
     #[ORM\Column]

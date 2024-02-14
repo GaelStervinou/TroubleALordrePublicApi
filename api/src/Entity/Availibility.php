@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
@@ -20,19 +21,31 @@ use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    uriTemplate: '/users/{id}/availabilities',
+    operations: [
+        new GetCollection(
+            security: 'user.isCompanyAdmin() and object.getTroubleMaker().getCompany().getOwner() == user'
+        ),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'availibilities', fromClass: User::class),
+    ],
+    normalizationContext: ['groups' => ['availability:read']],
+    denormalizationContext: ['groups' => ['availability:write']],
+    order: ['createdAt' => 'DESC'],
+    security: '(user.isTroubleMaker() and object.getTroubleMaker() == user)
+                or (user.isCompanyAdmin() and object.getTroubleMaker().getCompany() == user.getCompany()) 
+                or user.isAdmin()'
+)]
 #[ORM\Entity(repositoryClass: AvailibilityRepository::class)]
 #[ApiResource(
     operations: [
-        new GetCollection(),
-        new Get(),
-        new Post(),
-        new Patch(
-            security: '(user.isTroubleMaker() and object.getTroubleMaker() == user)
-                or (user.isCompanyAdmin() and object.getTroubleMaker().getCompany() == user.getCompany())'
+        new Post(
+            securityPostDenormalize: 'user.isCompanyAdmin() and object.getTroubleMaker().getCompany().getOwner() == user'
         ),
         new Delete(
-            security: '(user.isTroubleMaker() and object.getTroubleMaker() == user)
-                or (user.isCompanyAdmin() and object.getTroubleMaker().getCompany() == user.getCompany())'
+            securityPostDenormalize: 'user.isCompanyAdmin() and object.getTroubleMaker().getCompany().getOwner() == user'
         )
     ],
     normalizationContext: ['groups' => ['availability:read']],

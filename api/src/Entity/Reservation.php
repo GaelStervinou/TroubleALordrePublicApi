@@ -106,7 +106,7 @@ class Reservation implements TimestampableEntityInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['user:reservation:read'])]
+    #[Groups(['user:reservation:read', 'reservation:read'])]
     private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 255)]
@@ -137,7 +137,7 @@ class Reservation implements TimestampableEntityInterface
         ],
         message: "Le status n'est pas valide"
     )]
-    #[Groups(['reservation:update', 'user:reservation:read'])]
+    #[Groups(['reservation:update', 'user:reservation:read', 'reservation:read'])]
     private ?ReservationStatusEnum $status = null;
 
     #[ORM\Column()]
@@ -155,16 +155,16 @@ class Reservation implements TimestampableEntityInterface
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:read', 'user:reservation:read'])]
+    #[Groups(['reservation:read', 'user:reservation:read', 'reservation:read'])]
     private ?User $customer = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservationsTroubleMaker')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:read', 'reservation:write', 'user:reservation:read'])]
+    #[Groups(['reservation:read', 'reservation:write', 'user:reservation:read', 'reservation:read'])]
     private ?User $troubleMaker = null;
 
     #[ORM\OneToMany(mappedBy: 'reservation', targetEntity: Rate::class)]
-    #[Groups(['reservation:read', 'user:read'])]
+    #[Groups(['user:read'])]
     private Collection $rates;
 
     public function __construct()

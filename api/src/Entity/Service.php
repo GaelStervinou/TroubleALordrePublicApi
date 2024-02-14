@@ -61,12 +61,12 @@ class Service implements TimestampableEntityInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:read', 'rate:by-user:read', 'user:reservation:read'])]
+    #[Groups(['company:read', 'rate:by-user:read', 'user:reservation:read', 'reservation:read'])]
     private ?UuidInterface $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'services')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['service:read', 'service:write', 'reservation:read', 'user:reservation:read'])]
+    #[Groups(['service:read', 'service:write', 'user:reservation:read', 'reservation:read'])]
     private ?Company $company = null;
 
     #[ORM\Column]
@@ -100,7 +100,7 @@ class Service implements TimestampableEntityInterface
         minMessage: "La description doit avoir au moins {{ limit }} caractères",
         maxMessage: "La description ne peut pas dépasser {{ limit }} caractères"
     )]
-    #[Groups(['service:read', 'service:write', 'company:read', 'service:update'])]
+    #[Groups(['service:read', 'service:write', 'company:read', 'service:update', 'reservation:read'])]
     private ?string $description = null;
 
     #[ORM\OneToMany(mappedBy: 'service', targetEntity: Reservation::class)]

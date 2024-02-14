@@ -84,7 +84,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:read', 'user:read', 'company:admin:read', 'rate:by-user:read', 'company:dashboard:read', 'invitation:read'])]
+    #[Groups(['company:read', 'user:read', 'company:admin:read', 'rate:by-user:read', 'company:dashboard:read', 'invitation:read', 'reservation:read'])]
     private ?UuidInterface $id = null;
     #[Assert\NotBlank]
     #[Assert\Email]
@@ -113,7 +113,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     private ?string $verifyPassword = null;
 
     #[ORM\Column(type: 'json')]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'reservation:read'])]
     private array $roles = [];
 
     #[ORM\Column(length: 50)]
@@ -180,7 +180,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     private ?string $kbis = null;
 
     #[ORM\ManyToOne]
-    #[Groups(['company:read', 'rate:by-user:read', 'company:dashboard:read', 'user:read', 'invitation:read'])]
+    #[Groups(['company:read', 'rate:by-user:read', 'company:dashboard:read', 'user:read', 'invitation:read', 'reservation:read'])]
     private ?Media $profilePicture = null;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Company::class)]
