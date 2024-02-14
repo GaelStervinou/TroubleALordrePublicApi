@@ -17,7 +17,7 @@ use App\Entity\Trait\TimestampableTrait;
 use App\Interface\SoftDeleteInterface;
 use App\Interface\TimestampableEntityInterface;
 use App\State\User\UserMeProvider;
-use App\State\UserResetPasswordStateProvider;
+use App\State\UserAvailabilitiesStateProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;

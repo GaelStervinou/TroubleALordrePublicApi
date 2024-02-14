@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Link;
 use App\Entity\User;
 use App\State\TroubleMakerPlanningStateProvider;
 use App\State\UserAvailabilitiesStateProvider;
+use App\State\UserUnavailabilitiesStateProvider;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
@@ -35,6 +36,19 @@ use Symfony\Component\Serializer\Attribute\Groups;
     ],
     uriVariables: [
         'id' => new Link(fromProperty: 'availibilities', fromClass: User::class),
+    ],
+    normalizationContext: ['groups' => ['planning:read']],
+    order: ['createdAt' => 'DESC'],
+)]
+#[ApiResource(
+    uriTemplate: '/users/{id}/unavailabilities',
+    operations: [
+        new GetCollection(
+            provider: UserUnavailabilitiesStateProvider::class,
+        ),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'unavailibilities', fromClass: User::class),
     ],
     normalizationContext: ['groups' => ['planning:read']],
     order: ['createdAt' => 'DESC'],

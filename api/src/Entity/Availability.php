@@ -89,7 +89,6 @@ class Availability implements TimestampableEntityInterface
     #[Groups(['availability:read', 'availability:write'])]
     private ?int $day = null;
 
-    //TODO en fait on lie ça à company pas à user + rajouter kbis ds tbale user comme ça company = établissment
     #[ORM\ManyToOne(inversedBy: 'availibilities')]
     #[Groups(['availability:read', 'availability:write'])]
     private ?User $troubleMaker = null;
