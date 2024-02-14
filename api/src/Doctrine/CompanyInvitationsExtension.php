@@ -40,15 +40,15 @@ final readonly class CompanyInvitationsExtension implements QueryCollectionExten
         /**@var $loggedInUser User*/
         $loggedInUser = $this->security->getUser();
         if (!$loggedInUser->getOwnedCompanies()->exists(function (int $index, Company $company) use ($companyId) {
-            return $companyId === $company->getId() && $company->isActive();
+            return $companyId === $company->getId()?->toString() && $company->isActive();
         })) {
             throw new ValidationException('Vous ne possédez pas cette entreprise ou cette dernière n\'est plus active');
         }
 
         if (!$this->security->isGranted("ROLE_ADMIN")) {
             $rootAlias = $queryBuilder->getRootAliases()[ 0 ];
-            $queryBuilder->andWhere(sprintf('%s.receiver = :searchedUserId', $rootAlias));
-            $queryBuilder->setParameter('searchedUserId', $this->security->getUser()->getId());
+            $queryBuilder->andWhere(sprintf('%s.company = :searchedCompanyId', $rootAlias));
+            $queryBuilder->setParameter('searchedCompanyId', $companyId);
         }
     }
 }
