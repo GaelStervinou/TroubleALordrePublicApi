@@ -120,7 +120,7 @@ class Invitation implements TimestampableEntityInterface, SoftDeleteInterface
         message: "Le statut n'est pas valide"
     )]
     #[Groups(['invitation:read', 'invitation:update'])]
-    private ?string $status = null;
+    private ?string $status = InvitationStatusEnum::PENDING->value;
 
     public function getId(): ?UuidInterface
     {

@@ -31,7 +31,6 @@ class CreateAndUpdateInvitationStateProcessor implements ProcessorInterface
             $user = $this->userRepository->findOneBy([
                 'email' => $context[ 'request' ]->get('email'),
                 'status' => UserStatusEnum::USER_STATUS_ACTIVE->value,
-                'company' => null,
             ]);
             if ($user?->isTroubleMaker() && $this->isFirstInvitationFromCompanyToUser($user, $data)) {
                 $data->setReceiver($user);
