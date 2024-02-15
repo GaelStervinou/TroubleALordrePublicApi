@@ -79,7 +79,7 @@ class Company implements TimestampableEntityInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:collection:read', 'user:reservation:read', 'user:companies:read', 'invitation:read', 'reservation:read', 'reservation:read'])]
+    #[Groups(['company:collection:read', 'user:reservation:read', 'user:companies:read', 'invitation:read', 'reservation:read', 'reservation:read', 'company:read'])]
     private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 255)]
