@@ -165,7 +165,7 @@ class Reservation implements TimestampableEntityInterface
     private ?User $troubleMaker = null;
 
     #[ORM\OneToMany(mappedBy: 'reservation', targetEntity: Rate::class)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'reservation:read'])]
     private Collection $rates;
 
     public function __construct()

@@ -86,7 +86,7 @@ class Rate implements TimestampableEntityInterface, BlameableEntityInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:read', 'rate:read', 'rate:by-user:read'])]
+    #[Groups(['company:read', 'rate:read', 'rate:by-user:read', 'reservation:read'])]
     private ?UuidInterface $id = null;
 
     #[ORM\Column]
@@ -100,7 +100,7 @@ class Rate implements TimestampableEntityInterface, BlameableEntityInterface
 
     #[ORM\ManyToOne(inversedBy: 'rates')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['rate:read', 'rate:write', 'reservation:read', 'user:read', 'company:read'])]
+    #[Groups(['rate:read', 'rate:write', 'user:read', 'company:read'])]
     private ?User $rated = null;
 
     #[ORM\ManyToOne(inversedBy: 'rates')]
@@ -113,7 +113,7 @@ class Rate implements TimestampableEntityInterface, BlameableEntityInterface
     private ?Service $service = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['rate:by-user:read', 'company:read'])]
+    #[Groups(['rate:by-user:read', 'company:read', 'reservation:read'])]
     private ?string $content = null;
 
     #[ORM\Column]

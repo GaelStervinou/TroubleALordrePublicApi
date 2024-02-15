@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 trait BlameableTrait
 {
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[Groups(['rate:by-user:read'])]
+    #[Groups(['rate:by-user:read', 'reservation:read'])]
     private ?User $createdBy = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
