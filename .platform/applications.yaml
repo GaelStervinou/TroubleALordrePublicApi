@@ -11,9 +11,11 @@
       set -e
       npm install
     deploy: |
+      npm install
       npm run build
 
   mounts:
+    "/node_modules": { source: local, source_path: node_modules }
     "/dist": { source: local, source_path: dist }
       
   web:
