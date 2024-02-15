@@ -15,7 +15,6 @@
       npm run build
 
   mounts:
-    "/node_modules": { source: local, source_path: node_modules }
     "/dist": { source: local, source_path: dist }
       
   web:
@@ -62,10 +61,6 @@
         root: "public"
         expires: 1d
         passthru: "/index.php"
-
-  mounts:
-    "/var": { source: local, source_path: var }
-
 
   relationships:
     database: "database:postgresql"
