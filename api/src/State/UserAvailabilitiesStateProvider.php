@@ -10,8 +10,10 @@ use ApiPlatform\State\ProviderInterface;
 use ApiPlatform\Validator\Exception\ValidationException;
 use App\ApiResource\Planning;
 use App\Entity\Availability;
+use App\Entity\Unavailability;
 use App\Entity\User;
 use App\Repository\AvailabilityRepository;
+use App\Repository\UnavailabilityRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -52,6 +54,11 @@ class UserAvailabilitiesStateProvider implements ProviderInterface
          */
         $availibilityRepository = $this->entityManager->getRepository(Availability::class);
 
+        /**
+         * @var $unavailabilityRepository UnavailabilityRepository
+         */
+        $unavailabilityRepository = $this->entityManager->getRepository(Unavailability::class);
+
         $offset = $this->pagination->getOffset($operation, $context);
         $dateFrom = (new \DateTimeImmutable())->setTime(0, 0)->add(new \DateInterval("P{$offset}D"));
         if (0 !== $offset) {
@@ -63,7 +70,10 @@ class UserAvailabilitiesStateProvider implements ProviderInterface
         if (0 === count($userAvailabilities)) {
             return [];
         }
-        $userAvailabilitiesByDay = $this->formatAvailabilitiesByDay($this->sliceShiftsByDays($userAvailabilities, $dateFrom), $dateFrom);
+        $userUnavailabilities = $unavailabilityRepository->getTroubleMakerUnavailabilityFromDateToDate($user->getId(), $dateFrom, $dateTo);
+
+        $userAvailabilitiesSlicedByDay = $this->formatAvailabilitiesByDay($this->sliceShiftsByDays($userAvailabilities, $dateFrom), $dateFrom);
+        $userAvailabilitiesByDay = $this->removeUserUnavailabilities($userAvailabilitiesSlicedByDay, $userUnavailabilities, $dateFrom);
         $planningDays = [];
         foreach ($userAvailabilitiesByDay as $day => $slots) {
             $planning = (new Planning())
@@ -83,7 +93,6 @@ class UserAvailabilitiesStateProvider implements ProviderInterface
         /**
          * @var $availability Availability
          */
-        $minAndMaxTimes = [];
         $doneDays = [];
         $dateImmutable = $fromDate;
         $date = $dateImmutable->format('Y-m-d');
@@ -99,7 +108,6 @@ class UserAvailabilitiesStateProvider implements ProviderInterface
             } else {
                 $day = (int)$availability->getStartTime()?->format('N');
                 $date = $availability->getStartTime()->format('Y-m-d');
-                //TODO peut-être spérarer H et i par des ":"
                 $startTime = $availability->getStartTime()?->format('H:i');
                 $endTime = $availability->getEndTime()?->format('H:i');
             }
@@ -117,6 +125,60 @@ class UserAvailabilitiesStateProvider implements ProviderInterface
             $doneDays[] = $day;
         }
         return $shifts;
+    }
+
+    private function removeUserUnavailabilities(array $availabilities, array $unavailabilities, DateTimeImmutable $fromDate): array
+    {
+        if (empty($unavailabilities)) {
+            return $availabilities;
+        }
+        $userAvailabilities = [];
+        foreach ($availabilities as $date => $availability) {
+            foreach ($availability as $index => &$slot) {
+                /**@var $unavailability Unavailability*/
+                foreach ($unavailabilities as $unavailability) {
+                    if ($unavailability->getStartTime()->format('Y-m-d') === DateTimeImmutable::createFromFormat('U', $slot['startTime'])->format('Y-m-d')) {
+                        $unavailabilityStartTime = strtotime($unavailability->getStartTime()->format('Y-m-d H:i:s'));
+                        $unavailabilityEndTime = strtotime($unavailability->getEndTime()->format('Y-m-d H:i:s'));
+                        if (
+                            $unavailabilityStartTime < $slot['startTime']
+                            && $unavailabilityEndTime > $slot['endTime']
+                        ) {
+                            break;
+                        }
+                        if (
+                            $unavailabilityStartTime > $slot['startTime']
+                            && $unavailabilityStartTime < $slot['endTime']
+                            && $unavailabilityEndTime > $slot['endTime']
+                        ) {
+                            $slot['endTime'] = $unavailabilityStartTime;
+                        } elseif (
+                            $unavailabilityStartTime < $slot['startTime']
+                            && $unavailabilityEndTime > $slot['startTime']
+                            && $unavailabilityEndTime < $slot['endTime']
+                        ) {
+                            $slot['startTime'] = $unavailabilityEndTime;
+                        } elseif (
+                            $unavailabilityStartTime > $slot['startTime']
+                            && $unavailabilityStartTime < $slot['endTime']
+                            && $unavailabilityEndTime > $slot['startTime']
+                            && $unavailabilityEndTime < $slot['endTime']
+                        ) {
+                            $availability[] = [
+                                'startTime' => $unavailabilityEndTime,
+                                'endTime' => $slot['endTime']
+                            ];
+                            $slot['endTime'] = $unavailabilityStartTime;
+                        }
+                    }
+                    if (!$index) {
+                        $userAvailabilities[$date][] = $slot;
+                    }
+                    $userAvailabilities[$date][$index] = $slot;
+                }
+            }
+        }
+        return $userAvailabilities;
     }
 
     private function formatAvailabilitiesByDay(array $availabilities, DateTimeImmutable $fromDate): array
