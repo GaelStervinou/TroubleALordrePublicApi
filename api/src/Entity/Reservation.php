@@ -161,6 +161,7 @@ class Reservation implements TimestampableEntityInterface
     #[ORM\ManyToOne(inversedBy: 'reservationsTroubleMaker')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['reservation:read', 'reservation:write', 'user:reservation:read', 'reservation:read'])]
+    #[Assert\Expression('value.isTroubleMaker()', 'Vous devez sélectionner un prestataire valide.')]
     private ?User $troubleMaker = null;
 
     #[ORM\OneToMany(mappedBy: 'reservation', targetEntity: Rate::class)]

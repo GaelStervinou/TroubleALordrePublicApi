@@ -10,10 +10,10 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\TimestampableTrait;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\CategoryRepository;
+use App\State\CreateAndUpdateStateProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -39,10 +39,12 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(),
         new Get(),
         new Post(
-            security: 'user.isAdmin()'
+            security: 'user.isAdmin()',
+            processor: CreateAndUpdateStateProcessor::class,
         ),
         new Patch(
-            security: 'user.isAdmin()'
+            security: 'user.isAdmin()',
+            processor: CreateAndUpdateStateProcessor::class,
         ),
         new Delete(
             security: 'user.isAdmin()'
