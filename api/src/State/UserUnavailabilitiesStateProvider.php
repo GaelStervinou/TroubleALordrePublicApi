@@ -84,6 +84,7 @@ class UserUnavailabilitiesStateProvider implements ProviderInterface
         foreach ($userUnavailabilities as $unavailability) {
             $startTime = $unavailability->getStartTime();
             $unavailabilities[ $startTime?->format('Y-m-d') ][] = [
+                '@id' => $unavailability->getId()->toString(),
                 'startTime' => strtotime($startTime?->format('Y-m-d H:i:s')),
                 'endTime' => strtotime($unavailability->getEndTime()?->format('Y-m-d H:i:s'))
             ];

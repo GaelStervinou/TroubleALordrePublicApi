@@ -93,6 +93,9 @@ class Planning
                 'startTime' => \DateTimeImmutable::createFromFormat('U', $shift['startTime'])->format('H:i'),
                 'endTime' =>  \DateTimeImmutable::createFromFormat('U', $shift['endTime'])->format('H:i')
             ];
+            if (array_key_exists('@id', $shift)) {
+                $shifts[$index][0]['@id'] = $shift['@id'];
+            }
         }
 
         $this->setShifts($shifts);
