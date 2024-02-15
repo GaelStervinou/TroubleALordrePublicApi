@@ -9,6 +9,7 @@
   hooks:
     build: |
       set -e
+      npm cache clean --force
       npm install
     deploy: |
       set -e
