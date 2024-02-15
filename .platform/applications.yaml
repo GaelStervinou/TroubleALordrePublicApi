@@ -23,7 +23,7 @@
       "/":
         root: "dist"
         index: ["index.html"]
-        scripts: true
+        scripts: false
         allow: true
         expires: 1d
 
