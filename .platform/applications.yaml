@@ -15,8 +15,8 @@
       npm run build
 
   mounts:
-    "/app/front/node_modules": { source: ephemeral }
-    "/app/front/dist": { source: ephemeral }
+    "/node_modules": { source: local, source_path: node_modules }
+    "/dist": { source: local, source_path: dist }
       
   web:
     locations:
