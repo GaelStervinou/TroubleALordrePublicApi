@@ -62,6 +62,9 @@
         expires: 1d
         passthru: "/index.php"
 
+  mounts:
+    "/var": { source: local, source_path: var }
+
   relationships:
     database: "database:postgresql"
 
@@ -72,6 +75,7 @@
       composer install
       bin/console lexik:jwt:generate-keypair --overwrite
       curl -fs https://get.symfony.com/cloud/configurator | bash
+      NODE_VERSION=18 symfony-build
     deploy: |
       set -x -e
       symfony-deploy
