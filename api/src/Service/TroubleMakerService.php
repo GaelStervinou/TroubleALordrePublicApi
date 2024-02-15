@@ -70,7 +70,6 @@ readonly class TroubleMakerService
             }
             $planningDays[] = $planning;
         }
-
         return $planningDays;
     }
 
@@ -126,7 +125,7 @@ readonly class TroubleMakerService
             } else {
                 $day = (int)$availability->getStartTime()?->format('N');
                 $date = $availability->getStartTime()?->format('Y-m-d');
-                //TODO peut-être spérarer H et i par des ":"
+
                 $startTime = $availability->getStartTime()?->format('H:i');
                 $endTime = $availability->getEndTime()?->format('H:i');
             }
@@ -171,7 +170,7 @@ readonly class TroubleMakerService
             if (array_key_exists($date, $shifts)) {
                 foreach ($slots as $index => $slot) {
                     foreach ($shifts[ $date ] as $shift) {
-                        if ($shift[ 'startTime' ] < $slot[ 'startTime' ] && $shift[ 'endTime' ] > $slot[ 'endTime' ]) {
+                        if ($shift[ 'startTime' ] <= $slot[ 'startTime' ] && $shift[ 'endTime' ] >= $slot[ 'endTime' ]) {
                             $possibleSlots[] = $slot;
                             break;
                         }
@@ -182,7 +181,7 @@ readonly class TroubleMakerService
             if (array_key_exists($date, $unavalabilities)) {
                 foreach ($possibleSlots as $index => $slot) {
                     foreach ($unavalabilities[ $date ] as $unavalability) {
-                        if ($slot[ 'startTime' ] > $unavalability[ 'startTime' ] && $slot[ 'startTime' ] < $unavalability[ 'endTime' ]) {
+                        if ($slot[ 'startTime' ] >= $unavalability[ 'startTime' ] && $slot[ 'startTime' ] <= $unavalability[ 'endTime' ]) {
                             unset($possibleSlots[ $index ]);
                         }
                     }
@@ -205,9 +204,10 @@ readonly class TroubleMakerService
         $numberOfSlots = floor($timeRange / $duration);
 
         for ($i = 0; $i < $numberOfSlots; $i++) {
+            $minimumTime += (int)ceil(($duration * $i) / 300)* 300;
             $slots[] = [
-                'startTime' => $minimumTime + ($duration * $i),
-                'endTime' => +$minimumTime + ($duration * $i) + $duration
+                'startTime' => $minimumTime,
+                'endTime' => $minimumTime + ($duration * $i) + $duration
             ];
         }
 

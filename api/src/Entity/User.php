@@ -60,6 +60,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
         new Patch(processor: UserPasswordHasherStateProcessor::class)
     ],
     normalizationContext: ['groups' => ['user:read']],
+    //TODO denormalizationContext à faire !!!!
 )]
 #[ApiResource(
     uriTemplate: '/companies/{id}/users',
@@ -112,6 +113,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     #[Groups(['user:create', 'user:update', 'user:reset-password'])]
     private ?string $verifyPassword = null;
 
+    //TODO vérifeir que si c pas un admin il peut chanegr son role que pour troublemaker
     #[ORM\Column(type: 'json')]
     #[Groups(['user:read', 'reservation:read', 'user:admin:read'])]
     private array $roles = [];
