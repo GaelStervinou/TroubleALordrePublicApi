@@ -11,7 +11,6 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use App\Controller\Action\Export\ExportTroubleMakerReservations;
 use App\Controller\Action\PaymentIntent\CreatePaymentIntentAction;
 use App\Entity\Trait\TimestampableTrait;
 use App\Enum\ReservationStatusEnum;
@@ -61,9 +60,6 @@ use Symfony\Component\Validator\Constraints as Assert;
             normalizationContext: ['groups' => ['user:reservation:read']],
             name: Reservation::USER_RESERVATIONS_AS_TROUBLE_MAKERS,
         ),
-        new Get(
-            controller: ExportTroubleMakerReservations::class,
-        )
     ],
     uriVariables: [
         'id' => new Link(fromProperty: 'reservationsTroubleMaker', fromClass: User::class)
