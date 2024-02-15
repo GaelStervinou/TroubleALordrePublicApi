@@ -10,6 +10,7 @@ use ApiPlatform\Validator\Exception\ValidationException;
 use App\ApiResource\Planning;
 use App\Entity\Reservation;
 use App\Enum\ReservationStatusEnum;
+use App\Service\MailerService;
 use App\Service\TroubleMakerService;
 use App\State\CreateAndUpdateStateProcessor;
 use DateTimeImmutable;
@@ -22,7 +23,8 @@ class CreateReservationSateProcessor implements ProcessorInterface
     public function __construct(
         private CreateAndUpdateStateProcessor $createAndUpdateStateProcessor,
         private readonly Security             $security,
-        private TroubleMakerService           $troubleMakerService
+        private TroubleMakerService           $troubleMakerService,
+        private MailerService $mailerService
     )
     {
     }
@@ -44,6 +46,7 @@ class CreateReservationSateProcessor implements ProcessorInterface
             $data->setStatus(ReservationStatusEnum::ACTIVE);
             $data->setPrice($data->getService()?->getPrice());
             $data->setDuration($data->getService()?->getDuration());
+            $this->mailerService->sendEmail();
             $this->createAndUpdateStateProcessor->process($data, $operation, $uriVariables, $context);
         }
     }
@@ -62,7 +65,7 @@ class CreateReservationSateProcessor implements ProcessorInterface
 
     private function isTroubleMakerAvailableAt(DateTimeImmutable $date, Planning $planning, int $duration): bool
     {
-        $startTime = strtotime($date->format('Y-m-d H:i:s'));
+        $startTime = (int)ceil(strtotime($date->format('Y-m-d H:i:s'))/300)*300;
         $endTime = $startTime + $duration;
         foreach ($planning->getShifts() as $shift) {
             if (
