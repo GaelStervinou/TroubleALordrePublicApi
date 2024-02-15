@@ -124,6 +124,9 @@ class UserAvailabilitiesStateProvider implements ProviderInterface
         $availabilitiesByDay = [];
         for ($i = 1; $i <= 7; $i++) {
             $date = $fromDate->format('Y-m-d');
+            if (!array_key_exists($date, $availabilities)) {
+                continue;
+            }
             foreach ($availabilities[ $date ] as $shift) {
                 if (!array_key_exists($date, $availabilitiesByDay)) {
                     $availabilitiesByDay[ $date ][] = $shift;
