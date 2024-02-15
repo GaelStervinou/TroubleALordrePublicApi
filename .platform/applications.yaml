@@ -1,4 +1,4 @@
-- name: front
+front:
   type: 'nodejs:20'
   source:
     root: front
@@ -15,7 +15,7 @@
       npm run build
 
   mounts:
-    "/node_modules": { source: local, source_path: node_modules }
+    '/.tmp_platformsh': { source: local, source_path: files/tmp_platformsh }
     "/dist": { source: local, source_path: dist }
       
   web:
@@ -23,13 +23,28 @@
       "/":
         root: "dist"
         passthru: "/index.html"
+        index:
+          - "index.html"
+        expires: 300s
         scripts: true
         allow: true
-        expires: 1d
+        rules:
+          \.(css|js|gif|jpe?g|png|ttf|eot|woff2?|otf|html|ico|svg?)$:
+            allow: true
+          ^/admin/robots\.txt$:
+            allow: true
+          ^/admin/manifest\.json$:
+            allow: true
+          ^/admin/_next:
+            allow: true
+          ^/admin/sitemap:
+            allow: true
+        headers:
+          Access-Control-Allow-Origin: "*"
 
   disk: 1024
 
-- name: api
+api:
   type: php:8.3
   source:
     root: api
@@ -60,8 +75,13 @@
     locations:
       "/":
         root: "public"
-        expires: 1d
-        passthru: "/index.php"
+        passthru: '/index.php'
+        index:
+          - index.php
+        scripts: true
+        allow: true
+        headers:
+          Access-Control-Allow-Origin: "*"
 
   mounts:
     "/var": { source: local, source_path: var }
@@ -75,8 +95,8 @@
       set -x -e
       composer install
       bin/console lexik:jwt:generate-keypair --overwrite
-      curl -fs https://get.symfony.com/cloud/configurator | bash
-      NODE_VERSION=18 symfony-build
+      curl -s https://get.symfony.com/cloud/configurator | bash
+      symfony-build
     deploy: |
       set -x -e
       symfony-deploy
