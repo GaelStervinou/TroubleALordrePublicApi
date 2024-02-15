@@ -9,11 +9,11 @@
   hooks:
     build: |
       set -e
-      npm install
+      yarn
     deploy: |
       set -e
-      npm run build
-      npm run start
+      yarn build
+      yarn start
       
   web:
     locations:
