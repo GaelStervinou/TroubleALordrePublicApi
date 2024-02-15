@@ -38,7 +38,7 @@ class CreateAvailabilityVoter extends Voter
 
         if ($troubleMaker
             && !($troubleMaker->isTroubleMaker() && $troubleMaker->isActive()
-            && $troubleMaker->$user->getOwnedCompanies()->contains($troubleMaker->getCompany())
+            && $user->getOwnedCompanies()->contains($troubleMaker->getCompany())
         )
         ) {
             return false;
