@@ -5,10 +5,9 @@
 
   hooks:
     build: |
-      yarn install
-      yarn build
+      npm install
     deploy: |
-      yarn start
+      npm run start
 
 - name: api
   type: php:8.2
