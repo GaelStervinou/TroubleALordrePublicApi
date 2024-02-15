@@ -16,6 +16,7 @@ use App\Repository\RateRepository;
 use App\State\CreateRateProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Attribute\Groups;
 
@@ -72,6 +73,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     normalizationContext: ['groups' => ['rate:read']],
     denormalizationContext: ['groups' => ['rate:write']],
 )]
+#[UniqueEntity(fields: ['reservation', 'createdBy'], message: "Vous ne pouvez notez qu'une seule fois par réservation.")]
 class Rate implements TimestampableEntityInterface, BlameableEntityInterface
 {
     use TimestampableTrait;
