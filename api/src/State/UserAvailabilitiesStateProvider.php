@@ -42,7 +42,7 @@ class UserAvailabilitiesStateProvider implements ProviderInterface
 
         if (
             !$user->isTroubleMaker()
-            || $this->security->getUser() !== $user->getCompany()->getOwner()
+            && $this->security->getUser() !== $user->getCompany()->getOwner()
         ) {
             throw new ValidationException("Utilisateur introuvable");
         }

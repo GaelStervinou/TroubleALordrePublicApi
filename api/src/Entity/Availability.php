@@ -28,6 +28,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: AvailabilityRepository::class)]
 #[UniqueEntity(fields: ['day', 'company'], message: "Vous ne pouvez renseigner qu'un horaire journalier par établissement et par jour")]
 #[ApiResource(
+    uriTemplate: '/companies/{id}/availabilities',
+    operations: [
+        new GetCollection(
+            name: Availability::COMPANY_AVAILABILITIES_ROUTE_NAME,
+        ),
+    ],
+    uriVariables: [
+        'id' => new Link(fromProperty: 'availibilities', fromClass: Company::class),
+    ],
+    normalizationContext: ['groups' => ['availability:read']],
+    order: ['createdAt' => 'DESC'],
+    paginationEnabled: false
+)]
+#[ApiResource(
     operations: [
         new Post(
             securityPostDenormalize: "is_granted('AVAILABILITY_CREATE', object)",
@@ -49,6 +63,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Availability implements TimestampableEntityInterface
 {
     use TimestampableTrait;
+
+    public const COMPANY_AVAILABILITIES_ROUTE_NAME = 'companies_availabilities';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
