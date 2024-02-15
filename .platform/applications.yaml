@@ -11,11 +11,9 @@ front:
       set -e
       npm install
     deploy: |
-      npm install
       npm run build
 
   mounts:
-    '/.tmp_platformsh': { source: local, source_path: files/tmp_platformsh }
     "/dist": { source: local, source_path: dist }
       
   web:
