@@ -31,7 +31,7 @@ class CreateReservationSateProcessor implements ProcessorInterface
     {
         if ($operation instanceof Post && $data instanceof Reservation) {
             $offset = $this->getOffsetFromDate($data->getDate());
-            $troubleMakerPlanning = $this->troubleMakerService->getTroubleMakerPlanning($data->getTroubleMaker(), $data->getService()->getId(), $offset, false);
+            $troubleMakerPlanning = $this->troubleMakerService->getTroubleMakerPlanning($data->getTroubleMaker()->getId()->toString(), $data->getService()->getId(), $offset, false);
             $planningForDate = $this->getPlanningForDate($data->getDate(), $troubleMakerPlanning);
             if (!$planningForDate) {
                 throw new ValidationException('Error');
@@ -39,6 +39,7 @@ class CreateReservationSateProcessor implements ProcessorInterface
             if (!$this->isTroubleMakerAvailableAt($data->getDate(), $planningForDate, $data->getService()?->getDuration() ?? 0)) {
                 throw new ValidationException('Le créneau n\'est plus disponible.');
             }
+            $data->setPaymentIntentId('jzeuoezd');
             $data->setCustomer($this->security->getUser());
             $data->setStatus(ReservationStatusEnum::ACTIVE);
             $data->setPrice($data->getService()?->getPrice());
@@ -61,12 +62,12 @@ class CreateReservationSateProcessor implements ProcessorInterface
 
     private function isTroubleMakerAvailableAt(DateTimeImmutable $date, Planning $planning, int $duration): bool
     {
-        $startTime = strtotime($date);
+        $startTime = strtotime($date->format('Y-m-d H:i:s'));
         $endTime = $startTime + $duration;
         foreach ($planning->getShifts() as $shift) {
             if (
-                $shift[ 'startTime' ] < $startTime
-                && $shift[ 'endTime' ] > $endTime
+                $shift[ 'startTime' ] <= $startTime
+                && $shift[ 'endTime' ] >= $endTime
             ) {
                 return true;
             }

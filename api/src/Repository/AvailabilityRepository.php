@@ -37,7 +37,7 @@ class AvailabilityRepository extends ServiceEntityRepository
     {
         $query = $this->createQueryBuilder('a')
             ->select()
-            ->where('(a.troubleMaker = :userId AND a.start_time BETWEEN :dateFrom AND :dateTo) OR a.company = :companyId')
+            ->where('(a.troubleMaker = :userId AND a.startTime BETWEEN :dateFrom AND :dateTo) OR a.company = :companyId')
             ->setParameter('userId', $userId, ParameterType::STRING)
             ->setParameter('dateFrom', $dateFrom)
             ->setParameter('dateTo', $dateTo)
