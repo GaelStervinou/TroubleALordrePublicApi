@@ -36,7 +36,7 @@ class CreateRateProcessor implements ProcessorInterface
             } else {
                 throw new AccessDeniedException('Vous ne pouvez pas noter une prestation qui ne vous concerne pas.');
             }
-
+            $data->setService($reservation->getService());
             $this->createAndUpdateStateProcessor->process($data, $operation, $uriVariables, $context);
         }
     }
