@@ -135,9 +135,10 @@ class UserAvailabilitiesStateProvider implements ProviderInterface
         $userAvailabilities = [];
         foreach ($availabilities as $date => $availability) {
             foreach ($availability as $index => &$slot) {
+                dump($slot);
                 /**@var $unavailability Unavailability*/
                 foreach ($unavailabilities as $unavailability) {
-                    if ($unavailability->getStartTime()->format('Y-m-d') === DateTimeImmutable::createFromFormat('U', $slot['startTime'])->format('Y-m-d')) {
+                    if ($unavailability->getStartTime()->format('Y-m-d') === $date) {
                         $unavailabilityStartTime = strtotime($unavailability->getStartTime()->format('Y-m-d H:i:s'));
                         $unavailabilityEndTime = strtotime($unavailability->getEndTime()->format('Y-m-d H:i:s'));
                         if (
@@ -171,9 +172,7 @@ class UserAvailabilitiesStateProvider implements ProviderInterface
                             $slot['endTime'] = $unavailabilityStartTime;
                         }
                     }
-                    if (!$index) {
-                        $userAvailabilities[$date][] = $slot;
-                    }
+                    
                     $userAvailabilities[$date][$index] = $slot;
                 }
             }
