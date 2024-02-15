@@ -1,0 +1,63 @@
+- name: front
+  type: nodejs:20
+  source:
+    root: front
+
+  hooks:
+    build: |
+      npm install
+      npm run build
+    deploy: |
+      npm run start
+
+- name: api
+  type: php:8.2
+  source:
+    root: api
+  dependencies:
+    php:
+      composer/composer: "^2"
+
+  runtime:
+    extensions:
+      - apcu
+      - ctype
+      - iconv
+      - mbstring
+      - pdo_pgsql
+      - sodium
+      - xsl
+
+
+  variables:
+    php:
+      opcache.preload: config/preload.php
+  build:
+    flavor: none
+
+  disk: 1024
+
+  web:
+    locations:
+      "/":
+        root: "public"
+        expires: 1h
+        passthru: "/index.php"
+
+  mounts:
+    "/var": { source: local, source_path: var }
+
+
+  relationships:
+    database: "database:postgresql"
+
+  hooks:
+    build: |
+      cp .env.example .env
+      set -x -e
+      composer install
+      bin/console lexik:jwt:generate-keypair --overwrite
+      curl -fs https://get.symfony.com/cloud/configurator | bash
+    deploy: |
+      set -x -e
+      symfony-deploy
