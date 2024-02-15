@@ -12,7 +12,7 @@
       npm install
     deploy: |
       set -e
-      npm build
+      npm run build
       
   web:
     locations:
