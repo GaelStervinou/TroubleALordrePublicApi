@@ -13,7 +13,6 @@
     deploy: |
       set -e
       npm run build
-      npm run start
 
   mounts:
     "/dist": { source: local, source_path: dist }
@@ -22,7 +21,7 @@
     locations:
       "/":
         root: "dist"
-        index: ["index.html"]
+        index: ["/index.html"]
         scripts: false
         allow: true
         expires: 1d
