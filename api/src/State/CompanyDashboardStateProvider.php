@@ -6,12 +6,14 @@ use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\ApiResource\CompanyDashboard;
+use App\Entity\Company;
 use App\Entity\Rate;
 use App\Entity\Reservation;
 use App\Entity\User;
 use App\Repository\RateRepository;
 use App\Repository\ReservationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class CompanyDashboardStateProvider implements ProviderInterface
 {
@@ -19,6 +21,7 @@ class CompanyDashboardStateProvider implements ProviderInterface
 
     public function __construct(
         EntityManagerInterface $entityManager,
+        private Security       $security
     )
     {
         $this->entityManager = $entityManager;
@@ -36,6 +39,14 @@ class CompanyDashboardStateProvider implements ProviderInterface
          */
         $reservationRepository = $this->entityManager->getRepository(Reservation::class);
         $todayDate = new \DateTimeImmutable();
+        $companyId = $uriVariables[ 'id' ];
+        if (!$this->security->getUser()->getOwnedCompanies()->exists(
+                function (int $index, Company $company) use ($companyId) {
+                    dump($company->getId()->toString(), $company->isActive());
+                    return $companyId === $company->getId()->toString() && $company->isActive();
+                })) {
+            return [];
+        }
 
 
         $previousMonthDateFrom = \DateTimeImmutable::createFromFormat('U', strtotime("-2 months", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s'))));
@@ -44,7 +55,7 @@ class CompanyDashboardStateProvider implements ProviderInterface
         $previousMonthReservations = $reservationRepository->getCompanyReservationsFromDateToDate(
             $previousMonthDateFrom,
             $previousMonthDateTo,
-            $uriVariables[ 'id' ]
+            $companyId
         );
 
         $companyDashboard->setNumberOfReservationsPreviousMonth(count($previousMonthReservations));
@@ -71,12 +82,15 @@ class CompanyDashboardStateProvider implements ProviderInterface
             \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s')))),
             $todayDate,
             $uriVariables[ 'id' ]
-        )[0];
-
-        $bestTroubleMaker = $this->entityManager->getRepository(User::class)->find($bestTroubleMakerData['id']->serialize());
-        if ($bestTroubleMaker) {
-            $companyDashboard->setBestTroubleMaker($bestTroubleMaker->setCurrentMonthTotalReservations($bestTroubleMakerData['best_trouble_maker']));
+        );
+        if (count($bestTroubleMakerData) > 0) {
+            $bestTroubleMaker = $this->entityManager->getRepository(User::class)->find($bestTroubleMakerData[ 'id' ]->serialize());
+            if ($bestTroubleMaker) {
+                $companyDashboard->setBestTroubleMaker($bestTroubleMaker->setCurrentMonthTotalReservations($bestTroubleMakerData[ 'best_trouble_maker' ]));
+            }
         }
+
+
 
         /**
          * @var $rateRepository RateRepository
@@ -140,13 +154,13 @@ class CompanyDashboardStateProvider implements ProviderInterface
         $diffInDays = round(($dateToToTime - $dateFromToTime) / (60 * 60 * 24));
 
         $orderedByDateDatas = [];
-        for ($i=0; $i<=$diffInDays; $i++) {
-            if(!array_key_exists($dateFromToString, $datas)) {
-                $orderedByDateDatas[$dateFromToString] = $value;
+        for ($i = 0; $i <= $diffInDays; $i++) {
+            if (!array_key_exists($dateFromToString, $datas)) {
+                $orderedByDateDatas[ $dateFromToString ] = $value;
             } else {
-                $orderedByDateDatas[$dateFromToString] = $datas[$dateFromToString];
+                $orderedByDateDatas[ $dateFromToString ] = $datas[ $dateFromToString ];
             }
-            $dateFrom =  $dateFrom->add(new \DateInterval('P1D'));
+            $dateFrom = $dateFrom->add(new \DateInterval('P1D'));
             $dateFromToString = $dateFrom->format('Y-m-d');
         }
         return $orderedByDateDatas;

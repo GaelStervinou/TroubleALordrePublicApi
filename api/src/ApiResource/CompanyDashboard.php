@@ -25,8 +25,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
             name: 'company_dashboard',
             provider: CompanyDashboardStateProvider::class,
         )
-    ],
-    paginationItemsPerPage: 7
+    ]
 )]
 class CompanyDashboard
 {
