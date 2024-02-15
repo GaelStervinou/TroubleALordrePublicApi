@@ -13,6 +13,10 @@
     deploy: |
       set -e
       npm run build
+
+  mounts:
+    "/app/front/node_modules": { source: ephemeral }
+    "/app/front/dist": { source: ephemeral }
       
   web:
     locations:
