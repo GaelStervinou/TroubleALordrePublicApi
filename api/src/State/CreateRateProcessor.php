@@ -40,16 +40,4 @@ class CreateRateProcessor implements ProcessorInterface
             $this->createAndUpdateStateProcessor->process($data, $operation, $uriVariables, $context);
         }
     }
-
-    private function getRated(Reservation $reservation, User $loggedInUser): ?array
-    {
-        if ($loggedInUser === $reservation->getCustomer()) {
-            return [$reservation->getTroubleMaker()];
-        }
-        if ($loggedInUser === $reservation->getTroubleMaker()) {
-            return $reservation->getCustomer();
-        }
-
-        return null;
-    }
 }
