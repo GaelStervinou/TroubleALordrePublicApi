@@ -6,18 +6,13 @@
   build:
     flavor: none
 
-  dependencies:
-    nodejs:
-      yarn: '^1.22.5'
-
   hooks:
     build: |
       set -e
-      yarn
+      npm install
     deploy: |
       set -e
-      yarn build
-      yarn start
+      npm build
       
   web:
     locations:
