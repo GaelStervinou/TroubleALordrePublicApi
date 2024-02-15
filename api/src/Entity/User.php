@@ -169,6 +169,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     private Collection $availibilities;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
+    #[Groups(['user:read'])]
     private ?Company $company = null;
 
     #[ORM\Column(length: 5, nullable: true)]
@@ -178,7 +179,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         minMessage: "Le kbis invalide",
         maxMessage: "Le kbis invalide"
     )]
-    #[Groups(['user:read', 'company:read', 'company:admin:read', 'company:dashboard:read'])]
+    #[Groups(['user:read', 'company:read', 'company:admin:read', 'company:dashboard:read', 'user:admin:read'])]
     private ?string $kbis = null;
 
     #[ORM\ManyToOne]
