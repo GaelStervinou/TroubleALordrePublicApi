@@ -91,10 +91,9 @@ api:
     build: |
       cp .env.example .env
       set -x -e
-      composer install
-      bin/console lexik:jwt:generate-keypair --overwrite
       curl -s https://get.symfony.com/cloud/configurator | bash
       symfony-build
+      bin/console lexik:jwt:generate-keypair --overwrite
     deploy: |
       set -x -e
       symfony-deploy
