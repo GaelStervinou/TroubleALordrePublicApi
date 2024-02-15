@@ -207,7 +207,7 @@ readonly class TroubleMakerService
             $minimumTime += (int)ceil(($duration * $i) / 300)* 300;
             $slots[] = [
                 'startTime' => $minimumTime,
-                'endTime' => $minimumTime + ($duration * $i) + $duration
+                'endTime' => $minimumTime + $duration
             ];
         }
 
