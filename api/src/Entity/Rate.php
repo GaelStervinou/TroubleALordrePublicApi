@@ -65,7 +65,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new Get(),
         new Post(
-            security: 'object.getUser() == user 
+            securityPostDenormalize: 'object.getUser() == user 
                 and object.getReservation().getCustomer() == user
                 and object.getReservation().isFinished()'
         )
