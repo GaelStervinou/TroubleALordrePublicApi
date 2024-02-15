@@ -1,6 +1,2 @@
-"https://{default}/":
-  type: upstream
-  upstream: "front:http"
-"https://api.{default}/":
-  type: upstream
-  upstream: "api:http"
+"https://{all}/": {type: upstream, upstream: "front:http"}
+"https://api.{all}/": {type: upstream, upstream: "api:http"}

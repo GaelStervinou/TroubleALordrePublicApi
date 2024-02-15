@@ -1,13 +1,29 @@
 - name: front
-  type: 'nodejs:18'
+  type: 'nodejs:20'
   source:
     root: front
 
+  build:
+    flavor: none
+
   hooks:
     build: |
+      set -e
       npm install
     deploy: |
+      set -e
+      npm run build
       npm run start
+      
+  web:
+    locations:
+      "/":
+        root: "dist"
+        index: "index.html"
+        allow: true
+        expires: 1d
+
+  disk: 1024
 
 - name: api
   type: php:8.2
@@ -40,7 +56,7 @@
     locations:
       "/":
         root: "public"
-        expires: 1h
+        expires: 1d
         passthru: "/index.php"
 
   mounts:
