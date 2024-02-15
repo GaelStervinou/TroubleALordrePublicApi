@@ -42,7 +42,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
         ),
     ],
     uriVariables: [
-        'id',
+        'id' => new Link(fromProperty: 'rates', fromClass: User::class),
     ],
     order: ['createdAt' => 'DESC']
 )]

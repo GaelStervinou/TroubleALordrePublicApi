@@ -157,7 +157,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     #[ORM\OneToMany(mappedBy: 'troubleMaker', targetEntity: Reservation::class)]
     private Collection $reservationsTroubleMaker;
 
-    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Rate::class)]
+    #[ORM\OneToMany(mappedBy: 'rated', targetEntity: Rate::class)]
     private Collection $rates;
 
     #[ORM\OneToMany(mappedBy: 'troubleMaker', targetEntity: Unavailability::class)]
