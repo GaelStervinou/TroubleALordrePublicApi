@@ -206,9 +206,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         $this->ownedCompanies = new ArrayCollection();
     }
 
-    public function getId(): ?UuidInterface
+    public function getId(): ?string
     {
-        return $this->id;
+        return $this->id->toString();
     }
 
     public function getEmail(): ?string

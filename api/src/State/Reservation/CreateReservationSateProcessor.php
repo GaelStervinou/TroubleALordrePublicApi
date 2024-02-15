@@ -33,7 +33,7 @@ class CreateReservationSateProcessor implements ProcessorInterface
     {
         if ($operation instanceof Post && $data instanceof Reservation) {
             $offset = $this->getOffsetFromDate($data->getDate());
-            $troubleMakerPlanning = $this->troubleMakerService->getTroubleMakerPlanning($data->getTroubleMaker()->getId()->toString(), $data->getService()->getId(), $offset, false);
+            $troubleMakerPlanning = $this->troubleMakerService->getTroubleMakerPlanning($data->getTroubleMaker()->getId(), $data->getService()->getId(), $offset, false);
             $planningForDate = $this->getPlanningForDate($data->getDate(), $troubleMakerPlanning);
             if (!$planningForDate) {
                 throw new ValidationException('Error');

@@ -42,8 +42,7 @@ class CompanyDashboardStateProvider implements ProviderInterface
         $companyId = $uriVariables[ 'id' ];
         if (!$this->security->getUser()->getOwnedCompanies()->exists(
                 function (int $index, Company $company) use ($companyId) {
-                    dump($company->getId()->toString(), $company->isActive());
-                    return $companyId === $company->getId()->toString() && $company->isActive();
+                    return $companyId === $company->getId() && $company->isActive();
                 })) {
             return [];
         }
