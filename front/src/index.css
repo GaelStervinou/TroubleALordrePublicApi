@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+    .text-color-effect {
+        background: linear-gradient(120deg,theme('colors.primary'),theme('colors.accent-200'));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .text-stroke-effect {
+        -webkit-text-stroke-width: 1px;
+        -webkit-text-stroke-color: theme('colors.text');
+        color: transparent;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar{
+        display: none;
+    }
+
+    .ambilight {
+        margin: 0 auto;
+        width: 100%;
+        height: 240px;
+        position: relative;
+    }
+
+    .ambilight > .light {
+        filter: blur(0px);
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        object-fit: cover;
+        top: 0px;
+        left: 0;
+        z-index: 0;
+        opacity: 0;
+        transition: all 0.5s ease;
+    }
+
+    .ambilight-on:hover > .light {
+        filter: blur(30px);
+        opacity: 1;
+    }
+
+    .comment-container-h > article > p {
+        width: 100%;
+    }
+
+    .story-outer-circle {
+        width: 90px;
+        height: 90px;
+        border-radius: 115px;
+        background-image: linear-gradient(
+                253.4deg,
+                theme('colors.primary') 10%,
+                theme('colors.accent') 28.28%,
+                theme('colors.accent-800') 28.63%,
+                theme('colors.secondary') 86.15%
+        );
+        background-origin: border-box;
+        background-clip: content-box, border-box;
+    }
+
+    .tab.active {
+        transition: all 0.7s;
+        color: theme('colors.background') !important;
+        background-color: theme('colors.primary') !important;
+    }
+
+    .tab-sm {
+        color: theme('colors.secondary');
+        background-color: theme('colors.background');
+    }
+
+    .tab-sm.active {
+        transition: all 0.7s;
+        color: theme('colors.background') !important;
+        background-color: theme('colors.secondary') !important;
+    }
+}
