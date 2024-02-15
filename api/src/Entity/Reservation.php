@@ -11,12 +11,14 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Controller\Action\Export\ExportTroubleMakerReservations;
 use App\Controller\Action\PaymentIntent\CreatePaymentIntentAction;
 use App\Entity\Trait\TimestampableTrait;
 use App\Enum\ReservationStatusEnum;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\ReservationRepository;
 use App\State\Reservation\CreateReservationSateProcessor;
+use App\State\TroubleMakerReservationsExportStateProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -59,9 +61,27 @@ use Symfony\Component\Validator\Constraints as Assert;
             normalizationContext: ['groups' => ['user:reservation:read']],
             name: Reservation::USER_RESERVATIONS_AS_TROUBLE_MAKERS,
         ),
+        new Get(
+            controller: ExportTroubleMakerReservations::class,
+        )
     ],
     uriVariables: [
         'id' => new Link(fromProperty: 'reservationsTroubleMaker', fromClass: User::class)
+    ],
+    order: ['createdAt' => 'DESC']
+)]
+#[ApiResource(
+    operations: [
+        new Get(
+            uriTemplate: '/users/trouble-maker/{id}/reservations/export',
+            uriVariables: [
+                'id'
+            ],
+            requirements: [
+                'id' => '[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}',
+            ],
+            provider: TroubleMakerReservationsExportStateProvider::class,
+        )
     ],
     order: ['createdAt' => 'DESC']
 )]
