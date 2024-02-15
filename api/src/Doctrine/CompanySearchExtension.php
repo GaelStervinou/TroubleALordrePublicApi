@@ -49,7 +49,7 @@ final readonly class CompanySearchExtension implements QueryCollectionExtensionI
             "ST_DWithin(
             ST_MakePoint(%s.lng, %s.lat),
             ST_MakePoint(:lng, :lat),
-          5000) = TRUE", $rootAlias, $rootAlias
+          2.5)", $rootAlias, $rootAlias
         ))
             ->setParameter('lat', $lat, ParameterType::STRING)
             ->setParameter('lng', $lng, ParameterType::STRING);
