@@ -190,38 +190,39 @@ class UserAvailabilitiesStateProvider implements ProviderInterface
             }
             foreach ($availabilities[ $date ] as $shift) {
                 if (!array_key_exists($date, $availabilitiesByDay)) {
-                    $availabilitiesByDay[ $date ][] = $shift;
-                } else {
-                    foreach ($availabilitiesByDay[ $date ] as $index => $availability) {
-                        if (
-                            $availability[ 'startTime' ] > $shift[ 'startTime' ]
-                            && $availability[ 'endTime' ] > $shift[ 'endTime' ]
-                            && $availability[ 'startTime' ] < $shift[ 'endTime' ]
-                        ) {
-                            $availabilitiesByDay[ $date ][ $index ][ 'startTime' ] = $shift[ 'startTime' ];
-                            continue;
-                        } elseif (
-                            $availability[ 'startTime' ] < $shift[ 'startTime' ]
-                            && $availability[ 'endTime' ] > $shift[ 'startTime' ]
-                            && $availability[ 'endTime' ] < $shift[ 'endTime' ]
-                        ) {
-                            $availabilitiesByDay[ $date ][ $index ][ 'endTime' ] = $shift[ 'endTime' ];
-                            continue;
-                        } elseif (
-                            $availability[ 'startTime' ] > $shift[ 'startTime' ]
-                            && $availability[ 'endTime' ] < $shift[ 'endTime' ]
-                        ) {
-                            $availabilitiesByDay[ $date ][ $index ] = $shift;
-                            continue;
-                        } elseif (
-                            $availability[ 'startTime' ] < $shift[ 'startTime' ]
-                            && $availability[ 'endTime' ] > $shift[ 'endTime' ]
-                        ) {
-                            continue;
-                        }
                         $availabilitiesByDay[ $date ][] = $shift;
+                    } else {
+                        foreach ($availabilitiesByDay[ $date ] as $index => $availability) {
+                            if (
+                                $availability[ 'startTime' ] > $shift[ 'startTime' ]
+                                && $availability[ 'endTime' ] > $shift[ 'endTime' ]
+                                && $availability[ 'startTime' ] < $shift[ 'endTime' ]
+                            ) {
+                                $availabilitiesByDay[ $date ][ $index ][ 'startTime' ] = $shift[ 'startTime' ];
+                                continue;
+                            } elseif (
+                                $availability[ 'startTime' ] < $shift[ 'startTime' ]
+                                && $availability[ 'endTime' ] > $shift[ 'startTime' ]
+                                && $availability[ 'endTime' ] < $shift[ 'endTime' ]
+                            ) {
+                                $availabilitiesByDay[ $date ][ $index ][ 'endTime' ] = $shift[ 'endTime' ];
+                                continue;
+                            } elseif (
+                                $availability[ 'startTime' ] > $shift[ 'startTime' ]
+                                && $availability[ 'endTime' ] < $shift[ 'endTime' ]
+                            ) {
+                                $availabilitiesByDay[ $date ][ $index ] = $shift;
+                                continue;
+                            } elseif (
+                                $availability[ 'startTime' ] < $shift[ 'startTime' ]
+                                && $availability[ 'endTime' ] > $shift[ 'endTime' ]
+                            ) {
+                                continue;
+                            }
+                            $availabilitiesByDay[ $date ][] = $shift;
+                        }
                     }
-                }
+                
             }
             $fromDate = $fromDate->add(new \DateInterval("P1D"))->setTime(0, 0, 0);
         }

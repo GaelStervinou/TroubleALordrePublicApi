@@ -52,6 +52,8 @@ import UnavailabilitiesBackOffice from './routes/UnavailabilitesBackOffice.jsx';
 import UserAvailabilities from './routes/UserAvailabilities.jsx';
 import UserUnavailabilities from './routes/UserUnavailabilities.jsx';
 import UserAvailabilitiesCreate from './routes/UserAvailabilitiesCreate.jsx';
+import UserUnavailabilitiesCreate from './routes/UserUnavailabilitiesCreate.jsx';
+import ReservationRateCreate from './routes/ReservationRateCreate.jsx';
 
 const router = createBrowserRouter([
     {
@@ -101,6 +103,11 @@ const router = createBrowserRouter([
     {
         path: "/reservations/:reservationId",
         element: <ReservationPage/>,
+        errorElement: <LoadingPageError/>,
+    },
+    {
+        path: "/reservations/:reservationId/rate",
+        element: <ReservationRateCreate/>,
         errorElement: <LoadingPageError/>,
     },
     {
@@ -252,6 +259,11 @@ const router = createBrowserRouter([
     {
         path: "/profile/:userId/planning/availabilities/create",
         element: <UserAvailabilitiesCreate/>,
+        errorElement: <LoadingPageError/>,
+    },
+    {
+        path: "/profile/:userId/planning/unavailabilities/create",
+        element: <UserUnavailabilitiesCreate/>,
         errorElement: <LoadingPageError/>,
     },
     {
