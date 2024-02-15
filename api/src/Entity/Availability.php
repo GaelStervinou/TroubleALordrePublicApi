@@ -90,7 +90,7 @@ class Availability implements TimestampableEntityInterface
     #[ORM\Column(nullable: true)]
     #[Groups(['availability:read', 'availability:write', 'availability:update'])]
     #[Assert\GreaterThan(propertyPath: "startTime", message: "La date de fin doit être postérieure à la date de début")]
-    #[Assert\LessThan(value: "tomorrow", message: "La date de fin doit être postérieure à la date de début")]
+    #[Assert\Expression('this.isValidEndTime()', 'Vous ne pouvez mettre une indisponibilité que sur un seul jour.')]
     #[Assert\Expression('this.getDay() === null', 'Vous ne pouvez pas ajouter d\'heure spécifique à un jour de la semaine')]
     #[Assert\Expression('this.getTroubleMaker() !== null', 'Vous devez associer ce temps de travail spécifique à un prestataire.')]
     private ?DateTimeImmutable $endTime = null;
@@ -208,5 +208,10 @@ class Availability implements TimestampableEntityInterface
         $this->companyEndTime = $companyEndTime;
 
         return $this;
+    }
+
+    public function isValidEndTime(): bool
+    {
+        return $this->getStartTime()->setTime(0, 0)->add(new \DateInterval("P1D")) > $this->getEndTime();
     }
 }
