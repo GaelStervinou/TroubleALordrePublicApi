@@ -11,6 +11,7 @@ use App\Entity\User;
 use App\Repository\AvailabilityRepository;
 use App\Repository\ReservationRepository;
 use App\Repository\UnavailabilityRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 
 readonly class TroubleMakerService
@@ -104,6 +105,7 @@ readonly class TroubleMakerService
 
     private function sliceShiftsByDays(array $availabilities, \DateTimeImmutable $fromDate): array
     {
+        //dd($availabilities);
         $shifts = [];
 
         /**
@@ -126,6 +128,7 @@ readonly class TroubleMakerService
                 $day = (int)$availability->getStartTime()?->format('N');
                 $date = $availability->getStartTime()?->format('Y-m-d');
 
+                $dateImmutable = $availability->getStartTime();
                 $startTime = $availability->getStartTime()?->format('H:i');
                 $endTime = $availability->getEndTime()?->format('H:i');
             }
@@ -133,18 +136,20 @@ readonly class TroubleMakerService
             $explodedStartTime = explode(":", $startTime);
             $explodedEndTime = explode(":", $endTime);
 
-            $startTime = strtotime($fromDate->setTime((int)$explodedStartTime[ 0 ], (int)$explodedStartTime[ 1 ])->format('Y-m-d H:i:s'));
-            $endTime = strtotime($fromDate->setTime((int)$explodedEndTime[ 0 ], (int)$explodedEndTime[ 1 ])->format('Y-m-d H:i:s'));
+            $startTime = strtotime($dateImmutable->setTime((int)$explodedStartTime[ 0 ], (int)$explodedStartTime[ 1 ])->format('Y-m-d H:i:s'));
+            $endTime = strtotime($dateImmutable->setTime((int)$explodedEndTime[ 0 ], (int)$explodedEndTime[ 1 ])->format('Y-m-d H:i:s'));
 
             $shifts[ $date ][] = [
                 'startTime' => $startTime,
                 'endTime' => $endTime
             ];
-            if (!array_key_exists($date, $minAndMaxTimes) || $minAndMaxTimes[ $date ][ 'minimumStartTime' ] > $startTime) {
+            if (!array_key_exists($date, $minAndMaxTimes) || ($minAndMaxTimes[ $date ][ 'minimumStartTime' ] > $startTime)) {
                 $minAndMaxTimes[ $date ][ 'minimumStartTime' ] = $startTime;
+                //dump($date, DateTimeImmutable::createFromFormat('U', $minAndMaxTimes[ $date ][ 'minimumStartTime' ]));
             }
             if (!array_key_exists('maximumEndTime', $minAndMaxTimes[ $date ]) || $minAndMaxTimes[ $date ][ 'maximumEndTime' ] > $endTime) {
                 $minAndMaxTimes[ $date ][ 'maximumEndTime' ] = $endTime;
+                //dump($date, DateTimeImmutable::createFromFormat('U', $minAndMaxTimes[ $date ][ 'maximumEndTime' ]));
             }
             $doneDays[] = $day;
         }
@@ -192,26 +197,28 @@ readonly class TroubleMakerService
 
             $fromDate = $fromDate->add(new \DateInterval("P1D"))->setTime(0, 0);
         }
-
         return $avalaibleSlotsByDay;
     }
 
     private function getAllPossibleSlotsByDay(int $minimumTime, int $maximumTime, int $duration): array
     {
+        $day = \DateTimeImmutable::createFromFormat('U', $minimumTime);
+        $dayToTime = strtotime($day->add(new \DateInterval("P1D"))->format('Y-m-d'));
         $timeRange = $maximumTime - $minimumTime;
         $slots = [];
+        $maximumNumberOfSlots = floor($timeRange / $duration);
 
-        $numberOfSlots = floor($timeRange / $duration);
-
-        for ($i = 0; $i < $numberOfSlots; $i++) {
+        for ($i = 0; $i < $maximumNumberOfSlots; $i++) {
             $minimumTime += (int)ceil(($duration * $i) / 300)* 300;
+            $endTime = $minimumTime + $duration;
+            if ($minimumTime >= $dayToTime|| $endTime >= $dayToTime) {
+                return $slots;
+            }
             $slots[] = [
                 'startTime' => $minimumTime,
-                'endTime' => $minimumTime + $duration
+                'endTime' => $endTime
             ];
         }
-
         return $slots;
-
     }
 }

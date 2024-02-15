@@ -87,6 +87,7 @@ class MailerService
                 return [
                     'lastnameTo' => $options['lastnameTo'],
                     'firstnameTo' => $options['firstnameTo'],
+                    'date' => $options['date'],
                 ];
         }
     }

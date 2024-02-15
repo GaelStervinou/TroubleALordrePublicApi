@@ -32,8 +32,8 @@ class AvailabilityFixtures extends Fixture implements DependentFixtureInterface
             foreach ($company->getCompanyActiveTroubleMakers() as $troubleMaker) {
                 for ($i=0; $i<3; $i++) {
                     $startDate = \DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-5 days', '+15 days'));
-                    $hours = random_int(1, 8);
-                    $endDate = $startDate->add(new DateInterval("PT{$hours}H"));
+                    $startDate->setTime(random_int(0, 11), random_int(0, 59));
+                    $endDate = $startDate->setTime(random_int(12, 23), random_int(0, 59));
 
                     $availibility = (new Availability())
                         ->setTroubleMaker($troubleMaker)

@@ -24,7 +24,7 @@ class CreateReservationSateProcessor implements ProcessorInterface
         private CreateAndUpdateStateProcessor $createAndUpdateStateProcessor,
         private readonly Security             $security,
         private TroubleMakerService           $troubleMakerService,
-        private MailerService $mailerService
+        private MailerService                 $mailerService
     )
     {
     }
@@ -46,7 +46,14 @@ class CreateReservationSateProcessor implements ProcessorInterface
             $data->setStatus(ReservationStatusEnum::ACTIVE);
             $data->setPrice($data->getService()?->getPrice());
             $data->setDuration($data->getService()?->getDuration());
-            $this->mailerService->sendEmail();
+            $this->mailerService->sendEmail([
+                'emailTo' => $this->security->getUser()->getEmail(),
+                'firstname' => $this->security->getUser()->getFirstname(),
+                'firstnameTo' => $this->security->getUser()->getFirstname(),
+                'lastname' => $this->security->getUser()->getLastname(),
+                'lastnameTo' => $this->security->getUser()->getLastname(),
+                'date' => $data->getDate()->format('Y-m-d H:i'),
+            ], 0);
             $this->createAndUpdateStateProcessor->process($data, $operation, $uriVariables, $context);
         }
     }
@@ -65,8 +72,9 @@ class CreateReservationSateProcessor implements ProcessorInterface
 
     private function isTroubleMakerAvailableAt(DateTimeImmutable $date, Planning $planning, int $duration): bool
     {
-        $startTime = (int)ceil(strtotime($date->format('Y-m-d H:i:s'))/300)*300;
+        $startTime = strtotime($date->format('Y-m-d H:i:s'));
         $endTime = $startTime + $duration;
+
         foreach ($planning->getShifts() as $shift) {
             if (
                 $shift[ 'startTime' ] <= $startTime
@@ -81,7 +89,7 @@ class CreateReservationSateProcessor implements ProcessorInterface
     private function getPlanningForDate(DateTimeImmutable $date, array $plannings): ?Planning
     {
         $formattedDate = $date->format('Y-m-d');
-        /**@var $planning Planning*/
+        /**@var $planning Planning */
         foreach ($plannings as $planning) {
             if ($formattedDate === $planning->getDate()) {
                 return $planning;
