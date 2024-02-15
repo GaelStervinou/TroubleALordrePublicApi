@@ -24,7 +24,6 @@
 
   disk: 1024
 
-
 - name: api
   type: php:8.2
   source:
