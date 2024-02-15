@@ -48,7 +48,8 @@ use Symfony\Component\Serializer\Attribute\Groups;
         ),
         new GetCollection(
             uriTemplate: '/companies/search',
-            name: Company::COMPANY_SEARCH_ROUTE
+            paginationEnabled: false,
+            name: Company::COMPANY_SEARCH_ROUTE,
         ),
         new Get(),
         new Post(
