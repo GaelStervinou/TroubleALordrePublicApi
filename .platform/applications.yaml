@@ -19,7 +19,7 @@
       "/":
         root: "dist"
         index: ["index.html"]
-        scripts: false
+        scripts: true
         allow: true
         expires: 1d
 
