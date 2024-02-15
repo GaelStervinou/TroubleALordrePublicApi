@@ -13,6 +13,7 @@
     deploy: |
       set -e
       npm run build
+      npm run start
 
   mounts:
     "/dist": { source: local, source_path: dist }
