@@ -21,8 +21,8 @@
     locations:
       "/":
         root: "dist"
-        index: ["/index.html"]
-        scripts: false
+        index: ["index.html"]
+        scripts: true
         allow: true
         expires: 1d
 
