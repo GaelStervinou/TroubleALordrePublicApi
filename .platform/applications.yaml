@@ -21,7 +21,7 @@
     locations:
       "/":
         root: "dist"
-        index: ["index.html"]
+        passthru: "/index.html"
         scripts: true
         allow: true
         expires: 1d
