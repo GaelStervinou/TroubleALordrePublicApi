@@ -1,2 +1,4 @@
 "https://{all}/": {type: upstream, upstream: "front:http"}
+"http://{all}/": {type: redirect, to: "https://{all}/"}
 "https://api.{all}/": {type: upstream, upstream: "api:http"}
+"http://api.{all}/": {type: redirect, to: "https://api.{all}/"}
