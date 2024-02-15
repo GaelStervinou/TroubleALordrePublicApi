@@ -57,7 +57,11 @@ use Symfony\Component\Validator\Constraints\NotBlank;
             provider: UserMeProvider::class,
         ),
         new Put(processor: UserPasswordHasherStateProcessor::class),
-        new Patch(processor: UserPasswordHasherStateProcessor::class)
+        new Patch(
+            denormalizationContext: ['groups' => ['user:update']],
+            security: 'user.isAdmin() or user === object',
+            processor: UserPasswordHasherStateProcessor::class
+        )
     ],
     normalizationContext: ['groups' => ['user:read']],
     //TODO denormalizationContext à faire !!!!
@@ -141,7 +145,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     private ?string $lastname = null;
 
     #[ORM\Column (options: ['default' => UserStatusEnum::USER_STATUS_PENDING])]
-    #[Groups(['user:read', 'user:admin:read'])]
+    #[Groups(['user:read', 'user:admin:read', 'user:update'])]
     private ?UserStatusEnum $status = null;
 
     #[ORM\Column(length: 255, nullable: true)]
