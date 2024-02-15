@@ -19,7 +19,7 @@
     locations:
       "/":
         root: "dist"
-        index: "index.html"
+        index: ["index.html"]
         allow: true
         expires: 1d
 
