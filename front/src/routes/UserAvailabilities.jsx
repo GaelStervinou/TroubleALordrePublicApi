@@ -60,12 +60,6 @@ export default function UserAvailabilities() {
                 </div>
               </div>
               <div className="flex flex-row gap-2 max-sm:w-full">
-              <Button
-                  hasBackground
-                  title={'Supprimer'}
-                  onClick={() => deleteAvailability(availability.id)}
-                  className={'bg-danger text-background'}
-                />
               </div>
             </header>
           </article>

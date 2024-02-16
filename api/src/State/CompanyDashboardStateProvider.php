@@ -41,7 +41,7 @@ class CompanyDashboardStateProvider implements ProviderInterface
             $companyId = $uriVariables[ 'id' ];
             if (!$this->security->getUser()->getOwnedCompanies()->exists(
                 function (int $index, Company $company) use ($companyId) {
-                    return $companyId === $company->getId() && $company->isActive();
+                    return $companyId === $company->getId()->toString() && $company->isActive();
                 })) {
                 throw new AccessDeniedException("Vous n'avez pas accès à cette entreprise, ou elle n'est plus active.");
             }
@@ -82,9 +82,9 @@ class CompanyDashboardStateProvider implements ProviderInterface
                 $uriVariables[ 'id' ]
             );
             if (count($bestTroubleMakerData) > 0) {
-                $bestTroubleMaker = $this->entityManager->getRepository(User::class)->find($bestTroubleMakerData[ 'id' ]->serialize());
+                $bestTroubleMaker = $this->entityManager->getRepository(User::class)->find($bestTroubleMakerData[0][ 'id' ]->toString());
                 if ($bestTroubleMaker) {
-                    $companyDashboard->setBestTroubleMaker($bestTroubleMaker->setCurrentMonthTotalReservations($bestTroubleMakerData[ 'best_trouble_maker' ]));
+                    $companyDashboard->setBestTroubleMaker($bestTroubleMaker->setCurrentMonthTotalReservations($bestTroubleMakerData[0][ 'best_trouble_maker' ]));
                 }
             }
 

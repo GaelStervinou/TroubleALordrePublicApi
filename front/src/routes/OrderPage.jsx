@@ -195,7 +195,8 @@ export default function OrderPage() {
                                                 setCurrentPlanningPage(currentPlanningPage + 1);
                                             }}
                                             hasBackground={false}
-                                            className={'!w-full !mt-6 !bg-on-surface rounded-xl !text-primary hover:!bg-accent-500 hover:!text-text'}/>
+                                            className={'!w-full !mt-6 !bg-on-surface rounded-xl !text-primary hover:!bg-accent-500 hover:!text-text'}
+                                            />
                                     </div>
                                 </section>
                             ) : (
@@ -254,6 +255,7 @@ export default function OrderPage() {
                                 title={ nextStepName === 'Confirmation' ? translate("confirm") : translate("choose-a") + ' ' + nextStepName}
                                 hasBackground
                                 className={'!w-full !bg-primary !text-background hover:!bg-secondary disabled:!bg-on-surface'}
+                                disabled={!nextStepAvailable}
                             />
                         )}
                     </section>

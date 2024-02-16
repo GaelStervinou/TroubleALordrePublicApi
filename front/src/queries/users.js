@@ -16,7 +16,7 @@ export const getUserServicePlanning = async (idUser, idService, page) => {
         const response = await http.get(`/plannings/${idUser}/${idService}?page=${page}`);
         return response.data['hydra:member'];
     } catch (error) {
-        window.location.href = '/error';
+        console.error('Pas de planning pour cet utilisateur et ce service');
     }
 }
 
