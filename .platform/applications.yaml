@@ -27,7 +27,7 @@ front:
         scripts: false
         allow: true
 
-  disk: 5048
+  disk: 4048
 
 api:
   type: php:8.3
