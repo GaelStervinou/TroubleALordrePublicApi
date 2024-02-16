@@ -38,7 +38,7 @@ export default function Header() {
                 <div className="absolute w-full">
                     <div className="mx-auto flex justify-between items-center px-8 lg:px-16 h-full">
                         <a href="/" className={'w-96'}>
-                            <p className={'font-heading text-xl'}>Logo</p>
+                            <p className={'font-heading text-xl'}>TOLAP</p>
                         </a>
                         <div className={`h-12 transition-all duration-700 ${isSearchVisible ? 'opacity-1' : 'hidden opacity-0'}`}>
                             <Search />
