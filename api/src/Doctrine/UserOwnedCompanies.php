@@ -40,7 +40,7 @@ final readonly class UserOwnedCompanies implements QueryCollectionExtensionInter
         }
         /**@var $user User*/
         $user = $this->security->getUser();
-        if ($this->security->isGranted("ROLE_ADMIN") || $context[ 'request' ]?->get('id') !== $user->getId()) {
+        if (!$this->security->isGranted("ROLE_ADMIN") || $context[ 'request' ]?->get('id') !== $user->getId()) {
             throw new AccessDeniedException("Vous ne pouvez accéder qu'à vos propres établissements.");
         }
     }
