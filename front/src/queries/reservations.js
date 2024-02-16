@@ -22,8 +22,7 @@ export const getReservation = async (id) => {
 
 export const createReservation = async (reservation) => {
     try {
-        const response = await http.post('/reservations', reservation);
-        return response.data;
+        return await http.post('/reservations', reservation);
     } catch (error) {
         return error.response.data;
     }

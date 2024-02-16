@@ -5,12 +5,12 @@ import Chip from "../components/atoms/Chip.jsx";
 import {useOrder} from "../hooks/useOrder.jsx";
 import {useEffect, useState} from "react";
 import {getCompanyUsers} from "../queries/companies.js";
-import {useParams,useNavigate} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 import CardRounded from "../components/molecules/CardRounded.jsx";
 import {getService} from "../queries/services.js";
 import {getUserServicePlanning} from "../queries/users.js";
-import { useAuth } from "../app/authContext.jsx";
-import { createReservation } from "../queries/reservations.js";
+import {useAuth} from "../app/authContext.jsx";
+import {createReservation} from "../queries/reservations.js";
 import {useTranslator} from "../app/translatorContext.jsx";
 
 export default function OrderPage() {
@@ -22,7 +22,7 @@ export default function OrderPage() {
     const [error, setError] = useState(null);
     const {translate, getLanguageForDate} = useTranslator();
 
-    const { isLoggedIn, retrieveUser } = useAuth();
+    const {isLoggedIn, retrieveUser} = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -72,7 +72,7 @@ export default function OrderPage() {
             } else {
                 setCurrentStep('Confirmation');
                 setError('Une erreur est survenue lors de la création de votre rendez-vous, veuillez réessayer ultérieurement')
-            };
+            }
         }
     }    
     
@@ -107,10 +107,18 @@ export default function OrderPage() {
             setNextStepAvailable(true);
             const fetchUserServicePlanning = async () => {
                 const fetchedServicePlanning = await getUserServicePlanning(provider.id, serviceId, currentPlanningPage);
-                const formattedPlanning = fetchedServicePlanning.map(planning => ({
-                    date: planning.date,
-                    shifts: planning.shifts.map(shift => shift.startTime)
-                }));
+                const formattedPlanning = fetchedServicePlanning.map((planning) => {
+                        let shifts = [];
+                        for (const value in planning.shifts) {
+                            shifts.push(planning.shifts[value].startTime);
+                        }
+                        return {
+                            date: planning.date,
+                            shifts: shifts
+                        }
+
+                    }
+                );
                 setProviderCalendar(formattedPlanning);
             }
             fetchUserServicePlanning();
