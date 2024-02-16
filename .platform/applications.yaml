@@ -1,17 +1,36 @@
-- name: front
-  type: nodejs:20
-  source:
-    root: front
+#front:
+#  type: 'nodejs:20'
+#  source:
+#    root: front
+#
+#  size: M
+#
+#  build:
+#    flavor: none
+#
+#  hooks:
+#    build: |
+#      set -e
+#      npm install
+#    deploy: |
+#      VITE_OUTPUT_DIR=/dist/tmp npm run build
+#
+#  mounts:
+#    "/dist": { source: local, source_path: dist }
+#
+#  web:
+#    locations:
+#      "/":
+#        root: "dist"
+#        passthru: "/index.html"
+#        expires: 1h
+#        scripts: false
+#        allow: true
+#
+#  disk: 2048 */
 
-  hooks:
-    build: |
-      npm install
-      npm run build
-    deploy: |
-      npm run start
-
-- name: api
-  type: php:8.2
+api:
+  type: php:8.3
   source:
     root: api
   dependencies:
@@ -32,6 +51,7 @@
   variables:
     php:
       opcache.preload: config/preload.php
+
   build:
     flavor: none
 
@@ -41,12 +61,17 @@
     locations:
       "/":
         root: "public"
-        expires: 1h
-        passthru: "/index.php"
+        passthru: '/index.php'
+        index:
+          - index.php
+        scripts: true
+        allow: true
+        headers:
+          Access-Control-Allow-Origin: "*"
 
   mounts:
     "/var": { source: local, source_path: var }
-
+    "/public": { source: local, source_path: public }
 
   relationships:
     database: "database:postgresql"
@@ -55,9 +80,9 @@
     build: |
       cp .env.example .env
       set -x -e
-      composer install
+      curl -s https://get.symfony.com/cloud/configurator | bash
+      symfony-build
       bin/console lexik:jwt:generate-keypair --overwrite
-      curl -fs https://get.symfony.com/cloud/configurator | bash
     deploy: |
       set -x -e
       symfony-deploy
