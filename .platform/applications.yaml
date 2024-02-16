@@ -8,11 +8,11 @@ front:
   build:
     flavor: none
 
-  hooks:
-    build: |
-      set -e
+#  hooks:
+#    build: |
+#      set -e
 #      npm install
-    deploy: |
+#    deploy: |
 #      VITE_OUTPUT_DIR=/dist/tmp npm run build
 
   mounts:
