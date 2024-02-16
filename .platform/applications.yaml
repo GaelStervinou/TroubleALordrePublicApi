@@ -6,9 +6,6 @@ front:
   build:
     flavor: none
 
-  mounts:
-    "/dist": { source: local, source_path: dist }
-
   hooks:
     build: |
       set -e
