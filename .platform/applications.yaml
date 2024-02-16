@@ -1,33 +1,33 @@
-front:
-  type: 'nodejs:20'
-  source:
-    root: front
-
-  size: M
-
-  build:
-    flavor: none
-
-  hooks:
-    build: |
-      set -e
-      npm install
-    deploy: |
-      VITE_OUTPUT_DIR=/dist/tmp npm run build
-
-  mounts:
-    "/dist": { source: local, source_path: dist }
-
-  web:
-    locations:
-      "/":
-        root: "dist"
-        passthru: "/index.html"
-        expires: 1h
-        scripts: false
-        allow: true
-
-  disk: 2048
+#front:
+#  type: 'nodejs:20'
+#  source:
+#    root: front
+#
+#  size: M
+#
+#  build:
+#    flavor: none
+#
+#  hooks:
+#    build: |
+#      set -e
+#      npm install
+#    deploy: |
+#      VITE_OUTPUT_DIR=/dist/tmp npm run build
+#
+#  mounts:
+#    "/dist": { source: local, source_path: dist }
+#
+#  web:
+#    locations:
+#      "/":
+#        root: "dist"
+#        passthru: "/index.html"
+#        expires: 1h
+#        scripts: false
+#        allow: true
+#
+#  disk: 2048 */
 
 api:
   type: php:8.3
