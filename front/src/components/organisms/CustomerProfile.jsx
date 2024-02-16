@@ -12,6 +12,7 @@ export default function CustomerProfile() {
     const [userInformation, setUserInformation] = useState([]);
     const [isTroubleMaker, setIsTroubleMaker] = useState(false);
     const [isMemberOfMyCompany, setIsMemberOfMyCompany] = useState(false);
+    const [profilePicture, setProfilePicture] = useState('');
     const { userId } = useParams();
 
 
@@ -28,6 +29,13 @@ export default function CustomerProfile() {
             fetchedUser.userAverageRatesValue = fetchedUser.userAverageRatesValue ? fetchedUser.userAverageRatesValue.toFixed(1) : null;
 
             setUserInformation(fetchedUser);
+
+            if (fetchedUser?.profilePicture?.contentUrl){
+                setProfilePicture(`${import.meta.env.VITE_API_BASE_URL}${fetchedUser.profilePicture.contentUrl}`)
+            } else {
+                setProfilePicture(`${import.meta.env.VITE_API_BASE_URL}/media/default-profile-picture.jpeg`)
+            }
+
 
             if (fetchedUser.roles.includes('ROLE_TROUBLE_MAKER')) {
                 setIsTroubleMaker(true);
@@ -68,8 +76,8 @@ export default function CustomerProfile() {
                         <div className="story-outer-circle flex justify-center items-center w-32 h-32 max-sm:w-24 max-sm:h-24">
                             <img
                                 className={'rounded-full h-[93%] w-[93%] bg-accent-200 object-cover border-surface border-[8px] text-accent-200'}
-                                src={`${import.meta.env.VITE_API_BASE_URL}${userInformation.profilePicture?.contentUrl}`}
-                                alt={''}
+                                src={profilePicture }
+                                alt={'profile picture'}
                             />
                         </div>
                         <div className={'space-y-3'}>

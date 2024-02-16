@@ -157,7 +157,7 @@ export default function OrderPage() {
                                     <div className={'bg-surface py-12 mt-6 rounded-xl max-sm:py-6'}>
                                         <div className="overflow-x-scroll flex gap-8 w-full max-w-full scrollbar-hide px-8 max-sm:px-6 max-sm:gap-6">
                                             {collaboratorList?.map((item, index) => (
-                                                <CardRounded key={index} onClick={() => {setProvider(item)}} imagePath={`${import.meta.env.VITE_API_BASE_URL}${item.profilePicture.contentUrl}`} title={`${item.firstname} ${item.lastname}`} />
+                                                <CardRounded key={index} onClick={() => {setProvider(item)}} imagePath={`${import.meta.env.VITE_API_BASE_URL}${item.profilePicture.contentUrl ?? '/'}`} title={`${item.firstname} ${item.lastname}`} />
                                             ))}
                                         </div>
                                     </div>

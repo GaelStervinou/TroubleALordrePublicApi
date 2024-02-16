@@ -39,7 +39,7 @@ export default function UserRatesBookings() {
                 {ratesBookings.map((rate, index) => (
                     <Comment
                         key={index}
-                        authorImagePath={`${import.meta.env.VITE_API_BASE_URL}${rate.createdBy.profilePicture}`}
+                        authorImagePath={`${import.meta.env.VITE_API_BASE_URL}${rate.createdBy.profilePicture ?? '/'}`}
                         content={rate.content}
                         date={rate.createdAt}
                         rate={rate.value}

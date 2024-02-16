@@ -37,7 +37,7 @@ export default function CardList({ items }) {
             </div>
             <div className="flex overflow-x-auto scrollbar-hide px-2 max-sm:px-3 pl-36 max-md:pl-28 mt-[-65px]" ref={listRef}>
                 {items.map((item, index) => (
-                    <Card key={index} categories={item.categories} id={item.id} imagePath={`${import.meta.env.VITE_API_BASE_URL}${item.mainMedia.contentUrl}`} title={item.name} path={`/${item.id}`} rate={item.averageServicesRatesFromCustomer} />
+                    <Card key={index} categories={item.categories} id={item.id} imagePath={`${import.meta.env.VITE_API_BASE_URL}${item.mainMedia.contentUrl ?? '/'}`} title={item.name} path={`/${item.id}`} rate={item.averageServicesRatesFromCustomer} />
                 ))}
             </div>
         </div>

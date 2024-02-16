@@ -44,7 +44,7 @@ export default function BackOfficeEstablishments() {
             <article className={'flex flex-col gap-4 py-2'} key={establishment.id}>
               <header className={'flex justify-between items-start max-md:flex-col gap-2 max-md:gap-4'}>
                   <div className="flex flex-row gap-5">
-                      <img src={`${import.meta.env.VITE_API_BASE_URL}${establishment.mainMedia.contentUrl}`} alt={establishment.name} className={'w-28 h-28 object-fit'}/>
+                      <img src={`${import.meta.env.VITE_API_BASE_URL}${establishment.mainMedia.contentUrl ?? '/'}`} alt={establishment.name} className={'w-28 h-28 object-fit'}/>
                       <div className={'flex flex-col gap-1 mx-auto'}>
                           <h5 className={'text-xl font-medium'}>{establishment.name}</h5>
                           <div className={'flex gap-1'}>

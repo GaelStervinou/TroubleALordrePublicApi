@@ -169,7 +169,7 @@ export default function CompanyDashboardPage() {
                                 <div className="w-16 rounded-full">
                                     {isLoading ?
                                         (<div className="skeleton w-16 h-16 rounded-full"></div>) :
-                                        (<img src={`${import.meta.env.VITE_API_BASE_URL}${companyDashboard.bestTroubleMaker?.contentUrl}`} alt={companyDashboard.bestTroubleMaker?.name} />)
+                                        (<img src={`${import.meta.env.VITE_API_BASE_URL}${companyDashboard.bestTroubleMaker?.contentUrl ?? '/'}`} alt={companyDashboard.bestTroubleMaker?.name} />)
                                     }
                                 </div>
                             </div>

@@ -62,7 +62,7 @@ export default function Header() {
                                 <div className="dropdown dropdown-end">
                                     <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                                         <div className="w-10 rounded-full bg-accent-200 text-accent-200">
-                                            <img alt="profile picture" src={`${import.meta.env.VITE_API_BASE_URL}${retrieveUser().profilePicture?.contentUrl}`} className={'bg-accent-200'} />
+                                            <img alt="profile picture" src={`${import.meta.env.VITE_API_BASE_URL}${retrieveUser().profilePicture?.contentUrl ?? '/media/default-profile-picture.jpeg'}`} className={'bg-accent-200'} />
                                         </div>
                                     </div>
                                     <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow-lg menu menu-sm dropdown-content bg-surface rounded-box w-52">

@@ -200,7 +200,7 @@ export default function ReservationPage() {
                                                 (<div className="skeleton rounded-full w-32 h-32"></div>) :
                                                 (<img
                                                     className={'rounded-full h-[93%] w-[93%] bg-accent-200 object-cover border-surface border-[8px]'}
-                                                    src={`${import.meta.env.VITE_API_BASE_URL}${reservation.customer.profilePicture.contentUrl}`}
+                                                    src={`${import.meta.env.VITE_API_BASE_URL}${reservation.customer.profilePicture.contentUrl ?? '/'}`}
                                                     alt={reservation.service.name} />
                                                 )
                                             }
@@ -237,7 +237,7 @@ export default function ReservationPage() {
                                                 (<div className="skeleton rounded-full w-32 h-32"></div>) :
                                                 (<img
                                                         className={'rounded-full h-[93%] w-[93%] bg-accent-200 object-cover border-surface border-[8px]'}
-                                                        src={`${import.meta.env.VITE_API_BASE_URL}${reservation.troubleMaker.profilePicture.contentUrl}`}
+                                                        src={`${import.meta.env.VITE_API_BASE_URL}${reservation.troubleMaker.profilePicture.contentUrl ?? '/'}`}
                                                         alt={reservation.service.name} />
                                                 )
                                             }
@@ -273,7 +273,7 @@ export default function ReservationPage() {
                     <CardRow
                         path={`/${reservation.service.company.id}`}
                         title={reservation.service.company.name}
-                        imagePath={`${import.meta.env.VITE_API_BASE_URL}${reservation.service.company.mainMedia.contentUrl}`}
+                        imagePath={`${import.meta.env.VITE_API_BASE_URL}${reservation.service.company.mainMedia.contentUrl ?? '/'}`}
                         address={`${reservation.service.company.address} ${reservation.service.company.city} ${reservation.service.company.zipCode}`}
                     />
                 )
@@ -292,7 +292,7 @@ export default function ReservationPage() {
                                 <Comment
                                     key={index}
                                     content={rate.content}
-                                    authorImagePath={`${import.meta.env.VITE_API_BASE_URL}${rate.createdBy.profilePicture.contentUrl}`}
+                                    authorImagePath={`${import.meta.env.VITE_API_BASE_URL}${rate.createdBy.profilePicture.contentUrl ?? '/'}`}
                                     rate={rate.value}
                                     isFullWidth={true}
                                     author={`${rate.createdBy.firstname} ${rate.createdBy.lastname}`}

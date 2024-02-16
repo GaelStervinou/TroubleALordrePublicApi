@@ -39,7 +39,7 @@ export default function CommentList({ items }) {
                 {items?.map((item, index) => (
                     <Comment
                         key={index}
-                        authorImagePath={`${import.meta.env.VITE_API_BASE_URL}${item?.rated?.profilePicture?.contentUrl}`}
+                        authorImagePath={`${import.meta.env.VITE_API_BASE_URL}${item?.rated?.profilePicture?.contentUrl ?? '/'}`}
                         content={item.content}
                         date={item.createdAt}
                         rate={item.value}
