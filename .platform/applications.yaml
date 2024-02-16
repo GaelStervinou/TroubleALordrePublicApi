@@ -15,6 +15,7 @@ front:
 
   mounts:
     "/dist": { source: local, source_path: front/dist }
+    "/dist/assets": { source: local, source_path: front/dist/assets }
 
   web:
     locations:
@@ -68,6 +69,7 @@ api:
 
   mounts:
     "/var": { source: local, source_path: var }
+    "/public": { source: local, source_path: public }
 
   relationships:
     database: "database:postgresql"
