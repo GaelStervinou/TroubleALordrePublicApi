@@ -11,6 +11,15 @@ export const getCompanyInvitations = async (companySlug) => {
     }
 }
 
+export const getMyInvitations = async () => {
+    try {
+        const response = await http.get(`/users/my-invitations`);
+        return response.data;
+    } catch (error) {
+        window.location.href = '/error';
+    }
+}
+
 export const createInvitation = async (invitation) => {
     try {
         const response = await http.post(`/invitations`, invitation);

@@ -125,7 +125,7 @@ class Reservation implements TimestampableEntityInterface
         ],
         message: "Le status n'est pas valide"
     )]
-    #[Groups(['reservation:update', 'user:reservation:read', 'reservation:read'])]
+    #[Groups(['reservation:update', 'user:reservation:read', 'reservation:read', 'reservation:write'])]
     private ?ReservationStatusEnum $status = null;
 
     #[ORM\Column()]

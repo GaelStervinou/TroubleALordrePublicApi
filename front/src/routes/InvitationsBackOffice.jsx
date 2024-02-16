@@ -1,4 +1,4 @@
-import {NavLink, Outlet, useParams, useNavigate} from "react-router-dom";
+import {NavLink, useParams} from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getCompanyInvitations, updateInvitation } from "../queries/invitations.js";
 import Button from "../components/atoms/Button.jsx";

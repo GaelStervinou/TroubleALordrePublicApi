@@ -125,7 +125,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
 
     //TODO vérifeir que si c pas un admin il peut chanegr son role que pour troublemaker
     #[ORM\Column(type: 'json')]
-    #[Groups(['user:read', 'reservation:read', 'user:admin:read'])]
+    #[Groups(['user:read', 'reservation:read', 'user:admin:read', 'user:update'])]
     private array $roles = [];
 
     #[ORM\Column(length: 50)]

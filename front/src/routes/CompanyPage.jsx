@@ -14,6 +14,7 @@ import Rating from "../components/atoms/Rating.jsx";
 
 export default function CompanyPage() {
     const [company, setCompany] = useState(null);
+    const [medias, setMedias] = useState([]);
     const {companySlug} = useParams();
     let [companies, setCompanies] = useState([]);
     let [isLoading, setIsLoading] = useState(true);
@@ -25,6 +26,7 @@ export default function CompanyPage() {
             fetchedCompany.rates = fetchedCompany.services.map((service) => {
                 return service.rates;
             }).flat();
+            setMedias([...fetchedCompany.medias, fetchedCompany.mainMedia]);
             setCompany(fetchedCompany);
             setIsLoading(false);
         };
@@ -69,7 +71,7 @@ export default function CompanyPage() {
                         <div className="skeleton w-96 h-96"></div>
                         <div className="skeleton w-96 h-96"></div>
                     </div>) :
-                    (<Carousel pictures={company?.medias}/>)}
+                    (<Carousel pictures={medias}/>)}
             </div>
             <div className={'w-full px-16 max-md:px-8'}>
 

@@ -52,7 +52,6 @@ export default function ReservationRateCreate() {
         reservation: `/reservations/${reservationId}`
       };
 
-      console.log(data);
       await http.post(`/rates`, data);
 
       navigate(`/reservations/${reservationId}`);
