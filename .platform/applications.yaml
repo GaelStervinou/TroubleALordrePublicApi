@@ -8,10 +8,10 @@ front:
   build:
     flavor: none
 
-#  hooks:
-#    build: |
-#      set -e
-#      npm install
+  hooks:
+    build: |
+      set -e
+      npm install
 #    deploy: |
 #      VITE_OUTPUT_DIR=/dist/tmp npm run build
 
