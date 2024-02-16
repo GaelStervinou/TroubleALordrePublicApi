@@ -27,7 +27,6 @@ export default function CustomerProfile() {
             const fetchedUser = await getUser(userId);
             fetchedUser.userAverageRatesValue = fetchedUser.userAverageRatesValue ? fetchedUser.userAverageRatesValue.toFixed(1) : null;
 
-
             setUserInformation(fetchedUser);
 
             if (fetchedUser.roles.includes('ROLE_TROUBLE_MAKER')) {
@@ -123,6 +122,7 @@ export default function CustomerProfile() {
                     {   isMemberOfMyCompany &&
                         <NavLink to={`/profile/${userId}/planning`} role="tab" className="tab text-primary">Horaires</NavLink>
                     }
+                    {isTroubleMaker ? <NavLink to={`/profile/${userId}/become-troublemaker`} role="tab" className="tab text-primary">Mes invitations</NavLink> : null}
                     <NavLink to={`/profile/${userId}/rates`} role="tab" className="tab text-primary">Avis</NavLink>
                     { isCompanyAdmin() && <NavLink to={`/profile/${userId}/establishments`} role="tab" className="tab text-primary">Etablissements</NavLink> }
                 </div>

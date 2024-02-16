@@ -117,8 +117,6 @@ export default function CompanyRegister() {
             medias: additionalImagesIds,
         }
 
-        console.log(companyData);
-
         try {
           await http.post(API_COMPANY_ROUTE, companyData);
           navigate('/profile/' + user.id);

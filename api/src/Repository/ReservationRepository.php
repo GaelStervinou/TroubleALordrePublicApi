@@ -106,4 +106,14 @@ class ReservationRepository extends ServiceEntityRepository
 
         return $query->getQuery()->execute();
     }
+
+    public function getTroubleMakerReservations(string $userId): array
+    {
+        $query = $this->createQueryBuilder('r')
+            ->select('r.date, r.status, r.price, r.duration, u.firstname AS client_firstname, u.lastname AS client_lastname')
+            ->innerJoin(User::class, 'u', Join::WITH, 'r.customer = u.id')
+            ->where('r.troubleMaker = :userId')
+            ->setParameter('userId', $userId, ParameterType::STRING);
+        return $query->getQuery()->getArrayResult();
+    }
 }

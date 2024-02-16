@@ -20,59 +20,56 @@ class UserUnavailabilitiesStateProvider implements ProviderInterface
 {
     public function __construct(
         private EntityManagerInterface                                                    $entityManager,
-        #[Autowire(service: CollectionProvider::class)] private ProviderInterface $collectionProvider,
         private Pagination                                                        $pagination,
         private Security                                                          $security
     )
     {
-        $this->entityManager = $entityManager;
     }
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
-        if (!($operation instanceof CollectionOperationInterface)) {
-            return [null];
+        if ($operation instanceof CollectionOperationInterface) {
+            /***@var $user User */
+            $user = $this->entityManager->getRepository(User::class)->find($uriVariables[ 'id' ]);
+
+            if (
+                !$user->isTroubleMaker()
+                || $this->security->getUser() !== $user->getCompany()->getOwner()
+            ) {
+                throw new ValidationException("Utilisateur introuvable");
+            }
+
+            /**
+             * @var $availibilityRepository UnavailabilityRepository
+             */
+            $availibilityRepository = $this->entityManager->getRepository(Unavailability::class);
+
+            $offset = $this->pagination->getOffset($operation, $context);
+            $dateFrom = (new \DateTimeImmutable())->setTime(0, 0)->add(new \DateInterval("P{$offset}D"));
+            if (0 !== $offset) {
+                $dateFrom = (new \DateTimeImmutable())->add(new \DateInterval("P{$offset}D"));
+            }
+            $dateTo = $dateFrom->add(new \DateInterval("P7D"));
+
+            $userUnavailabilities = $availibilityRepository->getTroubleMakerUnavailabilityFromDateToDate($user->getId(), $dateFrom, $dateTo);
+            if (0 === count($userUnavailabilities)) {
+                return [];
+            }
+
+            $formattedUnavailabilities = $this->formatUnavailabilities($userUnavailabilities);
+            $planningDays = [];
+            foreach ($formattedUnavailabilities as $day => $unavailability) {
+                $planning = (new Planning())
+                    ->setDate($day)
+                    ->setShifts($unavailability)
+                    ->formatThisShiftsFromTimestampToString()
+                ;
+                $planningDays[] = $planning;
+            }
+
+            return $planningDays;
         }
-
-        /***@var $user User */
-        $user = $this->entityManager->getRepository(User::class)->find($uriVariables[ 'id' ]);
-
-        if (
-            !$user->isTroubleMaker()
-            || $this->security->getUser() !== $user->getCompany()->getOwner()
-        ) {
-            throw new ValidationException("Utilisateur introuvable");
-        }
-
-        /**
-         * @var $availibilityRepository UnavailabilityRepository
-         */
-        $availibilityRepository = $this->entityManager->getRepository(Unavailability::class);
-
-        $offset = $this->pagination->getOffset($operation, $context);
-        $dateFrom = (new \DateTimeImmutable())->setTime(0, 0)->add(new \DateInterval("P{$offset}D"));
-        if (0 !== $offset) {
-            $dateFrom = (new \DateTimeImmutable())->add(new \DateInterval("P{$offset}D"));
-        }
-        $dateTo = $dateFrom->add(new \DateInterval("P7D"));
-
-        $userUnavailabilities = $availibilityRepository->getTroubleMakerUnavailabilityFromDateToDate($user->getId(), $dateFrom, $dateTo);
-        if (0 === count($userUnavailabilities)) {
-            return [];
-        }
-
-        $formattedUnavailabilities = $this->formatUnavailabilities($userUnavailabilities);
-        $planningDays = [];
-        foreach ($formattedUnavailabilities as $day => $unavailability) {
-            $planning = (new Planning())
-                ->setDate($day)
-                ->setShifts($unavailability)
-                ->formatThisShiftsFromTimestampToString()
-            ;
-            $planningDays[] = $planning;
-        }
-
-        return $planningDays;
+        return [null];
     }
 
     private function formatUnavailabilities(array $userUnavailabilities): array
@@ -84,6 +81,7 @@ class UserUnavailabilitiesStateProvider implements ProviderInterface
         foreach ($userUnavailabilities as $unavailability) {
             $startTime = $unavailability->getStartTime();
             $unavailabilities[ $startTime?->format('Y-m-d') ][] = [
+                '@id' => $unavailability->getId()->toString(),
                 'startTime' => strtotime($startTime?->format('Y-m-d H:i:s')),
                 'endTime' => strtotime($unavailability->getEndTime()?->format('Y-m-d H:i:s'))
             ];

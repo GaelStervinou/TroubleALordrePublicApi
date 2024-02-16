@@ -8,7 +8,7 @@ import { useParams } from "react-router-dom";
 import SetUpInstance from "../utils/axios.js";
 
 export default function UserAvailabilitiesCreate() {
-  const [availability, setAvailability] = useState({});
+  const [availability, setAvailability] = useState({ startTime: '', endTime: ''});
   const [areMissingInfos, setAreMissingInfos] = useState(false);
   const [error, setError] = useState(false);
 
@@ -23,14 +23,48 @@ export default function UserAvailabilitiesCreate() {
     } 
   }, []);
 
-  const handleInputChange = (e) => {
-    setAvailability({ ...availability, [e.target.name]: e.target.value });
-  };
+  const handleStartDateChange = (event) => {
+    setAvailability({ ...availability, startTime: event.target.value });
+  }
+
+  const handleEndDateChange = (event) => {
+    setAvailability({ ...availability, endTime: event.target.value });
+  }
+
 
   const handleSubmit = async () => {
+    if (!availability.startTime || !availability.endTime) {
+      setAreMissingInfos(true);
+      return;
+    }
+
+    if (availability.startTime >= availability.endTime) {
+      setError(true);
+      return;
+    }
+
+    const startDate = new Date(availability.startTime);
+    const endDate = new Date(availability.endTime);
+    const currentDate = new Date();
+    if (startDate < currentDate || endDate < currentDate) {
+      setError(true);
+      return;
+    }
+
+    if (startDate.getDate() !== endDate.getDate()) {
+      setError(true);
+      return;
+    }
+
     try {
-      await http.post(`/users/${userId}/availabilities`, availability);
-      navigate(`/users/${userId}/availabilities`);
+      const data = {
+        startTime: availability.startTime,
+        endTime: availability.endTime,
+        troubleMaker: `/users/${userId}`
+      }
+
+      await http.post(`/availabilities`, data);
+      navigate(`/profile/${userId}/planning/availabilities`);
     } catch (error) {
       console.error(error);
     }
@@ -49,7 +83,7 @@ export default function UserAvailabilitiesCreate() {
                       type="datetime-local"
                       placeholder={"Start time"}
                       value={availability.startTime}
-                      onChange={handleInputChange}
+                      onChange={ (e) => handleStartDateChange(e) }
                   />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -59,13 +93,13 @@ export default function UserAvailabilitiesCreate() {
                       type="datetime-local"
                       placeholder={"End time"}
                       value={availability.endTime}
-                      onChange={handleInputChange}
+                      onChange={ (e) => handleEndDateChange(e) }
                   />
                 </div>
             {areMissingInfos && <WarningAlert message="Veuillez remplir tous les champs" />}
-            {error && <WarningAlert message="Veuillez entrer un email valide, votre invitation doit être à destination d'un troublemaker actif n'ayant pas encore de company" />}
+            {error && <WarningAlert message="Veuillez mettre une date de fin supérieure à la date de début et au même jour" />}
             <Button 
-                title="Envoyer une invitation"
+                title="Créer la disponibilité"
                 onClick={handleSubmit}
                 hasBackground 
                 className={'!w-full !bg-primary text-background hover:!bg-secondary mt-5'}/>

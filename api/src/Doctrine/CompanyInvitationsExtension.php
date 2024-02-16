@@ -11,6 +11,7 @@ use App\Entity\Invitation;
 use App\Entity\User;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 
 final readonly class CompanyInvitationsExtension implements QueryCollectionExtensionInterface
 {
@@ -29,11 +30,7 @@ final readonly class CompanyInvitationsExtension implements QueryCollectionExten
 
     private function addWhere(QueryBuilder $queryBuilder, ?Operation $operation = null, array $context = []): void
     {
-        if (null === $operation) {
-            return;
-        }
-
-        if (Invitation::COMPANY_INVITATIONS_ROUTE_NAME !== $operation->getName()) {
+        if (!$operation || Invitation::COMPANY_INVITATIONS_ROUTE_NAME !== $operation->getName()) {
             return;
         }
         $companyId = $context[ 'request' ]?->get('id');
@@ -42,7 +39,7 @@ final readonly class CompanyInvitationsExtension implements QueryCollectionExten
         if (!$loggedInUser->getOwnedCompanies()->exists(function (int $index, Company $company) use ($companyId) {
             return $companyId === $company->getId()?->toString() && $company->isActive();
         })) {
-            throw new ValidationException('Vous ne possédez pas cette entreprise ou cette dernière n\'est plus active');
+            throw new AccessDeniedException('Vous ne possédez pas cette entreprise ou cette dernière n\'est plus active');
         }
 
         if (!$this->security->isGranted("ROLE_ADMIN")) {

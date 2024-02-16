@@ -17,7 +17,6 @@ use App\Entity\Trait\TimestampableTrait;
 use App\Interface\SoftDeleteInterface;
 use App\Interface\TimestampableEntityInterface;
 use App\State\User\UserMeProvider;
-use App\State\UserAvailabilitiesStateProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -37,6 +36,11 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 #[ApiResource(
     operations: [
         new GetCollection(
+            uriTemplate: '/users/pending-company-admin-validation',
+            security: 'user.isAdmin()',
+            name: User::USERS_PENDING_COMPANY_ADMIN_VALIDATION,
+        ),
+        new GetCollection(
             normalizationContext: ['groups' => ['user:admin:read']],
             security: 'is_granted("ROLE_ADMIN")',
             securityMessage: 'Vous n\'êtes pas autorisé à voir cette ressource.',
@@ -48,6 +52,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
         ),
         new Get(
             normalizationContext: ['groups' => ['user:read']],
+            name: User::USERS_GET_ONE_ROUTE_NAME,
         ),
         new Get(
             uriTemplate: '/me',
@@ -64,7 +69,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
         )
     ],
     normalizationContext: ['groups' => ['user:read']],
-    //TODO denormalizationContext à faire !!!!
 )]
 #[ApiResource(
     uriTemplate: '/companies/{id}/users',
@@ -83,6 +87,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
 {
     use TimestampableTrait;
     use SoftDeleteTrait;
+    public CONST USERS_GET_ONE_ROUTE_NAME = 'users_get_one';
+    public CONST USERS_PENDING_COMPANY_ADMIN_VALIDATION = 'users_pending_company_admin_validation';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -93,7 +99,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     private ?UuidInterface $id = null;
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[Groups(['user:me:read', 'user:create', 'user:update', 'user:admin:read', 'invitation:read'])]
+    #[Groups(['user:me:read', 'user:create', 'user:admin:read', 'invitation:read'])]
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
     #[ORM\Column]
@@ -119,7 +125,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
 
     //TODO vérifeir que si c pas un admin il peut chanegr son role que pour troublemaker
     #[ORM\Column(type: 'json')]
-    #[Groups(['user:read', 'reservation:read', 'user:admin:read'])]
+    #[Groups(['user:read', 'reservation:read', 'user:admin:read', 'user:update'])]
     private array $roles = [];
 
     #[ORM\Column(length: 50)]
@@ -183,7 +189,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         minMessage: "Le kbis invalide",
         maxMessage: "Le kbis invalide"
     )]
-    #[Groups(['user:read', 'company:read', 'company:admin:read', 'company:dashboard:read', 'user:admin:read'])]
+    #[Groups(['user:read', 'company:read', 'company:admin:read', 'company:dashboard:read', 'user:admin:read', 'user:create', 'user:update'])]
     private ?string $kbis = null;
 
     #[ORM\ManyToOne]
@@ -206,9 +212,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         $this->ownedCompanies = new ArrayCollection();
     }
 
-    public function getId(): ?UuidInterface
+    public function getId(): ?string
     {
-        return $this->id;
+        return $this->id->toString();
     }
 
     public function getEmail(): ?string

@@ -16,7 +16,6 @@ use App\Entity\Trait\TimestampableTrait;
 use App\Enum\CompanyStatusEnum;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\CompanyRepository;
-use App\State\CreateAndUpdateStateProcessor;
 use App\State\CreateCompanyStateProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -32,6 +31,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(
             normalizationContext: ['groups' => ['user:companies:read']],
+            name: Company::USER_OWNED_COMPANIES_ROUTE_NAME,
         ),
     ],
     uriVariables: [
@@ -45,11 +45,12 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(
             normalizationContext: ['groups' => ['company:collection:read']],
+            name: Company::COMPANIES_ROUTE_NAME,
         ),
         new GetCollection(
             uriTemplate: '/companies/search',
             paginationEnabled: false,
-            name: Company::COMPANY_SEARCH_ROUTE,
+            name: Company::COMPANY_SEARCH_ROUTE_NAME,
         ),
         new Get(),
         new Post(
@@ -73,7 +74,9 @@ class Company implements TimestampableEntityInterface
 {
     use TimestampableTrait;
 
-    public const COMPANY_SEARCH_ROUTE = 'companies_search';
+    public const COMPANY_SEARCH_ROUTE_NAME = 'companies_search';
+    public const USER_OWNED_COMPANIES_ROUTE_NAME = 'users_owned_companies';
+    public const COMPANIES_ROUTE_NAME = 'companies_collection';
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\Column(type: 'uuid', unique: true)]

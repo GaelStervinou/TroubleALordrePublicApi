@@ -11,33 +11,19 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use App\Controller\Action\PaymentIntent\CreatePaymentIntentAction;
 use App\Entity\Trait\TimestampableTrait;
 use App\Enum\ReservationStatusEnum;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\ReservationRepository;
 use App\State\Reservation\CreateReservationSateProcessor;
+use App\State\UpdateReservationStateProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ApiResource(
-    uriTemplate: '/reservations/payment-intent',
-    operations: [
-        new Post(
-            controller: CreatePaymentIntentAction::class,
-            normalizationContext: ['groups' => ['paymentIntent:read']],
-            denormalizationContext: ['groups' => ['paymentIntent:write']],
-            security: 'user.isUser()',
-            output: PaymentIntent::class,
-            name: 'payment-intent',
-        ),
-    ]
-)]
 #[ApiResource(
     uriTemplate: '/users/{id}/reservations',
     operations: [
@@ -82,9 +68,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             processor: CreateReservationSateProcessor::class
         ),
         new Patch(
+            denormalizationContext: ['groups' => ['reservation:update']],
             security: '(user.isTroubleMaker() and object.getTroubleMaker() == user)
                 or (user.isCompanyAdmin() and object.getTroubleMaker().getCompany() == user.getCompany())
-                or user == object.getCustomer()'
+                or user == object.getCustomer()',
+            processor: UpdateReservationStateProcessor::class,
         )
     ],
     normalizationContext: ['groups' => ['reservation:read']],
@@ -137,15 +125,15 @@ class Reservation implements TimestampableEntityInterface
         ],
         message: "Le status n'est pas valide"
     )]
-    #[Groups(['reservation:update', 'user:reservation:read', 'reservation:read'])]
+    #[Groups(['reservation:update', 'user:reservation:read', 'reservation:read', 'reservation:write'])]
     private ?ReservationStatusEnum $status = null;
 
     #[ORM\Column()]
-    #[Groups(['reservation:read', 'user:reservation:read', 'reservation:write'])]
+    #[Groups(['reservation:read', 'user:reservation:read'])]
     private ?int $duration = null;
 
     #[ORM\Column]
-    #[Groups(['reservation:read', 'user:reservation:read', 'reservation:write'])]
+    #[Groups(['reservation:read', 'user:reservation:read'])]
     private ?float $price = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]

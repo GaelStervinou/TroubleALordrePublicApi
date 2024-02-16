@@ -33,9 +33,8 @@ class TroubleMakerPlanningStateProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
-        if (!($operation instanceof CollectionOperationInterface)) {
-            return null;
+        if ($operation instanceof CollectionOperationInterface) {
+            return $this->troubleMakerService->getTroubleMakerPlanning($uriVariables[ 'userId' ], $uriVariables[ 'serviceId' ], $this->pagination->getOffset($operation, $context));
         }
-        return $this->troubleMakerService->getTroubleMakerPlanning($uriVariables[ 'userId' ], $uriVariables[ 'serviceId' ], $this->pagination->getOffset($operation, $context));
     }
 }

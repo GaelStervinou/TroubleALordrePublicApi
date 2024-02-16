@@ -3,6 +3,7 @@
 namespace App\State;
 
 use ApiPlatform\Metadata\CollectionOperationInterface;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\ApiResource\CompanyDashboard;
@@ -14,6 +15,7 @@ use App\Repository\RateRepository;
 use App\Repository\ReservationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 
 class CompanyDashboardStateProvider implements ProviderInterface
 {
@@ -29,85 +31,81 @@ class CompanyDashboardStateProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
-        if ($operation instanceof CollectionOperationInterface) {
-            return [];
-        }
-
-        $companyDashboard = (new CompanyDashboard())->setId($uriVariables[ 'id' ]);
-        /**
-         * @var $reservationRepository ReservationRepository
-         */
-        $reservationRepository = $this->entityManager->getRepository(Reservation::class);
-        $todayDate = new \DateTimeImmutable();
-        $companyId = $uriVariables[ 'id' ];
-        if (!$this->security->getUser()->getOwnedCompanies()->exists(
+        if ($operation instanceof Get) {
+            $companyDashboard = (new CompanyDashboard())->setId($uriVariables[ 'id' ]);
+            /**
+             * @var $reservationRepository ReservationRepository
+             */
+            $reservationRepository = $this->entityManager->getRepository(Reservation::class);
+            $todayDate = new \DateTimeImmutable();
+            $companyId = $uriVariables[ 'id' ];
+            if (!$this->security->getUser()->getOwnedCompanies()->exists(
                 function (int $index, Company $company) use ($companyId) {
-                    dump($company->getId()->toString(), $company->isActive());
-                    return $companyId === $company->getId()->toString() && $company->isActive();
+                    return $companyId === $company->getId() && $company->isActive();
                 })) {
-            return [];
-        }
-
-
-        $previousMonthDateFrom = \DateTimeImmutable::createFromFormat('U', strtotime("-2 months", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s'))));
-        $previousMonthDateTo = \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(23, 59)->format('Y-m-d H:i:s'))));
-
-        $previousMonthReservations = $reservationRepository->getCompanyReservationsFromDateToDate(
-            $previousMonthDateFrom,
-            $previousMonthDateTo,
-            $companyId
-        );
-
-        $companyDashboard->setNumberOfReservationsPreviousMonth(count($previousMonthReservations));
-        $companyDashboard->setMonthSalesNumberPreviousMonth($this->calculateMonthSales($previousMonthReservations));
-
-        $currentMonthDateFrom = \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s'))));
-
-        $currentMonthReservations = $reservationRepository->getCompanyReservationsFromDateToDate(
-            $currentMonthDateFrom,
-            $todayDate,
-            $uriVariables[ 'id' ]
-        );
-        $companyDashboard->setNumberOfReservationsCurrentMonth(count($currentMonthReservations));
-        $formattedReservationsAndSalesAmountPreviousMonth = $this->associateDayOfMonthToReservationNumberAndSalesAmount($previousMonthReservations, $previousMonthDateFrom, $previousMonthDateTo, 0);
-        $companyDashboard->setReservationsPreviousMonth($formattedReservationsAndSalesAmountPreviousMonth[ 'reservationsByDate' ]);
-        $companyDashboard->setMonthSalesPreviousMonth($formattedReservationsAndSalesAmountPreviousMonth[ 'salesAmountByDate' ]);
-
-
-        $companyDashboard->setMonthsSalesAmountCurrentMonth($this->calculateMonthSales($currentMonthReservations));
-        $formattedReservationsAndSalesAmountCurrentMonth = $this->associateDayOfMonthToReservationNumberAndSalesAmount($currentMonthReservations, $currentMonthDateFrom, $todayDate, 0);
-        $companyDashboard->setReservationsCurrentMonth($formattedReservationsAndSalesAmountCurrentMonth[ 'reservationsByDate' ]);
-        $companyDashboard->setMonthSalesCurrentMonth($formattedReservationsAndSalesAmountCurrentMonth[ 'salesAmountByDate' ]);
-        $bestTroubleMakerData = $reservationRepository->getCompanyBestTroubleMakerFromDateToDate(
-            \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s')))),
-            $todayDate,
-            $uriVariables[ 'id' ]
-        );
-        if (count($bestTroubleMakerData) > 0) {
-            $bestTroubleMaker = $this->entityManager->getRepository(User::class)->find($bestTroubleMakerData[ 'id' ]->serialize());
-            if ($bestTroubleMaker) {
-                $companyDashboard->setBestTroubleMaker($bestTroubleMaker->setCurrentMonthTotalReservations($bestTroubleMakerData[ 'best_trouble_maker' ]));
+                throw new AccessDeniedException("Vous n'avez pas accès à cette entreprise, ou elle n'est plus active.");
             }
+
+
+            $previousMonthDateFrom = \DateTimeImmutable::createFromFormat('U', strtotime("-2 months", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s'))));
+            $previousMonthDateTo = \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(23, 59)->format('Y-m-d H:i:s'))));
+
+            $previousMonthReservations = $reservationRepository->getCompanyReservationsFromDateToDate(
+                $previousMonthDateFrom,
+                $previousMonthDateTo,
+                $companyId
+            );
+
+            $companyDashboard->setNumberOfReservationsPreviousMonth(count($previousMonthReservations));
+            $companyDashboard->setMonthSalesNumberPreviousMonth($this->calculateMonthSales($previousMonthReservations));
+
+            $currentMonthDateFrom = \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s'))));
+
+            $currentMonthReservations = $reservationRepository->getCompanyReservationsFromDateToDate(
+                $currentMonthDateFrom,
+                $todayDate,
+                $uriVariables[ 'id' ]
+            );
+            $companyDashboard->setNumberOfReservationsCurrentMonth(count($currentMonthReservations));
+            $formattedReservationsAndSalesAmountPreviousMonth = $this->associateDayOfMonthToReservationNumberAndSalesAmount($previousMonthReservations, $previousMonthDateFrom, $previousMonthDateTo, 0);
+            $companyDashboard->setReservationsPreviousMonth($formattedReservationsAndSalesAmountPreviousMonth[ 'reservationsByDate' ]);
+            $companyDashboard->setMonthSalesPreviousMonth($formattedReservationsAndSalesAmountPreviousMonth[ 'salesAmountByDate' ]);
+
+
+            $companyDashboard->setMonthsSalesAmountCurrentMonth($this->calculateMonthSales($currentMonthReservations));
+            $formattedReservationsAndSalesAmountCurrentMonth = $this->associateDayOfMonthToReservationNumberAndSalesAmount($currentMonthReservations, $currentMonthDateFrom, $todayDate, 0);
+            $companyDashboard->setReservationsCurrentMonth($formattedReservationsAndSalesAmountCurrentMonth[ 'reservationsByDate' ]);
+            $companyDashboard->setMonthSalesCurrentMonth($formattedReservationsAndSalesAmountCurrentMonth[ 'salesAmountByDate' ]);
+            $bestTroubleMakerData = $reservationRepository->getCompanyBestTroubleMakerFromDateToDate(
+                \DateTimeImmutable::createFromFormat('U', strtotime("-1 month", strtotime($todayDate->setTime(0, 0)->format('Y-m-d H:i:s')))),
+                $todayDate,
+                $uriVariables[ 'id' ]
+            );
+            if (count($bestTroubleMakerData) > 0) {
+                $bestTroubleMaker = $this->entityManager->getRepository(User::class)->find($bestTroubleMakerData[ 'id' ]->serialize());
+                if ($bestTroubleMaker) {
+                    $companyDashboard->setBestTroubleMaker($bestTroubleMaker->setCurrentMonthTotalReservations($bestTroubleMakerData[ 'best_trouble_maker' ]));
+                }
+            }
+
+
+
+            /**
+             * @var $rateRepository RateRepository
+             */
+            $rateRepository = $this->entityManager->getRepository(Rate::class);
+            $companyDashboard->setAverageRateForPreviousMonth((float)$rateRepository->getRatesForCompanyReservationsFromDateToDate(
+                $previousMonthDateFrom,
+                $previousMonthDateTo,
+                $uriVariables[ 'id' ]
+            ));
+            $companyDashboard->setAverageRateForCurrentMonth((float)$rateRepository->getRatesForCompanyReservationsFromDateToDate(
+                $currentMonthDateFrom,
+                $todayDate,
+                $uriVariables[ 'id' ]
+            ));
+            return $companyDashboard;
         }
-
-
-
-        /**
-         * @var $rateRepository RateRepository
-         */
-        $rateRepository = $this->entityManager->getRepository(Rate::class);
-        $companyDashboard->setAverageRateForPreviousMonth((float)$rateRepository->getRatesForCompanyReservationsFromDateToDate(
-            $previousMonthDateFrom,
-            $previousMonthDateTo,
-            $uriVariables[ 'id' ]
-        ));
-        $companyDashboard->setAverageRateForCurrentMonth((float)$rateRepository->getRatesForCompanyReservationsFromDateToDate(
-            $currentMonthDateFrom,
-            $todayDate,
-            $uriVariables[ 'id' ]
-        ));
-        //TODO CA par jour mois d'avant + nombre de resa du user
-        return $companyDashboard;
     }
 
     private function calculateMonthSales(array $reservations): float

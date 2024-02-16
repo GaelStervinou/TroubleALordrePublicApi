@@ -3,28 +3,15 @@
 namespace App\Doctrine;
 
 use ApiPlatform\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
-use ApiPlatform\Doctrine\Orm\Extension\QueryItemExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
 use App\Entity\Company;
-use App\Entity\Rate;
-use App\Entity\Reservation;
 use App\Enum\CompanyStatusEnum;
 use Doctrine\DBAL\ParameterType;
-use Doctrine\ORM\Query\Expr\Join;
-use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Bundle\SecurityBundle\Security;
 
 final readonly class CompanySearchExtension implements QueryCollectionExtensionInterface
 {
-
-    public function __construct(
-        private Security $security,
-    )
-    {
-    }
-
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = []): void
     {
         $this->addWhere($queryBuilder, $operation, $context);
@@ -33,7 +20,7 @@ final readonly class CompanySearchExtension implements QueryCollectionExtensionI
 
     private function addWhere(QueryBuilder $queryBuilder, ?Operation $operation = null, array $context = []): void
     {
-        if (null === $operation || Company::COMPANY_SEARCH_ROUTE !== $operation->getName()) {
+        if (null === $operation || Company::COMPANY_SEARCH_ROUTE_NAME !== $operation->getName()) {
             return;
         }
 

@@ -13,8 +13,10 @@ use App\Entity\Trait\TimestampableTrait;
 use App\Interface\BlameableEntityInterface;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\RateRepository;
+use App\State\CreateRateProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Attribute\Groups;
 
@@ -65,14 +67,13 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new Get(),
         new Post(
-            security: 'object.getUser() == user 
-                and object.getReservation().getCustomer() == user
-                and object.getReservation().isFinished()'
+            processor: CreateRateProcessor::class,
         )
     ],
     normalizationContext: ['groups' => ['rate:read']],
     denormalizationContext: ['groups' => ['rate:write']],
 )]
+#[UniqueEntity(fields: ['reservation', 'createdBy'], message: "Vous ne pouvez notez qu'une seule fois par réservation.")]
 class Rate implements TimestampableEntityInterface, BlameableEntityInterface
 {
     use TimestampableTrait;
@@ -100,11 +101,12 @@ class Rate implements TimestampableEntityInterface, BlameableEntityInterface
 
     #[ORM\ManyToOne(inversedBy: 'rates')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['rate:read', 'rate:write', 'user:read', 'company:read'])]
+    #[Groups(['rate:read', 'user:read', 'company:read'])]
     private ?User $rated = null;
 
     #[ORM\ManyToOne(inversedBy: 'rates')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['rate:write'])]
     private ?Reservation $reservation = null;
 
     #[ORM\ManyToOne(inversedBy: 'rates')]
@@ -113,7 +115,7 @@ class Rate implements TimestampableEntityInterface, BlameableEntityInterface
     private ?Service $service = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['rate:by-user:read', 'company:read', 'reservation:read'])]
+    #[Groups(['rate:by-user:read', 'company:read', 'reservation:read', 'rate:write'])]
     private ?string $content = null;
 
     #[ORM\Column]

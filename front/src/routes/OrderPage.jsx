@@ -173,7 +173,6 @@ export default function OrderPage() {
                                                             onClick={() => {
                                                                 setAppointmentDate(`${day.date} ${slot}`)
                                                                 setNextStepAvailable(true)
-                                                                console.log(`${day.date} ${slot}`)
                                                             }}
                                                         />
                                                     ))}

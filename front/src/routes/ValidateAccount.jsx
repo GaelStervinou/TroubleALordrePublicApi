@@ -15,7 +15,7 @@ export default function ValidateAccount() {
             http.patch(API_VALIDATE_ACCOUNT_ROUTE + `/${token}`);
             navigate('/login');
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }
 

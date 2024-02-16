@@ -52,6 +52,10 @@ import UnavailabilitiesBackOffice from './routes/UnavailabilitesBackOffice.jsx';
 import UserAvailabilities from './routes/UserAvailabilities.jsx';
 import UserUnavailabilities from './routes/UserUnavailabilities.jsx';
 import UserAvailabilitiesCreate from './routes/UserAvailabilitiesCreate.jsx';
+import UserUnavailabilitiesCreate from './routes/UserUnavailabilitiesCreate.jsx';
+import ReservationRateCreate from './routes/ReservationRateCreate.jsx';
+import UserInvitations from './routes/UserInvitations.jsx';
+import BackOfficeUsersWaiting from './routes/BackOfficeUsersWaiting.jsx';
 
 const router = createBrowserRouter([
     {
@@ -104,6 +108,11 @@ const router = createBrowserRouter([
         errorElement: <LoadingPageError/>,
     },
     {
+        path: "/reservations/:reservationId/rate",
+        element: <ReservationRateCreate/>,
+        errorElement: <LoadingPageError/>,
+    },
+    {
         path: "/admin",
         element: <BackOffice/>,
         children: [
@@ -113,7 +122,22 @@ const router = createBrowserRouter([
             },
             {
                 path: "users",
-                element: <BackOfficeUsers/>,
+                element: <SubMenu
+                    path={[
+                        {title: "Utilisateurs", path: "/admin/users/list"},
+                        {title: "Futurs PDG", path: "/admin/users/waiting-for-company-validation"},
+                    ]}
+                />,
+                children: [
+                    {
+                        path: "list",
+                        element: <BackOfficeUsers/>,
+                    },
+                    {
+                        path: "waiting-for-company-validation",
+                        element: <BackOfficeUsersWaiting/>,
+                    }
+                ]
             },
             {
                 path: "categories",
@@ -246,12 +270,21 @@ const router = createBrowserRouter([
             {
                 path: "establishments",
                 element: <UserEstablishments/>,
+            },
+            {
+                path: "become-troublemaker",
+                element: <UserInvitations/>,
             }
         ]
     },
     {
         path: "/profile/:userId/planning/availabilities/create",
         element: <UserAvailabilitiesCreate/>,
+        errorElement: <LoadingPageError/>,
+    },
+    {
+        path: "/profile/:userId/planning/unavailabilities/create",
+        element: <UserUnavailabilitiesCreate/>,
         errorElement: <LoadingPageError/>,
     },
     {

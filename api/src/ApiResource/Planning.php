@@ -6,7 +6,6 @@ namespace App\ApiResource;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
-use App\Entity\Company;
 use App\Entity\User;
 use App\State\TroubleMakerPlanningStateProvider;
 use App\State\UserAvailabilitiesStateProvider;
@@ -93,6 +92,9 @@ class Planning
                 'startTime' => \DateTimeImmutable::createFromFormat('U', $shift['startTime'])->format('H:i'),
                 'endTime' =>  \DateTimeImmutable::createFromFormat('U', $shift['endTime'])->format('H:i')
             ];
+            if (array_key_exists('@id', $shift)) {
+                $shifts[$index][0]['@id'] = $shift['@id'];
+            }
         }
 
         $this->setShifts($shifts);

@@ -2,11 +2,15 @@ import Rating from "../atoms/Rating.jsx";
 
 export default function Comment({ content, author, date, rate, authorImagePath, isFullWidth = false }) {
 
-    date = new Date(date).toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-    });
+    if (date) {
+        date = new Date(date).toLocaleDateString('fr-FR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+    } else {
+        date = null;
+    }
 
     return (
         <article className={`flex flex-col gap-6 p-5 rounded-xl bg-accent-200 min-w-80 ${isFullWidth ? 'w-1/2 max-sm:w-full' : null }`}>
@@ -24,8 +28,8 @@ export default function Comment({ content, author, date, rate, authorImagePath, 
                     className={'w-12 h-12 rounded-full object-cover'}
                 />
                 <div className={'flex flex-col'}>
-                    <p className={'text-md font-medium whitespace-pre'}>{author}</p>
-                    <p className={'text-sm text-gray-400'}>{date}</p>
+                    <p className={`text-md font-medium whitespace-pre ${date ?? 'mb-3'}`}>{author}</p>
+                    { date && <p className={'text-sm text-gray-400'}>{date}</p> }
                 </div>
             </div>
         </article>

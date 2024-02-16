@@ -2,7 +2,7 @@ import SetUpInstance from "../utils/axios.js";
 
 const http = SetUpInstance();
 
-export const getAvailabilities = async (serviceId, date) => {
+export const getAvailabilities = async () => {
     try {
         const response = await http.get(`/availabilities`);
         return response.data;

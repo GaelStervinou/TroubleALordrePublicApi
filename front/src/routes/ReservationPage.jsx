@@ -1,20 +1,30 @@
 import {useEffect, useState} from "react";
-import Rating from "../components/atoms/Rating.jsx";
-import {Link, useParams} from "react-router-dom";
+import {Link, useParams, useNavigate} from "react-router-dom";
 import {getReservation} from "../queries/reservations.js";
 import CardRow from "../components/molecules/CardRow.jsx";
 import {useAuth} from "../app/authContext.jsx";
 import Chip from "../components/atoms/Chip.jsx";
-import {useNavigate} from "react-router-dom";
 import Comment from "../components/molecules/Comment.jsx";
+import Button from "../components/atoms/Button.jsx";
+import SetUpInstance from "../utils/axios.js";
 
 export default function ReservationPage() {
     const [reservation, setReservation] = useState(null);
+    const [user, setUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isUpdating, setIsUpdating] = useState(false);
     const {reservationId} = useParams();
-    let [isLoading, setIsLoading] = useState(true);
 
     const { retrieveUser } = useAuth();
     const navigate = useNavigate();
+    const http = SetUpInstance();
+
+    useEffect(() => {
+        async function getUser() {
+            setUser(await retrieveUser());
+        }
+        getUser();
+    }, []);
 
     useEffect(() => {
         const fetchReservation = async () => {
@@ -44,7 +54,19 @@ export default function ReservationPage() {
         };
         fetchReservation();
 
-    }, [reservationId]);
+    }, [reservationId, isUpdating]);
+
+    const cancelReservation = async () => {
+        try {
+            await http.patch(`/reservations/${reservationId}`, {status: 'canceled'}, {
+                headers: { 'Content-Type': 'application/merge-patch+json' }
+            });
+            setIsUpdating(!isUpdating);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
 
     return (
         <div className={'mt-28 max-sm:mt-16 w-full px-16 max-sm:p-8'}>
@@ -64,7 +86,7 @@ export default function ReservationPage() {
                                     ( <Chip title={reservation.status} />)
                                 }
                             </div>
-                            <p className={'w-full'}>
+                            <div className={'w-full'}>
                                 {isLoading ?
                                     (<>
                                         <div className="skeleton w-full h-3 mb-1"></div>
@@ -73,7 +95,7 @@ export default function ReservationPage() {
                                     </>) :
                                     (reservation.service.description)
                                 }
-                            </p>
+                            </div>
                         </div>
                     </header>
                     <section className={'flex w-full justify-around max-sm:gap-8'}>
@@ -126,6 +148,33 @@ export default function ReservationPage() {
                             }
                         </div>
                     </section>
+                    <div className="flex flex-col gap-3">
+                        { user?.id === reservation?.customer.id || user?.id === reservation?.troubleMaker.id ?
+                            reservation?.status === 'active'  ? 
+                                <div className={'flex gap-5 max-sm:flex-col'}>
+                                    <Button 
+                                        title={'Annuler'}
+                                        onClick={cancelReservation}
+                                        hasBackground 
+                                        className={'!w-full !bg-danger text-background hover:!bg-secondary'}/>
+                                </div>
+                            : null
+                        : null
+                        }
+
+                        { user?.id === reservation?.customer.id || user?.id === reservation?.troubleMaker.id ?
+                            reservation?.rates.length < 2 ?
+                                (reservation?.rates.filter(rate => rate?.createdBy.id === user?.id).length === 0) ?
+                                <Button 
+                                    title={'Noter'}
+                                    onClick={() => navigate(`/reservations/${reservationId}/rate`)}
+                                    hasBackground 
+                                    className={'!w-full !bg-primary text-background hover:!bg-secondary mt-5'}/> 
+                                : null
+                            : null
+                        : null
+                        }
+                    </div>
                 </div>
             </section>
             <div className={'flex gap-8 max-sm:flex-col'}>
@@ -165,7 +214,7 @@ export default function ReservationPage() {
                                         <div className={'flex gap-1'}>
                                             {isLoading ?
                                                 (<div className="skeleton w-16 h-6"></div>) :
-                                                ( reservation.customer.id === retrieveUser().id ?
+                                                ( reservation.customer.id === user?.id ?
                                                         (<Chip title={'Client'} />) :
                                                         (<Chip title={'Prestataire'} />)
                                                 )
@@ -202,7 +251,7 @@ export default function ReservationPage() {
                                         <div className={'flex gap-1'}>
                                             {isLoading ?
                                                 (<div className="skeleton w-16 h-6"></div>) :
-                                                ( reservation.troubleMaker.id === retrieveUser().id ?
+                                                ( reservation.troubleMaker.id === user?.id ?
                                                         (<Chip title={'Client'} />) :
                                                         (<Chip title={'Prestataire'} />)
                                                 )
@@ -243,7 +292,6 @@ export default function ReservationPage() {
                                     content={rate.content}
                                     authorImagePath={`${import.meta.env.VITE_API_BASE_URL}${rate.createdBy.profilePicture.contentUrl}`}
                                     rate={rate.value}
-                                    date={rate.createdAt}
                                     isFullWidth={true}
                                     author={`${rate.createdBy.firstname} ${rate.createdBy.lastname}`}
                                 />
