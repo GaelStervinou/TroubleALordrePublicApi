@@ -1,28 +1,26 @@
-import {Link} from "react-router-dom";
 import videoBackground from "../assets/presentation-video.mp4";
 import CardList from "../components/organisms/CardList.jsx";
 import {AiOutlineSearch} from "react-icons/ai";
-import CardLiteList from "../components/organisms/CardLiteList.jsx";
 import SignInBanner from "../components/organisms/SignInBanner.jsx";
 import {useEffect, useRef, useState} from "react";
 import {useTheme} from "../hooks/useTheme.jsx";
 import {getCompanies, getSearch} from "../queries/companies.js";
 import {useSearch} from "../hooks/useSearch.jsx";
 import {useTranslator} from "../app/translatorContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
     const {language, translate} = useTranslator();
-    console.log(language);
-    const homeSearch = useRef(null);
-    const {isSearchVisible, setIsSearchVisible} = useTheme();
     let [searchAddress, setSearchAddress] = useState('');
     let [isSearchAddressOpen, setIsSearchAddressOpen] = useState(false);
     let [searchResults, setSearchResults] = useState([]);
     let [searchCategory, setSearchCategory] = useState('');
     let [searchLatLong, setSearchLatLong] = useState([]);
-
-
     let [companies, setCompanies] = useState([]);
+    
+    const {isSearchVisible, setIsSearchVisible} = useTheme();
+    const homeSearch = useRef(null);
+    const navigate = useNavigate();
 
     const {
         searchCategories,
@@ -56,7 +54,7 @@ export default function Home() {
             const fetchSearch = await getSearch(searchLatLong[1], searchLatLong[0], searchCategory)
             setSearchCompaniesResults(fetchSearch);
             if (window.location.pathname !== '/search') {
-                window.location.href = '/search';
+                navigate('/search');
             }
         }
     }

@@ -44,7 +44,6 @@ export default function ResetPassword() {
                 plainPassword: password,
                 verifyPassword: verifyPassword,
             };
-            console.log(userCredentials);
             await http.patch(API_RESET_PASSWORD_ROUTE + `/${token}`, userCredentials);
             navigate('/login');
         } catch (error) {
