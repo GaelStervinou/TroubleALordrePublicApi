@@ -14,7 +14,7 @@ front:
       npm install
     deploy: |
       set -e
-#      VITE_OUTPUT_DIR=/dist/tmp npm run build
+      npm run build
 
   mounts:
     "/dist": { source: local, source_path: dist }
