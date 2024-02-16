@@ -91,16 +91,6 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
             ]
         ];
 
-        $status = [
-            CompanyStatusEnum::ACTIVE,
-            CompanyStatusEnum::ACTIVE,
-            CompanyStatusEnum::ACTIVE,
-            CompanyStatusEnum::ACTIVE,
-            CompanyStatusEnum::PENDING,
-            CompanyStatusEnum::DELETED,
-            CompanyStatusEnum::BANNED
-        ];
-
         $userStatus = [
             UserStatusEnum::USER_STATUS_ACTIVE,
             UserStatusEnum::USER_STATUS_ACTIVE,
@@ -121,7 +111,7 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
 
             $company = new Company();
             $company
-                ->setStatus($faker->randomElement($status))
+                ->setStatus(CompanyStatusEnum::ACTIVE)
                 ->setOwner($faker->randomElement($companyAdmins))
                 ->setName($faker->company)
                 ->setDescription($faker->text(255))

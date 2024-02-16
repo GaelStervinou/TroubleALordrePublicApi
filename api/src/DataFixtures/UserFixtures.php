@@ -38,6 +38,53 @@ class UserFixtures extends Fixture
 
         // pwd = TESTtest@1
         $pwd = '$2y$13$f24/1sWERanDbm00jGHbl.BM39Gsm33CMp7RQcB7Rtl1agoQpSDCa';
+        $user = new User();
+        $user->setEmail('gael@gmail.com')
+            ->setFirstname($faker->firstName)
+            ->setLastname($faker->lastName)
+            ->setRoles(['ROLE_USER'])
+            ->setStatus(UserStatusEnum::USER_STATUS_ACTIVE)
+            ->setPassword($pwd)
+            ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')))
+            ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')));
+
+        $profilePicture = (new Media())
+            ->setPath($faker->randomElement($profilePictureNames));
+        $manager->persist($profilePicture);
+        $user->setProfilePicture($profilePicture);
+        $manager->persist($user);
+
+        $userCompany = new User();
+        $userCompany->setEmail('rui@gmail.com')
+            ->setFirstname($faker->firstName)
+            ->setLastname($faker->lastName)
+            ->setRoles(['ROLE_USER, ROLE_COMPANY_ADMIN'])
+            ->setStatus(UserStatusEnum::USER_STATUS_ACTIVE)
+            ->setPassword($pwd)
+            ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')))
+            ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')));
+
+        $profilePicture = (new Media())
+            ->setPath($faker->randomElement($profilePictureNames));
+        $manager->persist($profilePicture);
+        $userCompany->setProfilePicture($profilePicture);
+        $manager->persist($userCompany);
+
+        $userAdmin = new User();
+        $userAdmin->setEmail('louis@gmail.com')
+            ->setFirstname($faker->firstName)
+            ->setLastname($faker->lastName)
+            ->setRoles(['ROLE_USER, ROLE_ADMIN'])
+            ->setStatus(UserStatusEnum::USER_STATUS_ACTIVE)
+            ->setPassword($pwd)
+            ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')))
+            ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', '-4 months')));
+
+        $profilePicture = (new Media())
+            ->setPath($faker->randomElement($profilePictureNames));
+        $manager->persist($profilePicture);
+        $userAdmin->setProfilePicture($profilePicture);
+        $manager->persist($userAdmin);
 
         for ($i = 0; $i < 6; $i++) {
             $user = new User();
