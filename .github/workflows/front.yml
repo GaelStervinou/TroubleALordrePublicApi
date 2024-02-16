@@ -32,7 +32,7 @@ jobs:
     needs: build 
     steps:
       - name: Lint JavaScript
-        run: npm run lint-fix
+        run: cd front && npm run lint-fix
 
   e2e:
     name: End-to-End Tests
