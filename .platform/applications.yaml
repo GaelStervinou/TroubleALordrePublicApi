@@ -23,7 +23,7 @@ front:
       "/":
         root: "dist"
         passthru: "/index.html"
-        expires: 1d
+        expires: 1h
         scripts: false
         allow: true
 
