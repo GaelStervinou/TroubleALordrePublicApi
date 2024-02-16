@@ -6,7 +6,6 @@ import {
     RouterProvider,
 } from "react-router-dom";
 import PageNotFound from "./components/errors/PageNotFound.jsx";
-import Home from "./routes/home.jsx";
 import Login from "./routes/login.jsx";
 import Register from "./routes/Register.jsx";
 import {LoadingPageError} from "./components/errors/LoadingPageError.jsx";
@@ -54,11 +53,7 @@ import UserUnavailabilities from './routes/UserUnavailabilities.jsx';
 import UserAvailabilitiesCreate from './routes/UserAvailabilitiesCreate.jsx';
 
 const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <Home/>,
-        errorElement: <LoadingPageError/>,
-    },
+
     {
         path: "/error",
         element: <PageNotFound/>,
