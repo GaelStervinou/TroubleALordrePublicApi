@@ -28,12 +28,6 @@ use Symfony\Component\Validator\Constraints as Assert;
             securityPostDenormalize: 'object.getTroubleMaker().getCompany().getOwner() == user',
             processor: CreateAndUpdateStateProcessor::class,
         ),
-        new Patch(
-            denormalizationContext: ['groups' => ['unavailibility:update']],
-            securityMessage: 'Vous ne pouvez pas modifier d\'indisponibilité pour cet utilisateur car il ne fait pas partie de votre établissemnt',
-            securityPostDenormalize: 'object.getTroubleMaker().getCompany().getOwner() == user',
-            processor: CreateAndUpdateStateProcessor::class,
-        ),
         new Delete(
             securityMessage: 'Vous ne pouvez pas supprimer d\'indisponibilité pour cet utilisateur car il ne fait pas partie de votre établissemnt',
             securityPostDenormalize: 'object.getTroubleMaker().getCompany().getOwner() == user'

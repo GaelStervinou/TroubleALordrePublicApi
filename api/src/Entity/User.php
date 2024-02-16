@@ -17,7 +17,6 @@ use App\Entity\Trait\TimestampableTrait;
 use App\Interface\SoftDeleteInterface;
 use App\Interface\TimestampableEntityInterface;
 use App\State\User\UserMeProvider;
-use App\State\UserAvailabilitiesStateProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -48,6 +47,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
         ),
         new Get(
             normalizationContext: ['groups' => ['user:read']],
+            name: User::USERS_GET_ONE_ROUTE_NAME,
         ),
         new Get(
             uriTemplate: '/me',
@@ -64,7 +64,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
         )
     ],
     normalizationContext: ['groups' => ['user:read']],
-    //TODO denormalizationContext à faire !!!!
 )]
 #[ApiResource(
     uriTemplate: '/companies/{id}/users',
@@ -83,6 +82,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
 {
     use TimestampableTrait;
     use SoftDeleteTrait;
+    public CONST USERS_GET_ONE_ROUTE_NAME = 'users_get_one';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -183,7 +183,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         minMessage: "Le kbis invalide",
         maxMessage: "Le kbis invalide"
     )]
-    #[Groups(['user:read', 'company:read', 'company:admin:read', 'company:dashboard:read', 'user:admin:read'])]
+    #[Groups(['user:read', 'company:read', 'company:admin:read', 'company:dashboard:read', 'user:admin:read', 'user:create'])]
     private ?string $kbis = null;
 
     #[ORM\ManyToOne]

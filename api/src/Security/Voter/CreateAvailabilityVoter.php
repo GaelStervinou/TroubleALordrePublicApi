@@ -22,8 +22,7 @@ class CreateAvailabilityVoter extends Voter
     {
         /**@var $user User */
         $user = $token->getUser();
-        // if the user is anonymous, do not grant access
-        if (!$user instanceof UserInterface) {
+        if (!($user instanceof UserInterface)) {
             return false;
         }
         /**@var $subject Availability */
@@ -36,10 +35,9 @@ class CreateAvailabilityVoter extends Voter
             return false;
         }
 
-        if ($troubleMaker
-            && !($troubleMaker->isTroubleMaker() && $troubleMaker->isActive()
-            && $user->getOwnedCompanies()->contains($troubleMaker->getCompany())
-        )
+        if (!$troubleMaker
+            || !($troubleMaker->isTroubleMaker() && $troubleMaker->isActive())
+            || $user->getOwnedCompanies()->contains($troubleMaker->getCompany())
         ) {
             return false;
         }

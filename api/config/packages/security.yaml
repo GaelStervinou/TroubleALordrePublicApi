@@ -59,7 +59,6 @@ security:
         - { path: ^/users, method: GET, roles: PUBLIC_ACCESS }
         - { path: ^/companies, method: GET, roles: PUBLIC_ACCESS }
         - { path: ^/categories, method: GET, roles: PUBLIC_ACCESS }
-        - { path: ^/plannings, method: GET, roles: PUBLIC_ACCESS }
         - { path: ^/medias, method: GET, roles: PUBLIC_ACCESS }
         - { path: ^/users/verify-email/, method: GET, roles: PUBLIC_ACCESS }
         - { path: ^/validate-account/, method: PATCH, roles: PUBLIC_ACCESS }

@@ -17,8 +17,6 @@ class ServiceCreationVoter extends Voter
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        // replace with your own logic
-        // https://symfony.com/doc/current/security/voters.html
         return in_array($attribute, [self::CREATE, self::EDIT], true) && $subject instanceof Service;
     }
 
@@ -26,14 +24,15 @@ class ServiceCreationVoter extends Voter
     {
         $user = $token->getUser();
         // if the user is anonymous, do not grant access
-        if (!$user instanceof UserInterface) {
+        if (!$user instanceof UserInterface || $subject instanceof Service) {
             return false;
         }
         /**@var $user User*/
         if (!$user->isCompanyAdmin()) {
             return false;
         }
+        /**@var $subject Service*/
 
-        return $user === $subject->getCompany()?->getOwner();
+        return $user === $subject->getCompany()?->getOwner() && $subject->getCompany()?->isActive();
     }
 }

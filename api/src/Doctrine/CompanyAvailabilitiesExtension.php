@@ -12,6 +12,7 @@ use App\Entity\Invitation;
 use App\Entity\User;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 final readonly class CompanyAvailabilitiesExtension implements QueryCollectionExtensionInterface
@@ -44,7 +45,7 @@ final readonly class CompanyAvailabilitiesExtension implements QueryCollectionEx
         if (!$loggedInUser->getOwnedCompanies()->exists(function (int $index, Company $company) use ($companyId) {
             return $companyId === $company->getId()?->toString() && $company->isActive();
         })) {
-            throw new HttpException(403, 'Vous ne possédez pas cette entreprise ou cette dernière n\'est plus active');
+            throw new AccessDeniedException('Vous ne possédez pas cette entreprise ou cette dernière n\'est plus active');
         }
 
         if (!$this->security->isGranted("ROLE_ADMIN")) {

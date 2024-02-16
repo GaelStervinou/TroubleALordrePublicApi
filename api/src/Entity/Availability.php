@@ -5,20 +5,15 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\TimestampableTrait;
 use App\Interface\TimestampableEntityInterface;
 use App\Repository\AvailabilityRepository;
 use App\State\CreateAndUpdateStateProcessor;
-use App\State\CreateAvailabilityStateProcessor;
-use App\State\UserAvailabilitiesStateProvider;
 use DateTimeImmutable;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -47,14 +42,6 @@ use Symfony\Component\Validator\Constraints as Assert;
             securityPostDenormalize: "is_granted('AVAILABILITY_CREATE', object)",
             processor: CreateAndUpdateStateProcessor::class,
         ),
-        new Patch(
-            denormalizationContext: ['groups' => ['availability:update']],
-            securityPostDenormalize: 'user.isCompanyAdmin() and object.getTroubleMaker().getCompany().getOwner() == user',
-            processor: CreateAndUpdateStateProcessor::class,
-        ),
-        new Delete(
-            securityPostDenormalize: 'user.isCompanyAdmin() and object.getTroubleMaker().getCompany().getOwner() == user'
-        )
     ],
     normalizationContext: ['groups' => ['availability:read']],
     denormalizationContext: ['groups' => ['availability:write']],
