@@ -14,7 +14,7 @@ front:
       npm run build
 
   mounts:
-    "/dist": { source: local, source_path: /dist }
+    "/dist": { source: local, source_path: dist }
 
   web:
     locations:
