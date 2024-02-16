@@ -6,6 +6,9 @@ import {
     RouterProvider,
 } from "react-router-dom";
 import PageNotFound from "./components/errors/PageNotFound.jsx";
+import Home from "./routes/Home.jsx";
+import Login from "./routes/Login.jsx";
+import Register from "./routes/Register.jsx";
 import {LoadingPageError} from "./components/errors/LoadingPageError.jsx";
 import Header from "./components/molecules/Header.jsx";
 import Footer from "./components/molecules/Footer.jsx";
@@ -29,7 +32,7 @@ import AccountCreated from './routes/AccountCreated.jsx';
 import ResetPassword from './routes/ResetPassword.jsx';
 import UserUpdate from './routes/UserUpdate.jsx';
 import BackOffice from "./routes/BackOffice.jsx";
-import CompanyBackOffice from './routes/CompanyBackOffice.jsx';
+import CompanyBackOffice from "./routes/CompanyBackOffice.jsx";
 import CompanyRegister from './routes/CompanyRegister.jsx';
 import ReservationPage from "./routes/ReservationPage.jsx";
 import ServicesBackOffice from './routes/ServicesBackOffice.jsx';
@@ -49,9 +52,6 @@ import UnavailabilitiesBackOffice from './routes/UnavailabilitesBackOffice.jsx';
 import UserAvailabilities from './routes/UserAvailabilities.jsx';
 import UserUnavailabilities from './routes/UserUnavailabilities.jsx';
 import UserAvailabilitiesCreate from './routes/UserAvailabilitiesCreate.jsx';
-import Home from './routes/home.jsx';
-import Login from './routes/login.jsx';
-import Register from './routes/Register.jsx';
 
 const router = createBrowserRouter([
     {
