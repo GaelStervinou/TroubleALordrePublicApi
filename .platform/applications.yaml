@@ -6,13 +6,15 @@ front:
   build:
     flavor: none
 
+  mounts:
+    "/dist": { source: local, source_path: dist }
+
   hooks:
     build: |
       set -e
       npm install
     deploy: |
       npm run build
-
       
   web:
     locations:
