@@ -28,8 +28,73 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
             'casseur-1.jpeg',
             'casseur-2.jpeg',
         ];
+        $coordinates = [
+            [
+                'lng' => 48.793837,
+                'lat' => 2.377474
+            ],
+            [
+                'lng' => 48.745961,
+                'lat' => 2.390549
+            ],
+            [
+                'lng' => 48.770691,
+                'lat' => 2.113038
+            ],
+            [
+                'lng' => 48.868674,
+                'lat' => 3.418726
+            ],
+            [
+                'lng' => 48.860413,
+                'lat' => 2.283232
+            ],
+            [
+                'lng' => 48.813995,
+                'lat' => 2.273107
+            ],
+            [
+                'lng' => 48.790540,
+                'lat' => 2.320239
+            ],
+            [
+                'lng' => 48.926519,
+                'lat' => 2.372607
+            ],
+            [
+                'lng' => 48.894624,
+                'lat' => 2.262983
+            ],
+            [
+                'lng' => 48.897149,
+                'lat' => 2.380637
+            ],
+            [
+                'lng' => 48.865236,
+                'lat' => 2.382557
+            ],
+            [
+                'lng' => 48.868911,
+                'lat' => 2.456222
+            ],
+            [
+                'lng' => 48.861446,
+                'lat' => 2.196824
+            ],
+            [
+                'lng' => 48.926633,
+                'lat' => 2.173433
+            ],
+            [
+                'lng' => 49.008914,
+                'lat' => 2.199966
+            ]
+        ];
 
         $status = [
+            CompanyStatusEnum::ACTIVE,
+            CompanyStatusEnum::ACTIVE,
+            CompanyStatusEnum::ACTIVE,
             CompanyStatusEnum::ACTIVE,
             CompanyStatusEnum::PENDING,
             CompanyStatusEnum::DELETED,
@@ -37,9 +102,9 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
         ];
 
         $userStatus = [
-            UserStatusEnum::USER_STATUS_BANNED,
-            UserStatusEnum::USER_STATUS_DELETED,
-            UserStatusEnum::USER_STATUS_PENDING,
+            UserStatusEnum::USER_STATUS_ACTIVE,
+            UserStatusEnum::USER_STATUS_ACTIVE,
+            UserStatusEnum::USER_STATUS_ACTIVE,
             UserStatusEnum::USER_STATUS_ACTIVE
         ];
 
@@ -64,8 +129,9 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
                 ->setAddress($faker->streetAddress)
                 ->setZipCode($faker->postcode)
                 ->setCity($faker->city)
-                ->setLat($faker->latitude)
-                ->setLng($faker->longitude)
+                //we inverse
+                ->setLat($faker->randomElement($coordinates)['lng'])
+                ->setLng($faker->randomElement($coordinates)['lat'])
                 ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 months', '-2 days')))
                 ->setUpdatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 months', '-2 days')));
             foreach ($companyMedias as $companyMedia) {

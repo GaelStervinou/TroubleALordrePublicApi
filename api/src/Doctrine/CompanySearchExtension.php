@@ -9,6 +9,7 @@ use App\Entity\Company;
 use App\Enum\CompanyStatusEnum;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 final readonly class CompanySearchExtension implements QueryCollectionExtensionInterface
 {
@@ -24,9 +25,15 @@ final readonly class CompanySearchExtension implements QueryCollectionExtensionI
             return;
         }
 
-        $lat = $context[ 'request' ]?->get('lat');
-        $lng = $context[ 'request' ]?->get('lng');
-        //TODO check validity by regex
+        if (!array_key_exists("filters", $context)
+            || !array_key_exists('lat', $context['filters'])
+            || !array_key_exists('lng', $context['filters'])
+        ) {
+            throw new BadRequestException("Il manque la latitude et la longitude");
+        }
+        $lat = $context[ 'filters' ]['lat'];
+        $lng = $context[ 'filters' ]['lng'];
+
         $rootAlias = $queryBuilder->getRootAliases()[ 0 ];
 
         $queryBuilder->andWhere(sprintf('%s.status = :status', $rootAlias))

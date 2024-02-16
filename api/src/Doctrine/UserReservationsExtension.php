@@ -32,15 +32,20 @@ final readonly class UserReservationsExtension implements QueryCollectionExtensi
         if (null === $operation) {
             return;
         }
-        $userId = $context[ 'request' ]?->get('id');
-        if (!$userId) {
-            return;
-        }
+
         if (Reservation::USER_RESERVATIONS_AS_CUSTOMERS === $operation->getName()) {
+            $userId = $context[ 'request' ]?->get('id');
+            if (!$userId) {
+                return;
+            }
             $rootAlias = $queryBuilder->getRootAliases()[ 0 ];
             $queryBuilder->andWhere(sprintf('%s.customer = :searchedUserId', $rootAlias));
             $queryBuilder->setParameter('searchedUserId', $userId);
         } elseif (Reservation::USER_RESERVATIONS_AS_TROUBLE_MAKERS === $operation->getName()) {
+            $userId = $context[ 'request' ]?->get('id');
+            if (!$userId) {
+                return;
+            }
             $rootAlias = $queryBuilder->getRootAliases()[ 0 ];
             $queryBuilder->andWhere(sprintf('%s.troubleMaker = :searchedUserId', $rootAlias));
             $queryBuilder->setParameter('searchedUserId', $userId);
