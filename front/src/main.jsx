@@ -6,54 +6,59 @@ import {
     RouterProvider,
 } from "react-router-dom";
 import PageNotFound from "./components/errors/PageNotFound.jsx";
-import Login from "./routes/login.jsx";
-import Register from "./routes/Register.jsx";
+import Home from "./ok/home.jsx";
+import Login from "./ok/login.jsx";
+import Register from "./ok/Register.jsx";
 import {LoadingPageError} from "./components/errors/LoadingPageError.jsx";
 import Header from "./components/molecules/Header.jsx";
 import Footer from "./components/molecules/Footer.jsx";
-import CompanyPage from "./routes/CompanyPage.jsx";
-import OrderPage from "./routes/OrderPage.jsx";
-import ForgotPassword from './routes/ForgotPassword.jsx';
-import SearchPage from "./routes/SearchPage.jsx";
-import CompanyDashboardPage from "./routes/CompanyDashboardPage.jsx";
+import CompanyPage from "./ok/CompanyPage.jsx";
+import OrderPage from "./ok/OrderPage.jsx";
+import ForgotPassword from './ok/ForgotPassword.jsx';
+import SearchPage from "./ok/SearchPage.jsx";
+import CompanyDashboardPage from "./ok/CompanyDashboardPage.jsx";
 import { AuthProvider } from './app/authContext';
 import {ThemeContextProvider} from "./hooks/useTheme.jsx";
 import {OrderContextProvider} from "./hooks/useOrder.jsx";
 import CustomerProfile from "./components/organisms/CustomerProfile.jsx";
 import SubMenu from "./components/molecules/SubMenu.jsx";
-import UserAppointments from "./routes/UserAppointments.jsx";
-import UserBookings from "./routes/UserBookings.jsx";
-import UserRatesAppointments from "./routes/UserRatesAppointments.jsx";
-import UserRatesBookings from "./routes/UserRatesBookings.jsx";
-import UserEstablishments from "./routes/UserEstablishments.jsx";
-import ValidateAccount from './routes/ValidateAccount.jsx';
-import AccountCreated from './routes/AccountCreated.jsx';
-import ResetPassword from './routes/ResetPassword.jsx';
-import UserUpdate from './routes/UserUpdate.jsx';
-import BackOffice from "./routes/BackOffice.jsx";
-import CompanyBackOffice from "./routes/CompanyBackOffice.jsx";
-import CompanyRegister from './routes/CompanyRegister.jsx';
-import ReservationPage from "./routes/ReservationPage.jsx";
-import ServicesBackOffice from './routes/ServicesBackOffice.jsx';
-import ServiceBackOfficeCreate from './routes/ServiceBackOfficeCreate.jsx';
-import ServiceBackOfficeUpdate from './routes/ServiceBackOfficeUpdate.jsx';
-import InvitationsBackOffice from './routes/InvitationsBackOffice.jsx';
-import InvitationsBackOfficeCreate from './routes/InvitationsBackOfficeCreate.jsx';
-import BackOfficeEstablishments from './routes/BackOfficeEstablishments.jsx';
-import BackOfficeUsers from './routes/BackOfficeUsers.jsx';
-import BackOfficeUsersUpdate from './routes/BackOfficeUsersUpdate.jsx';
-import BackOfficeCategories from './routes/BackOfficeCategories.jsx';
-import BackOfficeCategoriesCreate from './routes/BackOfficeCategoriesCreate.jsx';
-import BackOfficeCategoriesUpdate from './routes/BackOfficeCategoriesUpdate.jsx';
+import UserAppointments from "./ok/UserAppointments.jsx";
+import UserBookings from "./ok/UserBookings.jsx";
+import UserRatesAppointments from "./ok/UserRatesAppointments.jsx";
+import UserRatesBookings from "./ok/UserRatesBookings.jsx";
+import UserEstablishments from "./ok/UserEstablishments.jsx";
+import ValidateAccount from './ok/ValidateAccount.jsx';
+import AccountCreated from './ok/AccountCreated.jsx';
+import ResetPassword from './ok/ResetPassword.jsx';
+import UserUpdate from './ok/UserUpdate.jsx';
+import BackOffice from "./ok/BackOffice.jsx";
+import CompanyBackOffice from "./ok/CompanyBackOffice.jsx";
+import CompanyRegister from './ok/CompanyRegister.jsx';
+import ReservationPage from "./ok/ReservationPage.jsx";
+import ServicesBackOffice from './ok/ServicesBackOffice.jsx';
+import ServiceBackOfficeCreate from './ok/ServiceBackOfficeCreate.jsx';
+import ServiceBackOfficeUpdate from './ok/ServiceBackOfficeUpdate.jsx';
+import InvitationsBackOffice from './ok/InvitationsBackOffice.jsx';
+import InvitationsBackOfficeCreate from './ok/InvitationsBackOfficeCreate.jsx';
+import BackOfficeEstablishments from './ok/BackOfficeEstablishments.jsx';
+import BackOfficeUsers from './ok/BackOfficeUsers.jsx';
+import BackOfficeUsersUpdate from './ok/BackOfficeUsersUpdate.jsx';
+import BackOfficeCategories from './ok/BackOfficeCategories.jsx';
+import BackOfficeCategoriesCreate from './ok/BackOfficeCategoriesCreate.jsx';
+import BackOfficeCategoriesUpdate from './ok/BackOfficeCategoriesUpdate.jsx';
 import {SearchContextProvider} from "./hooks/useSearch.jsx";
-import AvailabilitiesBackOffice from './routes/AvailabilitiesBackOffice.jsx';
-import UnavailabilitiesBackOffice from './routes/UnavailabilitesBackOffice.jsx';
-import UserAvailabilities from './routes/UserAvailabilities.jsx';
-import UserUnavailabilities from './routes/UserUnavailabilities.jsx';
-import UserAvailabilitiesCreate from './routes/UserAvailabilitiesCreate.jsx';
+import AvailabilitiesBackOffice from './ok/AvailabilitiesBackOffice.jsx';
+import UnavailabilitiesBackOffice from './ok/UnavailabilitesBackOffice.jsx';
+import UserAvailabilities from './ok/UserAvailabilities.jsx';
+import UserUnavailabilities from './ok/UserUnavailabilities.jsx';
+import UserAvailabilitiesCreate from './ok/UserAvailabilitiesCreate.jsx';
 
 const router = createBrowserRouter([
-
+    {
+        path: "/",
+        element: <Home/>,
+        errorElement: <LoadingPageError/>,
+    },
     {
         path: "/error",
         element: <PageNotFound/>,
