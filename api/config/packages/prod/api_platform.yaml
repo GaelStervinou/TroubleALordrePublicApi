@@ -1,0 +1,22 @@
+api_platform:
+    title: Hello API Platform
+    version: 1.0.0
+    # Mercure integration, remove if unwanted
+    mercure: ~
+
+    enable_docs: false
+    enable_swagger: false
+    enable_swagger_ui: false
+
+    swagger:
+        api_keys:
+            JWT:
+                name: Authorization
+                type: header
+    # Good defaults for REST APIs
+    defaults:
+        stateless: true
+        cache_headers:
+            vary: ['Content-Type', 'Authorization', 'Origin']
+        extra_properties:
+            standard_put: true

@@ -6,8 +6,8 @@ import {
     RouterProvider,
 } from "react-router-dom";
 import PageNotFound from "./components/errors/PageNotFound.jsx";
-import Home from "./routes/home.jsx";
-import Login from "./routes/login.jsx";
+import Home from "./routes/Home.jsx";
+import Login from "./routes/Login.jsx";
 import Register from "./routes/Register.jsx";
 import {LoadingPageError} from "./components/errors/LoadingPageError.jsx";
 import Header from "./components/molecules/Header.jsx";
