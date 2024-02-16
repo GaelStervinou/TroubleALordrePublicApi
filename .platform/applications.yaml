@@ -12,7 +12,8 @@ front:
     build: |
       set -e
       npm install
-#    deploy: |
+    deploy: |
+      set -e
 #      VITE_OUTPUT_DIR=/dist/tmp npm run build
 
   mounts:
