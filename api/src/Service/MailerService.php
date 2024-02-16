@@ -12,7 +12,11 @@ class MailerService
 {
     public const VERIFY_ACCOUNT_TEMPLATE_ID = 1;
     public const RESET_PASSWORD_TEMPLATE_ID = 2;
-    
+
+    public const DEFAULT_ADMIN_MAIL = "stervinou.g36@gmail.com";
+    public const DEFAULT_ADMIN_FIRSTNAME = "Gaël";
+    public const DEFAULT_ADMIN_LASTNAMEL = "Stervinou";
+
     private MailerInterface $mailer;
 
     public function __construct(MailerInterface $mailer)
@@ -44,6 +48,8 @@ class MailerService
                 return 'Trouble à l\'ordre public - Validation de votre compte';
             case 2:
                 return 'Trouble à l\'ordre public - Réinitialisation de votre mot de passe';
+            case 3:
+                return 'Trouble à l\'ordre public admin - Nouvelle demande de PDG';
             default:
                 return 'Trouble à l\'ordre public - Information importante';
         }
@@ -58,6 +64,8 @@ class MailerService
                 return 'emails/validation.html.twig';
             case 2:
                 return 'emails/reset_password.html.twig';
+            case 3:
+                return 'emails/new_company_admin_request.html.twig';
             default:
                 return 'emails/default.html.twig';
         }

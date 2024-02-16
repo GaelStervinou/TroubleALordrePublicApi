@@ -36,6 +36,11 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 #[ApiResource(
     operations: [
         new GetCollection(
+            uriTemplate: '/users/pending-company-admin-validation',
+            security: 'user.isAdmin()',
+            name: User::USERS_PENDING_COMPANY_ADMIN_VALIDATION,
+        ),
+        new GetCollection(
             normalizationContext: ['groups' => ['user:admin:read']],
             security: 'is_granted("ROLE_ADMIN")',
             securityMessage: 'Vous n\'êtes pas autorisé à voir cette ressource.',
@@ -83,6 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     use TimestampableTrait;
     use SoftDeleteTrait;
     public CONST USERS_GET_ONE_ROUTE_NAME = 'users_get_one';
+    public CONST USERS_PENDING_COMPANY_ADMIN_VALIDATION = 'users_pending_company_admin_validation';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -93,7 +99,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
     private ?UuidInterface $id = null;
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[Groups(['user:me:read', 'user:create', 'user:update', 'user:admin:read', 'invitation:read'])]
+    #[Groups(['user:me:read', 'user:create', 'user:admin:read', 'invitation:read'])]
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
     #[ORM\Column]
@@ -183,7 +189,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Timesta
         minMessage: "Le kbis invalide",
         maxMessage: "Le kbis invalide"
     )]
-    #[Groups(['user:read', 'company:read', 'company:admin:read', 'company:dashboard:read', 'user:admin:read', 'user:create'])]
+    #[Groups(['user:read', 'company:read', 'company:admin:read', 'company:dashboard:read', 'user:admin:read', 'user:create', 'user:update'])]
     private ?string $kbis = null;
 
     #[ORM\ManyToOne]

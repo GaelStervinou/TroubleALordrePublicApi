@@ -53,6 +53,15 @@ final class UserPasswordHasherStateProcessor implements ProcessorInterface
             ) {
                 throw new ValidationException("Vous ne pouvez pas changer votre rôle.");
             }
+
+            if (!empty($data->getKbis()) && empty($context[ 'previous_data' ]->getKbis())) {
+                $this->mailerService->sendEmail([
+                    'emailTo' => MailerService::DEFAULT_ADMIN_MAIL,
+                    'firstnameTo' => MailerService::DEFAULT_ADMIN_FIRSTNAME,
+                    'lastnameTo' => MailerService::DEFAULT_ADMIN_LASTNAMEL,
+                    'email' => $data->getEmail(),
+                ], 3);
+            }
             $data = $userService->updateUser($context[ 'previous_data' ]->getEmail() !== $data->getEmail());
             $this->softDeleteStateProcessor->process($data, $operation, $uriVariables, $context);
         }
