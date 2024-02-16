@@ -18,7 +18,7 @@ use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
 
-final readonly class UserOwnedCompanies implements QueryCollectionExtensionInterface
+final readonly class OnlyActiveCompaniesExtension implements QueryCollectionExtensionInterface
 {
 
     public function __construct(

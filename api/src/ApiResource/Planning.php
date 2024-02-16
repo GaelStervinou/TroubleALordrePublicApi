@@ -6,7 +6,6 @@ namespace App\ApiResource;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
-use App\Entity\Company;
 use App\Entity\User;
 use App\State\TroubleMakerPlanningStateProvider;
 use App\State\UserAvailabilitiesStateProvider;
