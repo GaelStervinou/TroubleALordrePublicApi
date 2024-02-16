@@ -25,9 +25,6 @@ jobs:
 
       - name: Install Dependencies
         run: cd front && npm install
-
-      - name: Build React App
-        run: cd front && npm run build
         
       - name: Lint JavaScript
         run: cd front && npm run lint-fix

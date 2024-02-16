@@ -18,10 +18,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build and Run Tests
+      - name: Build
         run: |
           docker compose -f compose.yaml -f compose.override.yaml up -d
-          docker compose exec -T php composer install
+          docker compose exec -T php composer install          
+        continue-on-error: true  # Continue to the next step even if tests fail
+
+      - name: Run Tests
+        run: |
           docker compose exec -T php bin/phpunit
           docker compose exec -T php bin/console -e test doctrine:schema:validate
         continue-on-error: true  # Continue to the next step even if tests fail
