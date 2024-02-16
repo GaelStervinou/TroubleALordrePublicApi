@@ -3,7 +3,7 @@ front:
   source:
     root: front
 
-  size: L
+  size: M
 
   build:
     flavor: none
