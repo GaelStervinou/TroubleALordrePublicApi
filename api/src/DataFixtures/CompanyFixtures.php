@@ -25,6 +25,8 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
             'pp-4.jpeg',
             'pp-5.jpeg',
             'pp-6.jpeg',
+            'casseur-1.jpeg',
+            'casseur-2.jpeg',
         ];
 
         $status = [

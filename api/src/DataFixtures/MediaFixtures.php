@@ -18,6 +18,8 @@ class MediaFixtures extends Fixture
             'company-3.jpeg',
             'company-4.jpeg',
             'company-5.jpeg',
+            'gilet-jaune.jpeg',
+            'rond-point.jpeg',
         ];
 
         for ($i = 0; $i < 300; $i++) {
