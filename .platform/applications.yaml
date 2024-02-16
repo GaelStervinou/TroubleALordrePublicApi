@@ -15,6 +15,7 @@ front:
 
   mounts:
     "/dist": { source: local, source_path: dist }
+    "vite" : { source: local, source_path: vite.config.js }
 
   web:
     locations:
