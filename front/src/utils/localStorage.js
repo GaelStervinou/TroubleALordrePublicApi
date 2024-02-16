@@ -4,6 +4,8 @@ const LS_KEY_PREFIX = 'talop';
 const LS_TOKEN_KEY = LS_KEY_PREFIX + 'Token';
 const LS_REFRESH_TOKEN_KEY = LS_KEY_PREFIX + 'RefreshToken';
 const LS_USER_INFORMATION_KEY = LS_KEY_PREFIX + 'UserInformation';
+const LS_LANGUAGE = LS_KEY_PREFIX + 'Language';
+
 export function localStorageStoreItem(name, item, isObject = false) {
     if (isObject) {
         localStorage.setItem(name, JSON.stringify(item));
@@ -46,4 +48,12 @@ export function eraseCredentials() {
     localStorageRemoveItem(LS_TOKEN_KEY);
     localStorageRemoveItem(LS_USER_INFORMATION_KEY);
     localStorageRemoveItem(LS_REFRESH_TOKEN_KEY);
+}
+
+export function storeLanguage(language) {
+    localStorageStoreItem(LS_LANGUAGE, language);
+}
+
+export function getLanguage() {
+    return localStorageGetItem(LS_LANGUAGE);
 }

@@ -3,6 +3,7 @@ import {getUserServicesRates} from "../queries/rates.js";
 import Comment from "../components/molecules/Comment.jsx";
 import {useParams} from "react-router-dom";
 import Button from "../components/atoms/Button.jsx";
+import {useTranslator} from "../app/translatorContext.jsx";
 
 export default function UserRatesBookings() {
     const [ratesBookings, setRatesBookings] = useState([]);
@@ -11,6 +12,7 @@ export default function UserRatesBookings() {
     const [hasMore, setHasMore] = useState(false);
     const [totalRates, setTotalRates] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
+    const {translate} = useTranslator();
 
     useEffect(() => {
         const fetchUserRates = async () => {
@@ -53,7 +55,7 @@ export default function UserRatesBookings() {
                 }
                 {hasMore &&
                     <Button
-                        title={'Voir plus'}
+                        title={translate("see-more")}
                         onClick={() => {
                             setIsLoading(true);
                             setCurrentPage(currentPage + 1);

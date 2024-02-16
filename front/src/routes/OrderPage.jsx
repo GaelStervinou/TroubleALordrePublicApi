@@ -11,6 +11,7 @@ import {getService} from "../queries/services.js";
 import {getUserServicePlanning} from "../queries/users.js";
 import { useAuth } from "../app/authContext.jsx";
 import { createReservation } from "../queries/reservations.js";
+import {useTranslator} from "../app/translatorContext.jsx";
 
 export default function OrderPage() {
     const {companySlug, serviceId} = useParams();
@@ -19,6 +20,7 @@ export default function OrderPage() {
     const [collaboratorList, setCollaboratorList] = useState([]);
     const [providerCalendar, setProviderCalendar] = useState([]);
     const [error, setError] = useState(null);
+    const {translate, getLanguageForDate} = useTranslator();
 
     const { isLoggedIn, retrieveUser } = useAuth();
     const navigate = useNavigate();
@@ -200,10 +202,10 @@ export default function OrderPage() {
                                     ) : (
                                         <section className={'space-y-2'}>
                                             <h1 className={'text-2xl font-medium'}>
-                                                Merci pour votre confiance !
+                                                {translate("thank-for-trust")}
                                             </h1>
                                             <h3 className={'text-lg font-medium text-secondary'}>
-                                                Votre rendez-vous avec {provider?.firstname} {provider?.lastname} chez {service?.company.name} est prévu pour le {new Date(appointmentDate).toLocaleDateString('fr-FR', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'})}
+                                                {translate("your-appointment")} {provider?.firstname} {provider?.lastname} {translate("at")} {service?.company.name}  {new Date(appointmentDate).toLocaleDateString(getLanguageForDate(), {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'})}
                                             </h3>
                                         </section>
                                     )}
@@ -214,10 +216,10 @@ export default function OrderPage() {
                     <section className={'h-min w-1/3 space-y-10 max-md:w-[100%] max-md:mx-[-2rem] bg-accent-200 rounded-lg p-8 sticky top-28 mt-2 transition-all duration-700 max-sm:px-4 max-sm:fixed max-sm:p-3 max-sm:rounded-t-xl max-sm:rounded-b-none max-sm:left-8 max-sm:top-[100dvh] max-sm:pb-6 max-sm:z-50 max-sm:bg-on-surface max-sm:-translate-y-full max-sm:space-y-4'}>
                         <div className={'space-y-4 max-sm:space-y-1'}>
                             <h2 className={'text-xl font-medium max-md:text-xl max-sm:hidden'}>
-                                Votre rendez-vous chez {service?.company.name}
+                                {translate("your-appointment-at")} {service?.company.name}
                             </h2>
                             { appointmentDate ? (
-                                <div className={'text-sm font-md text-secondary'}>{new Date(appointmentDate).toLocaleDateString('fr-FR', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'})}</div>
+                                <div className={'text-sm font-md text-secondary'}>{new Date(appointmentDate).toLocaleDateString(getLanguageForDate(), {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'})}</div>
                             ) : null}
                             <hr className={'max-sm:hidden'}/>
                             <div className={'flex justify-between font-md text-lg'}>
@@ -235,13 +237,13 @@ export default function OrderPage() {
                         { currentStep === 'Confirmation' ? (
                             <Button
                                 onClick={handleRedirect}
-                                title={'Voir mon calendrier'}
+                                title={translate("see-my-calendar")}
                                 hasBackground
                                 className={'!w-full !bg-primary !text-background hover:!bg-secondary'}/>
                         ) : (
                             <Button
                                 onClick={handleNextStep}
-                                title={ nextStepName === 'Confirmation' ? 'Confirmer' : `Choisir une ${nextStepName}`}
+                                title={ nextStepName === 'Confirmation' ? translate("confirm") : translate("choose-a") + ' ' + nextStepName}
                                 hasBackground
                                 className={'!w-full !bg-primary !text-background hover:!bg-secondary disabled:!bg-on-surface'}
                             />

@@ -7,6 +7,7 @@ import Chip from "../components/atoms/Chip.jsx";
 import Comment from "../components/molecules/Comment.jsx";
 import Button from "../components/atoms/Button.jsx";
 import SetUpInstance from "../utils/axios.js";
+import {useTranslator} from "../app/translatorContext.jsx";
 
 export default function ReservationPage() {
     const [reservation, setReservation] = useState(null);
@@ -18,6 +19,7 @@ export default function ReservationPage() {
     const { retrieveUser } = useAuth();
     const navigate = useNavigate();
     const http = SetUpInstance();
+    const {translate} = useTranslator();
 
     useEffect(() => {
         async function getUser() {
@@ -126,7 +128,7 @@ export default function ReservationPage() {
                                 (
                                     <>
                                         <p className={'font-bold text-xl max-md:text-xl'}>{reservation?.hour}</p>
-                                        <label className={'text-lg max-sm:text-sm'}>Heure</label>
+                                        <label className={'text-lg max-sm:text-sm'}>{translate("hour")}</label>
                                     </>
                                 )
                             }
@@ -142,7 +144,7 @@ export default function ReservationPage() {
                                 (
                                     <>
                                         <p className={'font-bold text-xl max-md:text-xl'}>{reservation?.duration}</p>
-                                        <label className={'text-lg max-sm:text-sm'}>Durée</label>
+                                        <label className={'text-lg max-sm:text-sm'}>{translate("duration")}</label>
                                     </>
                                 )
                             }
@@ -189,7 +191,7 @@ export default function ReservationPage() {
                         <>
                             <section className={'rounded-box p-12 max-sm:p-6 bg-surface mb-12 max-sm:mb-4 w-1/2 max-sm:w-full'}>
                                 <h5 className={'stat-title text-text font-medium'}>
-                                    Le client
+                                    {translate("the-client")}
                                 </h5>
                                 <header className={'flex gap-8 max-sm:gap-4 mt-8'}>
                                     <Link to={`/profile/${reservation.customer.id}`}>
@@ -226,7 +228,7 @@ export default function ReservationPage() {
                             </section>
                             <section className={'rounded-box p-12 max-sm:p-6 bg-surface mb-12 w-1/2 max-sm:w-full'}>
                                 <h5 className={'stat-title text-text font-medium'}>
-                                    Le prestataire
+                                    {translate("the-trouble-maker")}
                                 </h5>
                                 <header className={'flex gap-8 max-sm:gap-4 mt-8'}>
                                     <Link to={`/profile/${reservation.troubleMaker.id}`}>

@@ -4,6 +4,7 @@ import TextInput from "../components/atoms/TextInput.jsx";
 import WarningAlert from "../components/atoms/WarningAlert.jsx";
 import Button from "../components/atoms/Button.jsx";
 import { useAuth } from "../app/authContext.jsx";
+import {useTranslator} from "../app/translatorContext.jsx";
 
 export default function Register() {
     const [email, setEmail] = useState("");
@@ -15,6 +16,7 @@ export default function Register() {
     const { register } = useAuth();
     const [hasTriedToRegister, setHasTriedToRegister] = useState(false);
     const navigate = useNavigate();
+    const {translate} = useTranslator();
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
@@ -75,7 +77,7 @@ export default function Register() {
                         <div className="flex flex-row gap-5">
                             <TextInput
                                 type="text"
-                                placeholder="Prénom"
+                                placeholder={translate("firstname")}
                                 value={firstname}
                                 handleValueChange={handleFirstnameChange}
                             />
@@ -88,27 +90,27 @@ export default function Register() {
                         </div>
                         <TextInput
                             type="email"
-                            placeholder="Email"
+                            placeholder={translate("email")}
                             value={email}
                             handleValueChange={handleEmailChange}
                         />
                         <TextInput
                             type="password"
-                            placeholder="Mot de passe"
+                            placeholder={translate("password")}
                             value={password}
                             isSecret={true}
                             handleValueChange={handlePasswordChange}
                         />
                         <TextInput
                             type="password"
-                            placeholder="Confirmer le mot de passe"
+                            placeholder={translate("confirm-password")}
                             value={verifyPassword}
                             isSecret={true}
                             handleValueChange={handleVerifyPasswordChange}
                         />
-                        <Button type={'submit'} title="S'inscrire" hasBackground className={'mt-10 !w-full !bg-primary text-background hover:!bg-secondary'}/>
+                        <Button type={'submit'} title={translate("register")} hasBackground className={'mt-10 !w-full !bg-primary text-background hover:!bg-secondary'}/>
                         {areInvalidCredentials && (
-                            <WarningAlert message="Invalid credentials" />
+                            <WarningAlert message={translate("wrong-log-info")} />
                         )}
                     </form>
                 </div>

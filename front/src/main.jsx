@@ -56,6 +56,7 @@ import UserUnavailabilitiesCreate from './routes/UserUnavailabilitiesCreate.jsx'
 import ReservationRateCreate from './routes/ReservationRateCreate.jsx';
 import UserInvitations from './routes/UserInvitations.jsx';
 import BackOfficeUsersWaiting from './routes/BackOfficeUsersWaiting.jsx';
+import {TranslatorProvider} from "./app/translatorContext.jsx";
 
 const router = createBrowserRouter([
     {
@@ -323,14 +324,16 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <AuthProvider>
-        <SearchContextProvider>
-            <ThemeContextProvider>
-                <Header/>
-                <main className="flex min-h-screen flex-col items-center pb-28 max-sm:pb-40">
-                    <RouterProvider router={router}/>
-                </main>
-                <Footer/>
-            </ThemeContextProvider>
-        </SearchContextProvider>
+        <TranslatorProvider>
+            <SearchContextProvider>
+                <ThemeContextProvider>
+                    <Header/>
+                    <main className="flex min-h-screen flex-col items-center pb-28 max-sm:pb-40">
+                        <RouterProvider router={router}/>
+                    </main>
+                    <Footer/>
+                </ThemeContextProvider>
+            </SearchContextProvider>
+        </TranslatorProvider>
     </AuthProvider>
 )

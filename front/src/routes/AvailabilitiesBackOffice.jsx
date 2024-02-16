@@ -3,11 +3,13 @@ import SetUpInstance from "../utils/axios.js";
 import { useNavigate, NavLink, useParams } from "react-router-dom";
 import { useAuth } from "../app/authContext.jsx";
 import { deleteAvailability } from "../queries/availabilities.js";
+import {useTranslator} from "../app/translatorContext.jsx";
 
 
 export default function AvailabilitiesBackOffice() {
   const [availabilities, setAvailabilities] = useState([]);
   const [isUpdating, setIsUpdating] = useState(false);
+  const {translate} = useTranslator();
 
   const http = SetUpInstance();
   const navigate = useNavigate();
@@ -58,14 +60,14 @@ export default function AvailabilitiesBackOffice() {
               <p>{availability.day}</p>
               <p>{availability.startTime}</p>
               <p>{availability.endTime}</p>
-              <button onClick={ () => openAvailability(availability.id) }>Modifier</button>
-              <button onClick={ () => handleDeleteAvailability(availability.id) }>Supprimer</button>
+              <button onClick={ () => openAvailability(availability.id) }>{translate("update")}</button>
+              <button onClick={ () => handleDeleteAvailability(availability.id) }>{translate("remove")}</button>
             </div>
           );
         }
         )
       ) : (
-        <p>Aucune disponibilité pour le moment</p>
+        <p>{translate("no-availability")}</p>
       )}
     </div>
   );

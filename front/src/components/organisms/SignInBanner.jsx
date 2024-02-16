@@ -1,6 +1,8 @@
 import {AiFillThunderbolt} from "react-icons/ai";
 import Button from "../atoms/Button.jsx";
+import {useTranslator} from "../../app/translatorContext.jsx";
 export default function SignInBanner () {
+    const {translate} = useTranslator();
 
     return (
         <>
@@ -13,15 +15,15 @@ export default function SignInBanner () {
                 </div>
                 <div className="flex flex-col items-center gap-3 my-8 mx-4 z-10 max-md:mx-2 max-md:my-2">
                     <h2 className="text-primary font-medium mt-4 text-center font-heading text-3xl max-md:text-base max-md:mt-0">
-                        Vous êtes propriétaire <br/>d'un établissement ?
+                        {translate("you-establishment-owner")} <br/>{translate("of-an-establishment")} ?
                     </h2>
                     <p className="text-lg text-center max-md:text-base">
-                        Augmentez vos reserverations en ajoutant votre établissement
+                        {translate("boost-your-reservations")}
                     </p>
                 </div>
                     <Button
                       type={'submit'}
-                      title="Ajoutez votre établisement"
+                      title={translate("add-your-establishment")}
                       href={'/company-register'}
                       icon={<AiFillThunderbolt/>}
                       hasBackground

@@ -7,6 +7,7 @@ import Button from "../components/atoms/Button.jsx";
 import { useAuth } from "../app/authContext.jsx";
 import { useParams } from "react-router-dom";
 import SetUpInstance from "../utils/axios.js";
+import {useTranslator} from "../app/translatorContext.jsx";
 
 export default function ReservationRateCreate() {
   const [rate, setRate] = useState(0);
@@ -19,6 +20,7 @@ export default function ReservationRateCreate() {
   const { isLoggedIn } = useAuth();
 
   const { reservationId } = useParams();
+  const {translate} = useTranslator();
 
   useEffect(() => {
     if (!isLoggedIn()) {
@@ -62,12 +64,12 @@ export default function ReservationRateCreate() {
 
   return (
     <div className="mt-32 bg-background max-sm:mt-28 w-1/2">
-      <h1 className="text-4xl text-color-effect font-heading text-center">Ajouter une note</h1>
+      <h1 className="text-4xl text-color-effect font-heading text-center">{translate("add-note")}</h1>
       <div className="hero-content flex-col w-full lg:flex-row-reverse">
           <div className="card shrink-0 max-w-sm w-full shadow-2xl bg-surface">
               <div className="card-body" >
                   <NumberInput
-                      placeholder="Note"
+                      placeholder="Score"
                       min={0}
                       max={5}
                       step={0.5}
@@ -75,7 +77,7 @@ export default function ReservationRateCreate() {
                       handleValueChange={(event) => handleRateChange(event)}
                   />
                   <TextInput
-                      placeholder="Commentaire"
+                      placeholder={translate("comment")}
                       value={content}
                       handleValueChange={(event) => handleContentChange(event)}
                   />
@@ -85,8 +87,8 @@ export default function ReservationRateCreate() {
                       onClick={handleSubmit}
                       hasBackground 
                       className={'!w-full !bg-primary text-background hover:!bg-secondary'}/>
-                    {areMissingInfos && <WarningAlert message="Veuillez remplir tous les champs" />}
-                    {error && <WarningAlert message="Erreur lors de la création de la note" />}
+                    {areMissingInfos && <WarningAlert message={translate("fill-all-fields")} />}
+                    {error && <WarningAlert message={translate("rate-creation-error")} />}
                   </div>
               </div>
           </div>

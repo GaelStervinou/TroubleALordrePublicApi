@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import {getUserReservations} from "../queries/users.js";
 import Button from "../components/atoms/Button.jsx";
 import CardLg from "../components/molecules/CardLg.jsx";
+import {useTranslator} from "../app/translatorContext.jsx";
 
 export default function UserAppointments() {
     const [appointments, setAppointments] = useState([]);
@@ -11,6 +12,7 @@ export default function UserAppointments() {
     const [hasMore, setHasMore] = useState(false);
     const [totalAppointments, setTotalAppointments] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
+    const {translate} = useTranslator();
 
     useEffect(() => {
         const fetchUserReservations = async () => {
@@ -32,14 +34,14 @@ export default function UserAppointments() {
 
     return (
         <div className={'-mt-20 max-sm:-mt-16'}>
-            <p className={'text-secondary mb-14'}>{totalAppointments} rendez-vous avec</p>
+            <p className={'text-secondary mb-14'}>{totalAppointments} {translate("appointment-with")}</p>
             <section className={'item-paginate-container space-y-24'}>
                 {appointments.map((appointment, index) => (
                     <CardLg
                         key={index}
                         duration={appointment.duration}
                         date={appointment.date}
-                        title={`${appointment.service.name} avec ${appointment.troubleMaker.firstname} ${appointment.troubleMaker.lastname} chez ${appointment.service.company.name}`}
+                        title={`${appointment.service.name} ${translate("with")} ${appointment.troubleMaker.firstname} ${appointment.troubleMaker.lastname} ${translate("at")} ${appointment.service.company.name}`}
                         path={`/reservations/${appointment.id}`}
                         address={`${appointment.service.company.address} ${appointment.service.company.city} ${appointment.service.company.zipCode}`}
                         imagePath={`${import.meta.env.VITE_API_BASE_URL}${appointment.service.company.mainMedia.contentUrl}`}

@@ -7,6 +7,7 @@ import Button from "../components/atoms/Button.jsx";
 import { useAuth } from "../app/authContext.jsx";
 import SetUpInstance from '../utils/axios.js';
 import { API_MEDIA_ROUTE, API_USERS_ROUTE } from "../utils/apiRoutes.js";
+import {useTranslator} from "../app/translatorContext.jsx";
 
 export default function UserUpdate() {
     const [firstname, setFirstname] = useState("");
@@ -22,6 +23,7 @@ export default function UserUpdate() {
     const navigate = useNavigate();
     const { userId } = useParams();
     const http = SetUpInstance();
+    const {translate} = useTranslator();
 
     useEffect(() => {
         const checkIsMyProfile = async () => {
@@ -74,9 +76,9 @@ export default function UserUpdate() {
     const handleTroublemakerChange = () => {
         setWantToBeTroublemaker(!wantToBeTroublemaker);
         if (wantToBeTroublemaker) {
-            setButtonText("Devenir Troublemaker");
+            setButtonText(translate("become-trouble-maker"));
         } else {
-            setButtonText("Ne plus être Troublemaker");
+            setButtonText(translate("stop-being-trouble-maker"));
         }
     }
 
@@ -137,19 +139,19 @@ export default function UserUpdate() {
                         <div className="flex flex-row gap-5">
                             <TextInput
                                 type="text"
-                                placeholder="Prénom"
+                                placeholder={translate("firstname")}
                                 value={firstname}
                                 handleValueChange={handleFirstnameChange}
                             />
                             <TextInput
                                 type="text"
-                                placeholder="Nom"
+                                placeholder={translate("lastname")}
                                 value={lastname}
                                 handleValueChange={handleLastnameChange}
                             />
                         </div>
                         <FileInput
-                            placeholder="Photo de profil"
+                            placeholder="Photo"
                             handleValueChange={ handlePictureChange }
                             name={ profileImage }
                             accept="image/*"
@@ -170,7 +172,7 @@ export default function UserUpdate() {
                             <Button title={buttonText} onClick={handleTroublemakerChange} hasBackground className={'mt-10 !w-full !bg-accent-800 text-background hover:!bg-accent-500'}/>
                         )}
 
-                        <Button type={'submit'} title="Mettre à jour mon profil" hasBackground className={'mt-10 !w-full !bg-primary text-background hover:!bg-secondary'}/>
+                        <Button type={'submit'} title={translate("update")} hasBackground className={'mt-10 !w-full !bg-primary text-background hover:!bg-secondary'}/>
                         {areInvalidCredentials && (
                             <WarningAlert message="Invalid credentials" />
                         )}

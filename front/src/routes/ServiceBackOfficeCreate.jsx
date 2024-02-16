@@ -7,6 +7,7 @@ import Button from "../components/atoms/Button.jsx";
 import { useAuth } from "../app/authContext.jsx";
 import { useParams } from "react-router-dom";
 import { createService } from "../queries/services.js";
+import {useTranslator} from "../app/translatorContext.jsx";
 
 export default function ServiceBackOfficeCreate() {
   const [name, setName] = useState("");
@@ -19,6 +20,7 @@ export default function ServiceBackOfficeCreate() {
   const { companySlug } = useParams();
   const { isCompanyAdmin, isLoggedIn } = useAuth();
   const navigate = useNavigate();
+  const {translate} = useTranslator();
 
 
   useEffect(() => {
@@ -80,19 +82,19 @@ export default function ServiceBackOfficeCreate() {
           <div className="card shrink-0 max-w-sm w-full shadow-2xl bg-surface">
               <div className="card-body" >
                   <TextInput
-                      placeholder="Titre"
+                      placeholder={translate("title")}
                       type="text"
                       value={name}
                       handleValueChange={handleNameChange}
                     />
                   <TextInput
-                      placeholder="Description"
+                      placeholder={translate("description")}
                       type="text"
                       value={description}
                       handleValueChange={handleDescriptionChange}
                     />
                   <NumberInput
-                      placeholder="Durée (en minutes)"
+                      placeholder={translate("duration-in-minutes")}
                       type="number"
                       value={duration}
                       min={5}
@@ -101,7 +103,7 @@ export default function ServiceBackOfficeCreate() {
                       handleValueChange={handleDurationChange}
                     />
                   <NumberInput
-                      placeholder="Prix"
+                      placeholder={translate("price")}
                       type="number"
                       value={price}
                       min={1}
@@ -111,12 +113,12 @@ export default function ServiceBackOfficeCreate() {
                     />
                   <div className="pt-4 flex flex-col gap-2">
                     <Button 
-                      title="Créer"
+                      title={translate("create")}
                       onClick={handleSubmit}
                       hasBackground 
                       className={'!w-full !bg-primary text-background hover:!bg-secondary'}/>
-                    {areMissingInfos && <WarningAlert message="Veuillez remplir tous les champs" />}
-                    {error && <WarningAlert message="Erreur lors de la création de l'entreprise" />}
+                    {areMissingInfos && <WarningAlert message={translate("fill-all-fields")} />}
+                    {error && <WarningAlert message={translate("service-creation-error")} />}
                   </div>
               </div>
           </div>

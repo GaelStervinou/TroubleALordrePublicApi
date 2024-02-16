@@ -5,6 +5,7 @@ import WarningAlert from "../components/atoms/WarningAlert.jsx";
 import Button from "../components/atoms/Button.jsx";
 import SetUpInstance from '../utils/axios.js';
 import { API_RESET_PASSWORD_ROUTE } from '../utils/apiRoutes.js';
+import {useTranslator} from "../app/translatorContext.jsx";
 
 export default function ResetPassword() {
     const [password, setPassword] = useState("");
@@ -28,6 +29,8 @@ export default function ResetPassword() {
 
         return passwordRegex.test(password);
     };
+
+    const {translate} = useTranslator();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -58,28 +61,28 @@ export default function ResetPassword() {
                         <span className={'text-4xl max-sm:text-2xl'}>Reset your password</span>
                     </h1>
                     <p className={'text-text max-sm:text-sm px-14 max-sm:px-8'}>
-                        Enter your new password and confirm it.
+                        {translate("new-password-and-confirm-it")}
                     </p>
                 </div>
                 <div className="card shrink-0 w-full max-w-sm shadow-2xl">
                     <form className="card-body" onSubmit={handleSubmit}>
                         <TextInput
                             type="password"
-                            placeholder="Password"
+                            placeholder={translate("password")}
                             value={password}
                             isSecret={true}
                             handleValueChange={handlePasswordChange}
                         />
                         <TextInput
                             type="password"
-                            placeholder="Verify password"
+                            placeholder={translate("confirm-password")}
                             value={verifyPassword}
                             isSecret={true}
                             handleValueChange={handleVerifyPasswordChange}
                         />
-                        <Button type={'submit'} title="Reset password" hasBackground className={'mt-10 !w-full !bg-primary text-background hover:!bg-secondary'}/>
+                        <Button type={'submit'} title={translate("reset-password")} hasBackground className={'mt-10 !w-full !bg-primary text-background hover:!bg-secondary'}/>
                         {areInvalidCredentials && (
-                            <WarningAlert message="Password must match and be at least 8 characters with number & special" />
+                            <WarningAlert message={translate("password-regex")} />
                         )}
                     </form>
                 </div>

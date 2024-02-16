@@ -10,6 +10,7 @@ import { useAuth } from "../app/authContext.jsx";
 import SetUpInstance from '../utils/axios.js';
 import { API_COMPANY_ROUTE } from "../utils/apiRoutes.js";
 import { API_MEDIA_ROUTE } from "../utils/apiRoutes.js";
+import {useTranslator} from "../app/translatorContext.jsx";
 
 export default function CompanyRegister() {
     const [name, setName] = useState("");
@@ -26,6 +27,7 @@ export default function CompanyRegister() {
     const [error, setError] = useState(false);
 
     const { isCompanyAdmin, user, isLoggedIn, getMe } = useAuth();
+    const {translate} = useTranslator();
 
     const navigate = useNavigate();
     const http = SetUpInstance();
@@ -147,44 +149,44 @@ export default function CompanyRegister() {
             <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-surface">
                 <form className="card-body" onSubmit={handleSubmit}>
                     <TextInput
-                        placeholder="Nom de l'entreprise"
+                        placeholder={translate("company-name")}
                         type="text"
                         value={name}
                         handleValueChange={handleNameChange}
                     />
                     <TextInput
-                        placeholder="Description"
+                        placeholder={translate("description")}
                         type="text"
                         value={description}
                         handleValueChange={handleDescriptionChange}
                     />
                     <TextInput
-                        placeholder="Adresse"
+                        placeholder={translate("address")}
                         type="text"
                         value={address}
                         handleValueChange={handleAddressChange}
                     />
                     <div className="flex flex-row gap-5">
                       <TextInput
-                          placeholder="Code postal"
+                          placeholder={translate("postal-code")}
                           type="text"
                           value={zipcode}
                           handleValueChange={handleZipcodeChange}
                       />
                       <TextInput
-                          placeholder="Ville"
+                          placeholder={translate("city")}
                           type="text"
                           value={city}
                           handleValueChange={handleCityChange}
                       />
                     </div>
                     <TextInput
-                        placeholder="Pays"
+                        placeholder={translate("country")}
                         type="text"
                         value={country}
                         handleValueChange={handleCountryChange}
                     />
-                    <label htmlFor="categories" className={'font-medium text-text'}>Catégories</label>
+                    <label htmlFor="categories" className={'font-medium text-text'}>{translate("categories")}</label>
                     { categories.map((category) => {
                         return (
                             <CheckboxInput
@@ -223,8 +225,8 @@ export default function CompanyRegister() {
                         hasBackground
                         className={'mt-10 !w-full !bg-primary text-background hover:!bg-secondary'}
                     />
-                    {areMissingInfos && <WarningAlert message="Veuillez remplir tous les champs" />}
-                    {error && <WarningAlert message="Erreur lors de la création de l'entreprise" />}
+                    {areMissingInfos && <WarningAlert message={translate("fill-all-fields")} />}
+                    {error && <WarningAlert message={translate("company-creation-error")} />}
                 </form>
             </div>
         </div>

@@ -13,6 +13,7 @@ import ChipList from "../components/molecules/ChipList.jsx";
 import Rating from "../components/atoms/Rating.jsx";
 import {AiOutlineRight} from "react-icons/ai";
 import {Link} from "react-router-dom";
+import {useTranslator} from "../app/translatorContext.jsx";
 
 function SetViewOnClick() {
     const { searchCompaniesLatLng} = useSearch();
@@ -29,6 +30,7 @@ function SetViewOnClick() {
 export default function SearchPage() {
     const {searchCompaniesResults,searchCategories, searchCompaniesAddress, searchCompaniesCategory, searchCompaniesLatLng} = useSearch();
     const [selectedCompany, setSelectedCompany] = useState(null);
+    const {translate} = useTranslator();
 
     return (
         <div className={'flex gap-8 pt-28 pb-14 w-full max-sm:!block h-[100dvh] max-sm:z-10 max-sm:py-0 -mb-28'}>
@@ -36,7 +38,7 @@ export default function SearchPage() {
                 {!selectedCompany &&
                     <div className="flex flex-col gap-4 max-sm:gap-3 pl-16 max-sm:p-8">
                         {searchCompaniesAddress &&
-                            (<h1 className="text-lg font-medium">Résultats de recherche pour {searchCompaniesAddress}</h1>)
+                            (<h1 className="text-lg font-medium">{translate("search-results-for")} {searchCompaniesAddress}</h1>)
                         }
                         <div className="flex gap-4 max-sm:gap-3">
                             {(searchCategories && searchCompaniesCategory) &&
@@ -80,7 +82,7 @@ export default function SearchPage() {
                                     </header>
 
                                     <div className={'text-primary text-base flex items-center gap-2 max-md:text-sm'}>
-                                        Voir plus
+                                        {translate("see-more")}
                                         <AiOutlineRight />
                                     </div>
                                 </div>
@@ -88,7 +90,7 @@ export default function SearchPage() {
                         ):
                         (
                             searchCompaniesResults.length === 0 ?
-                                (<p className="text-center">Aucun résultat trouvé</p>):
+                                (<p className="text-center">{translate("no-result")}</p>):
                                 (
                                     searchCompaniesResults.map((company, index) => (
                                         <CardRow

@@ -11,6 +11,7 @@ import {useParams} from "react-router-dom";
 import {getCompanies, getCompany} from "../queries/companies.js";
 import ChipList from "../components/molecules/ChipList.jsx";
 import Rating from "../components/atoms/Rating.jsx";
+import {useTranslator} from "../app/translatorContext.jsx";
 
 export default function CompanyPage() {
     const [company, setCompany] = useState(null);
@@ -18,6 +19,7 @@ export default function CompanyPage() {
     const {companySlug} = useParams();
     let [companies, setCompanies] = useState([]);
     let [isLoading, setIsLoading] = useState(true);
+    const {translate} = useTranslator();
 
 
     useEffect(() => {
@@ -38,29 +40,6 @@ export default function CompanyPage() {
         }
         fetchRandomCompanies();
     }, [companySlug]);
-
-    let citesList = [
-        {
-            "title": "Paris",
-            "image": "https://cdn.paris.fr/paris/2019/10/01/huge-b3661d1d3cb578bc5752cc0d4237d592.jpg",
-            "path": "/login"
-        },
-        {
-            "title": "Marseille",
-            "image": "https://a.cdn-hotels.com/gdcs/production76/d86/ded693e8-0d94-404e-8ae3-23739d6ec3bc.jpg",
-            "path": "/login"
-        },
-        {
-            "title": "Lyon",
-            "image": "https://images.ctfassets.net/bth3mlrehms2/3FT2t7eUwluY8vEHRcQcBt/737ba261438c62dcc2bfc873d93690ed/France_Lyon_Quais_de_Sao__ne.jpg?w=2119&h=1414&fl=progressive&q=50&fm=jpg",
-            "path": "/login"
-        },
-        {
-            "title": "Bordeaux",
-            "image": "https://www.novo-monde.com/app/uploads/2018/05/DSC07100.jpg",
-            "path": "/login"
-        }
-    ];
 
     return (
         <>
@@ -119,7 +98,7 @@ export default function CompanyPage() {
                         <section>
                             <h2 className={'text-2xl max-sm:text-xl font-medium mt-4 font-heading max-md:text-base'}>Nos services</h2>
                             <p>
-                                Choisissez votre service et prenez rendez-vous
+                                {translate("pick-service-and-book")}
                             </p>
                             <section className={'flex flex-col gap-6 mt-12'} id={'service-container'}>
                                 {company?.services.map((service, index) => (
@@ -137,7 +116,7 @@ export default function CompanyPage() {
                         <section>
                             <h5 className={'mt-4 flex flex-col text-xl font-bold max-md:px-0 max-md:text-base max-md:mt-20'}>
                                 <span className={'text-2xl font-heading max-md:text-xl'}>{company?.customerRates.length}</span>
-                                Commentaires
+                                {translate("comments")}
                             </h5>
                             <CommentList items={company?.customerRates}/>
                         </section>
@@ -151,7 +130,7 @@ export default function CompanyPage() {
                     <section className={'h-min w-1/3 space-y-10 max-md:w-[100%] max-md:mx-[-2rem] bg-accent-200 rounded-lg p-8 sticky top-28 mt-2 transition-all duration-700 max-sm:px-4 max-sm:fixed max-sm:p-3 max-sm:rounded-t-xl max-sm:rounded-b-none max-sm:left-8 max-sm:top-[100dvh] max-sm:pb-6 max-sm:z-50 max-sm:bg-on-surface max-sm:-translate-y-full max-sm:space-y-6'}>
                         <div className={'space-y-4'}>
                             <h2 className={'text-xl font-medium max-md:text-xl'}>
-                                Choisissez votre service et prenez rendez-vous
+                                {translate("pick-service-and-book")}
                             </h2>
                             <div className="inline-block w-min bg-accent-500 rounded-md px-2 py-1 text-lg font-md text-secondary whitespace-pre">
                                 Entre {company?.minimumServicePrice}€ et {company?.maximumServicePrice}€
@@ -159,7 +138,7 @@ export default function CompanyPage() {
                         </div>
                         <Button
                             href={'#service-container'}
-                            title="Prendre rendez-vous"
+                            title={translate("book-disturbance")}
                             hasBackground
                             className={'!w-full !bg-primary !text-background hover:!bg-secondary'}
                         />
@@ -171,19 +150,10 @@ export default function CompanyPage() {
             <section className={'w-full mt-28'}>
                 <h2 className={'text-2xl px-16 font-medium mt-4 font-heading max-md:text-xl max-md:px-8'}>Poris lamis</h2>
                 <p className={'px-16 max-md:px-8'}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing
+                    {translate("find-company-to-fit-your-needs")}
                 </p>
                 <CardList items={companies} />
             </section>
-
-            <section className={'w-full mt-28 mb-36 max-sm:mb-64 px-16 max-md:px-8'}>
-                <h2 className={'text-2xl font-medium mt-4 font-heading max-md:text-xl'}>Poris lamis</h2>
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing
-                </p>
-                <CardLiteList items={citesList} />
-            </section>
-
         </>
 
     );

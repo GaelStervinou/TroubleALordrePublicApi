@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getMyInvitations, updateInvitation } from "../queries/invitations.js";
 import Button from "../components/atoms/Button.jsx";
 import Chip from "../components/atoms/Chip.jsx";
+import {useTranslator} from "../app/translatorContext.jsx";
 
 export default function UserInvitations() {
   const [invitations, setInvitations] = useState([]);
@@ -16,6 +17,7 @@ export default function UserInvitations() {
     };
     fetchInvitations();
   }, [isUpdating]);
+  const {translate} = useTranslator();
 
   const refuseInvitationAction = (invitationId) => {
     updateInvitation(invitationId, { status: "refused" });
@@ -48,12 +50,12 @@ export default function UserInvitations() {
                       <div className="flex flex-row gap-2 max-sm:w-full">
                         <Button
                             hasBackground
-                            title="Accepter"
+                            title={translate("accept")}
                             onClick={ () => acceptInvitationAction(invitation['@id']) }
                             className={'!bg-success !text-background max-md:w-full'}/>
                         <Button
                             hasBackground
-                            title="Refuser"
+                            title={translate("refuse")}
                             onClick={ () => refuseInvitationAction(invitation['@id']) }
                             className={'!bg-danger !text-background max-md:w-full'}/>
                       </div>
@@ -64,7 +66,7 @@ export default function UserInvitations() {
           );
         })
       ) : (
-        <p>Aucune invitation pour le moment</p>
+        <p>{translate("no-invitation")}</p>
       )}
     </div>
   );
