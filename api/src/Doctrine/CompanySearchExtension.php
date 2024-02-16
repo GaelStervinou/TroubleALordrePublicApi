@@ -25,14 +25,8 @@ final readonly class CompanySearchExtension implements QueryCollectionExtensionI
             return;
         }
 
-        if (!array_key_exists("filters", $context)
-            || !array_key_exists('lat', $context['filters'])
-            || !array_key_exists('lng', $context['filters'])
-        ) {
-            throw new BadRequestException("Il manque la latitude et la longitude");
-        }
-        $lat = $context[ 'filters' ]['lat'];
-        $lng = $context[ 'filters' ]['lng'];
+        $lat = $context[ 'request' ]?->get('lat');
+        $lng = $context[ 'request' ]?->get('lng');
 
         $rootAlias = $queryBuilder->getRootAliases()[ 0 ];
 
