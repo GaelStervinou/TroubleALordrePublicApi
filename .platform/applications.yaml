@@ -20,8 +20,7 @@ front:
     locations:
       "/":
         root: "dist"
-        index:
-          - "index.html"
+        passthru: "/index.html"
         expires: 1d
         scripts: false
         allow: true
